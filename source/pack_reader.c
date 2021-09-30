@@ -15,7 +15,7 @@ typedef struct ItemInfo
 typedef struct PackItem
 {
 	ItemInfo info;
-	const char* path;
+	char* path;
 } PackItem;
 
 struct PackReader
@@ -107,7 +107,11 @@ PackResult createPackReader(
 	if (packReader == NULL)
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
-#if _WIN32
+#if __linux__ || __APPLE__
+	FILE* file = fopen(
+		filePath,
+		"r");
+#elif _WIN32
 	FILE* file;
 
 	errno_t error = fopen_s(
@@ -118,9 +122,7 @@ PackResult createPackReader(
 	if (error != 0)
 		file = NULL;
 #else
-	FILE* file = fopen(
-		filePath,
-		"r");
+#error Unsupported operating system
 #endif
 
 	if (file == NULL)
@@ -262,7 +264,7 @@ bool getPackItemIndex(
 
 	PackItem* searchItem =
 		&packReader->searchItem;
-	searchItem->path = path;
+	searchItem->path = (char*)path;
 
 	PackItem* item = bsearch(
 		searchItem,
@@ -302,7 +304,15 @@ PackResult readPackItemData(
 
 	FILE* file = packReader->file;
 
-#if __linux__ || __APPLE__
+#if __linux__
+	off64_t fileOffset = (off64_t)(offset +
+		packReader->items[index].info.fileOffset);
+
+	int seekResult = fseeko64(
+		file,
+		fileOffset,
+		SEEK_SET);
+#elif __APPLE__
 	off_t fileOffset = (off_t)(offset +
 		packReader->items[index].info.fileOffset);
 
@@ -318,6 +328,8 @@ PackResult readPackItemData(
 		file,
 		fileOffset,
 		SEEK_SET);
+#else
+#error Unsupported operating system
 #endif
 
 	if (seekResult != 0)
