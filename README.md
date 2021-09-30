@@ -1,5 +1,9 @@
 # Work in Progress!
 
+## Features
+* Compressed file pack creation
+* Runtime file pack reading
+
 ## Supported operating systems
 * Ubuntu
 * MacOS

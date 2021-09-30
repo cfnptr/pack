@@ -37,4 +37,5 @@ target_link_libraries(pack PUBLIC
 	libzstd_static)
 target_include_directories(pack PUBLIC
 	${PROJECT_BINARY_DIR}
-	${PROJECT_SOURCE_DIR}/include)
+	${PROJECT_SOURCE_DIR}/include
+	${PROJECT_SOURCE_DIR}/libraries/zstd/lib)

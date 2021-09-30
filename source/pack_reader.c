@@ -1,6 +1,8 @@
 #include "pack/pack_reader.h"
 #include "pack/defines.h"
 
+#include "zstd.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -8,6 +10,7 @@
 
 typedef struct ItemInfo
 {
+	uint64_t zipSize;
 	uint64_t itemSize;
 	uint64_t fileOffset;
 	uint8_t pathSize;
@@ -20,6 +23,7 @@ typedef struct PackItem
 
 struct PackReader
 {
+	ZSTD_DCtx* zstdContext;
 	FILE* file;
 	uint64_t itemCount;
 	PackItem* items;
@@ -107,6 +111,14 @@ PackResult createPackReader(
 	if (packReader == NULL)
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
+	ZSTD_DCtx* zstdContext = ZSTD_createDCtx();
+
+	if (zstdContext == NULL)
+	{
+		free(packReader);
+		return FAILED_TO_CREATE_ZSTD_PACK_RESULT;
+	}
+
 #if __linux__ || __APPLE__
 	FILE* file = fopen(
 		filePath,
@@ -127,6 +139,7 @@ PackResult createPackReader(
 
 	if (file == NULL)
 	{
+		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
 		return FAILED_TO_OPEN_FILE_PACK_RESULT;
 	}
@@ -142,6 +155,7 @@ PackResult createPackReader(
 	if (readResult != PACK_HEADER_SIZE)
 	{
 		fclose(file);
+		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
 		return FAILED_TO_READ_FILE_PACK_RESULT;
 	}
@@ -152,6 +166,7 @@ PackResult createPackReader(
 		header[3] != 'K')
 	{
 		fclose(file);
+		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
 		return UNKNOWN_FILE_TYPE_PACK_RESULT;
 	}
@@ -160,6 +175,7 @@ PackResult createPackReader(
 		header[5] != PACK_VERSION_MINOR)
 	{
 		fclose(file);
+		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
 		return BAD_FILE_VERSION_PACK_RESULT;
 	}
@@ -169,6 +185,7 @@ PackResult createPackReader(
 	if (header[7] != !PACK_LITTLE_ENDIAN)
 	{
 		fclose(file);
+		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
 		return BAD_FILE_ENDIANNESS_PACK_RESULT;
 	}
@@ -184,6 +201,7 @@ PackResult createPackReader(
 	if (readResult != sizeof(uint64_t))
 	{
 		fclose(file);
+		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
 		return FAILED_TO_READ_FILE_PACK_RESULT;
 	}
@@ -198,10 +216,12 @@ PackResult createPackReader(
 	if (packResult != SUCCESS_PACK_RESULT)
 	{
 		fclose(file);
+		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
 		return packResult;
 	}
 
+	packReader->zstdContext = zstdContext;
 	packReader->file = file;
 	packReader->itemCount = itemCount;
 	packReader->items = items;
@@ -224,6 +244,8 @@ void destroyPackReader(
 		packReader->itemCount,
 		packReader->items);
 	fclose(packReader->file);
+	ZSTD_freeDCtx(
+		packReader->zstdContext);
 	free(packReader);
 }
 
@@ -287,62 +309,82 @@ uint64_t getPackItemDataSize(
 	assert(index < packReader->itemCount);
 	return packReader->items[index].info.itemSize;
 }
+const char* getPackItemPath(
+	PackReader packReader,
+	uint64_t index)
+{
+	assert(packReader != NULL);
+	assert(index < packReader->itemCount);
+	return packReader->items[index].path;
+}
+
 PackResult readPackItemData(
 	PackReader packReader,
 	uint64_t index,
-	uint64_t size,
-	uint64_t offset,
 	void* buffer)
 {
 	assert(packReader != NULL);
 	assert(index < packReader->itemCount);
-	assert(size != 0);
 	assert(buffer != NULL);
 
-	assert(size + offset <=
-		packReader->items[index].info.itemSize);
-
 	FILE* file = packReader->file;
+	PackItem* item = &packReader->items[index];
+	uint64_t zipSize = item->info.zipSize;
 
-#if __linux__
-	off64_t fileOffset = (off64_t)(offset +
-		packReader->items[index].info.fileOffset);
+	uint8_t* zipData = malloc(
+		zipSize * sizeof(uint8_t));
 
-	int seekResult = fseeko64(
-		file,
-		fileOffset,
-		SEEK_SET);
-#elif __APPLE__
-	off_t fileOffset = (off_t)(offset +
-		packReader->items[index].info.fileOffset);
+	if (zipData == NULL)
+		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
+#if __linux__ || __APPLE__
 	int seekResult = fseeko(
 		file,
-		fileOffset,
+		(off_t)item->info.fileOffset,
 		SEEK_SET);
 #elif _WIN32
-	__int64 fileOffset = (__int64)(offset +
-		packReader->items[index].info.fileOffset);
-
 	int seekResult = _fseeki64(
 		file,
-		fileOffset,
+		(__int64)item->info.fileOffset,
 		SEEK_SET);
 #else
 #error Unsupported operating system
 #endif
 
 	if (seekResult != 0)
+	{
+		free(zipData);
 		return FAILED_TO_SEEK_FILE_PACK_RESULT;
+	}
 
 	size_t readResult = fread(
-		buffer,
-		sizeof(char),
-		size,
+		zipData,
+		sizeof(uint8_t),
+		zipSize,
 		file);
 
-	if (readResult != size)
+	if (readResult != zipSize)
+	{
+		free(zipData);
 		return FAILED_TO_READ_FILE_PACK_RESULT;
+	}
+
+	uint64_t itemSize = item->info.itemSize;
+
+	size_t decompressResult = ZSTD_decompressDCtx(
+		packReader->zstdContext,
+		buffer,
+		itemSize,
+		zipData,
+		zipSize);
+
+	free(zipData);
+
+	if (ZSTD_isError(decompressResult) ||
+		decompressResult != itemSize)
+	{
+		return FAILED_TO_DECOMPRESS_PACK_RESULT;
+	}
 
 	return SUCCESS_PACK_RESULT;
 }
@@ -359,7 +401,7 @@ PackResult createPackItemData(
 	assert(_data != NULL);
 
 	uint64_t size =
-		packReader->items->info.itemSize;
+		packReader->items[index].info.itemSize;
 	uint8_t* data = malloc(
 		size * sizeof(uint8_t));
 
@@ -369,8 +411,6 @@ PackResult createPackItemData(
 	PackResult result = readPackItemData(
 		packReader,
 		index,
-		size,
-		0,
 		data);
 
 	if (result != SUCCESS_PACK_RESULT)
