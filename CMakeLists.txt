@@ -4,14 +4,16 @@ if (${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
 	message(FATAL_ERROR "Prevented in-tree build")
 endif ()
 
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_STANDARD_REQUIRED TRUE)
-
 project(pack 
 	VERSION 0.1.0
 	DESCRIPTION "Simple data packing library"
 	HOMEPAGE_URL "https://github.com/cfnptr/pack"
 	LANGUAGES C)
+
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED TRUE)
+
+option(PACK_BUILD_UTILITIES "Build PACK utility programs" ON)
 
 set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
 set(ZSTD_BUILD_TEST OFF CACHE BOOL "" FORCE)
@@ -40,3 +42,13 @@ target_include_directories(pack PUBLIC
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}/include
 	${PROJECT_SOURCE_DIR}/libraries/zstd/lib)
+
+if (PACK_BUILD_UTILITIES)
+	add_executable(packer
+		utilities/packer.c)
+	target_link_libraries(packer PRIVATE
+		pack)
+	target_include_directories(packer PRIVATE
+		${PROJECT_BINARY_DIR}
+		${PROJECT_SOURCE_DIR}/include)
+endif ()

@@ -12,6 +12,7 @@ inline static PackResult writePackItems(
 	FILE* packFile,
 	uint64_t itemCount,
 	const char** itemPaths,
+	bool printProgress,
 	uint64_t* errorItemIndex)
 {
 	for (uint64_t i = 0; i < itemCount; i++)
@@ -46,7 +47,19 @@ inline static PackResult writePackItems(
 		{
 			fclose(itemFile);
 			*errorItemIndex = i;
-			return ZERO_DATA_FILE_SIZE_PACK_RESULT;
+			return BAD_DATA_SIZE_PACK_RESULT;
+		}
+
+		seekResult = seekFile(
+			itemFile,
+			0,
+			SEEK_SET);
+
+		if (seekResult != 0)
+		{
+			fclose(itemFile);
+			*errorItemIndex = i;
+			return FAILED_TO_SEEK_FILE_PACK_RESULT;
 		}
 
 		uint8_t* itemData = malloc(
@@ -164,27 +177,73 @@ inline static PackResult writePackItems(
 
 		free(zipData);
 		free(itemData);
+
+		if (printProgress == true)
+		{
+			int progress = (int)((float)(i + 1) /
+				(float)itemCount * 100.0f);
+
+			printf("Packed %s file. [%d%%]\n",
+				itemPath,
+				progress);
+			fflush(stdout);
+		}
 	}
 
 	return SUCCESS_PACK_RESULT;
 }
+static int comparePackItemPaths(
+	const void* _a,
+	const void* _b)
+{
+	const char* a = *(const char**)_a;
+	const char* b = *(const char**)_b;
+	uint8_t al = (uint8_t)strlen(a);
+	uint8_t bl = (uint8_t)strlen(b);
+
+	int difference = al - bl;
+
+	if (difference != 0)
+		return difference;
+
+	return memcmp(a, b, al);
+}
 PackResult createItemPack(
 	const char* filePath,
 	uint64_t itemCount,
-	const char** itemPaths,
+	const char** _itemPaths,
+	bool printProgress,
 	uint64_t* errorItemIndex)
 {
 	assert(filePath != NULL);
 	assert(itemCount != 0);
-	assert(itemPaths != NULL);
+	assert(_itemPaths != NULL);
 	assert(errorItemIndex != NULL);
+
+	const char** itemPaths = malloc(
+		itemCount * sizeof(const char*));
+
+	if (itemPaths == NULL)
+		return FAILED_TO_ALLOCATE_PACK_RESULT;
+
+	for (uint64_t i = 0; i < itemCount; i++)
+		itemPaths[i] = _itemPaths[i];
+
+	qsort(
+		itemPaths,
+		itemCount,
+		sizeof(const char*),
+		comparePackItemPaths);
 
 	FILE* packFile = openFile(
 		filePath,
 		"wb");
 
 	if (packFile == NULL)
+	{
+		free(itemPaths);
 		return FAILED_TO_OPEN_FILE_PACK_RESULT;
+	}
 
 	char header[PACK_HEADER_SIZE] = {
 		'P', 'A', 'C', 'K',
@@ -202,6 +261,7 @@ PackResult createItemPack(
 
 	if (writeResult != PACK_HEADER_SIZE)
 	{
+		free(itemPaths);
 		fclose(packFile);
 		remove(filePath);
 		return FAILED_TO_WRITE_FILE_PACK_RESULT;
@@ -215,6 +275,7 @@ PackResult createItemPack(
 
 	if (writeResult != 1)
 	{
+		free(itemPaths);
 		fclose(packFile);
 		remove(filePath);
 		return FAILED_TO_WRITE_FILE_PACK_RESULT;
@@ -224,8 +285,17 @@ PackResult createItemPack(
 		packFile,
 		itemCount,
 		itemPaths,
+		printProgress,
 		errorItemIndex);
 
+	free(itemPaths);
 	fclose(packFile);
-	return packResult;
+
+	if (packResult != SUCCESS_PACK_RESULT)
+	{
+		remove(filePath);
+		return packResult;
+	}
+
+	return SUCCESS_PACK_RESULT;
 }

@@ -45,7 +45,7 @@ PackResult getPackInfo(
 		header[3] != 'K')
 	{
 		fclose(file);
-		return UNKNOWN_FILE_TYPE_PACK_RESULT;
+		return BAD_FILE_TYPE_PACK_RESULT;
 	}
 
 	uint64_t itemCount;

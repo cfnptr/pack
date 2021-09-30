@@ -26,5 +26,10 @@ cmake -DCMAKE_BUILD_TYPE=Release -S . -B build/
 cmake --build build/
 ```
 
+### CMake options
+| Name                 | Description                         | Default value |
+| -------------------- | ----------------------------------- | ------------- |
+| PACK_BUILD_UTILITIES | Build PACK utility programs         | ON            |
+
 ## Third-party
 * [zstd](https://github.com/facebook/zstd/) (BSD License)

@@ -13,8 +13,8 @@
 	FILE* file;                  \
 	errno_t error = fopen_s(     \
 		file, filePath, mode);   \
-	if (error != 0) return NULL; \
-	return file;                 \
+	if (error != 0) NULL;        \
+	file;                        \
 }
 #define seekFile(file, offset, whence) \
 	_fseeki64(file, offset, whence)

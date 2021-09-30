@@ -32,7 +32,7 @@ inline static void destroyPackItems(
 	free(items);
 }
 inline static PackResult createPackItems(
-	FILE* file,
+	FILE* packFile,
 	uint64_t itemCount,
 	PackItem** _items)
 {
@@ -49,13 +49,21 @@ inline static PackResult createPackItems(
 			&info,
 			sizeof(PackItemInfo),
 			1,
-			file);
+			packFile);
 
 		if (result != 1)
 		{
 			destroyPackItems(i, items);
 			free(items);
 			return FAILED_TO_READ_FILE_PACK_RESULT;
+		}
+
+		if (info.itemSize == 0 ||
+			info.pathSize == 0)
+		{
+			destroyPackItems(i, items);
+			free(items);
+			return BAD_DATA_SIZE_PACK_RESULT;
 		}
 
 		char* path = malloc(
@@ -72,7 +80,7 @@ inline static PackResult createPackItems(
 			path,
 			sizeof(char),
 			info.pathSize,
-			file);
+			packFile);
 
 		path[info.pathSize] = 0;
 
@@ -148,7 +156,7 @@ PackResult createPackReader(
 		fclose(file);
 		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
-		return UNKNOWN_FILE_TYPE_PACK_RESULT;
+		return BAD_FILE_TYPE_PACK_RESULT;
 	}
 
 	if (header[4] != PACK_VERSION_MAJOR ||

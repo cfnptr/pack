@@ -20,8 +20,8 @@ typedef enum PackResult
     FAILED_TO_READ_FILE_PACK_RESULT = 5,
     FAILED_TO_SEEK_FILE_PACK_RESULT = 6,
 	FAILED_TO_DECOMPRESS_PACK_RESULT = 7,
-    UNKNOWN_FILE_TYPE_PACK_RESULT = 8,
-	ZERO_DATA_FILE_SIZE_PACK_RESULT = 9,
+	BAD_DATA_SIZE_PACK_RESULT = 8,
+    BAD_FILE_TYPE_PACK_RESULT = 9,
     BAD_FILE_VERSION_PACK_RESULT = 10,
     BAD_FILE_ENDIANNESS_PACK_RESULT = 11,
     PACK_RESULT_COUNT = 12,
@@ -35,3 +35,37 @@ typedef struct PackItemInfo
 	uint8_t pathSize;
 
 } PackItemInfo;
+
+inline static const char* packResultToString(
+	PackResult result)
+{
+	switch (result)
+	{
+	default:
+		return "Unknown pack result";
+	case SUCCESS_PACK_RESULT:
+		return "Success";
+	case FAILED_TO_ALLOCATE_PACK_RESULT:
+		return "Failed to allocate";
+	case FAILED_TO_CREATE_ZSTD_PACK_RESULT:
+		return "Failed to create ZSTD";
+	case FAILED_TO_OPEN_FILE_PACK_RESULT:
+		return "Failed to open file";
+	case FAILED_TO_WRITE_FILE_PACK_RESULT:
+		return "Failed to write file";
+	case FAILED_TO_READ_FILE_PACK_RESULT:
+		return "Failed to read file";
+	case FAILED_TO_SEEK_FILE_PACK_RESULT:
+		return "Failed to seek file";
+	case FAILED_TO_DECOMPRESS_PACK_RESULT:
+		return "Failed to decompress";
+	case BAD_DATA_SIZE_PACK_RESULT:
+		return "Bad data size";
+	case BAD_FILE_TYPE_PACK_RESULT:
+		return "Bad file type";
+	case BAD_FILE_VERSION_PACK_RESULT:
+		return "Bad file version";
+	case BAD_FILE_ENDIANNESS_PACK_RESULT:
+		return "Bad file endianness";
+	}
+}
