@@ -31,8 +31,9 @@ configure_file(
 	pack/defines.h)
 
 add_library(pack STATIC
-	source/pack_writer.c
-	source/pack_reader.c)
+	source/common.c
+	source/reader.c
+	source/writer.c)
 target_link_libraries(pack PUBLIC
 	libzstd_static)
 target_include_directories(pack PUBLIC

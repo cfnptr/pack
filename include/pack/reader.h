@@ -1,7 +1,5 @@
 #pragma once
 #include "pack/defines.h"
-
-#include <stdint.h>
 #include <stdbool.h>
 
 typedef struct PackReader* PackReader;

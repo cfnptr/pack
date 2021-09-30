@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 
 #define __PACK__
 
@@ -18,10 +19,19 @@ typedef enum PackResult
     FAILED_TO_WRITE_FILE_PACK_RESULT = 4,
     FAILED_TO_READ_FILE_PACK_RESULT = 5,
     FAILED_TO_SEEK_FILE_PACK_RESULT = 6,
-	FAILED_TO_COMPRESS_PACK_RESULT = 7,
-	FAILED_TO_DECOMPRESS_PACK_RESULT = 8,
-    UNKNOWN_FILE_TYPE_PACK_RESULT = 9,
+	FAILED_TO_DECOMPRESS_PACK_RESULT = 7,
+    UNKNOWN_FILE_TYPE_PACK_RESULT = 8,
+	ZERO_DATA_FILE_SIZE_PACK_RESULT = 9,
     BAD_FILE_VERSION_PACK_RESULT = 10,
     BAD_FILE_ENDIANNESS_PACK_RESULT = 11,
     PACK_RESULT_COUNT = 12,
 } PackResult;
+
+typedef struct PackItemInfo
+{
+	uint64_t zipSize;
+	uint64_t itemSize;
+	uint64_t fileOffset;
+	uint8_t pathSize;
+
+} PackItemInfo;

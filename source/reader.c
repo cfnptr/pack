@@ -1,23 +1,15 @@
-#include "pack/pack_reader.h"
-#include "pack/defines.h"
+#include "pack/reader.h"
+#include "pack/file.h"
 
 #include "zstd.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
 
-typedef struct ItemInfo
-{
-	uint64_t zipSize;
-	uint64_t itemSize;
-	uint64_t fileOffset;
-	uint8_t pathSize;
-} ItemInfo;
 typedef struct PackItem
 {
-	ItemInfo info;
+	PackItemInfo info;
 	char* path;
 } PackItem;
 
@@ -51,15 +43,15 @@ inline static PackResult createPackItems(
 
 	for (uint64_t i = 0; i < itemCount; i++)
 	{
-		ItemInfo info;
+		PackItemInfo info;
 
-		size_t readResult = fread(
+		size_t result = fread(
 			&info,
-			sizeof(ItemInfo),
+			sizeof(PackItemInfo),
 			1,
 			file);
 
-		if (readResult != sizeof(ItemInfo))
+		if (result != 1)
 		{
 			destroyPackItems(i, items);
 			free(items);
@@ -67,7 +59,7 @@ inline static PackResult createPackItems(
 		}
 
 		char* path = malloc(
-			info.pathSize * sizeof(char));
+			(info.pathSize + 1) * sizeof(char));
 
 		if (path == NULL)
 		{
@@ -76,13 +68,15 @@ inline static PackResult createPackItems(
 			return FAILED_TO_ALLOCATE_PACK_RESULT;
 		}
 
-		readResult = fread(
+		result = fread(
 			path,
 			sizeof(char),
 			info.pathSize,
 			file);
 
-		if (readResult != info.pathSize)
+		path[info.pathSize] = 0;
+
+		if (result != info.pathSize)
 		{
 			destroyPackItems(i, items);
 			free(items);
@@ -119,23 +113,9 @@ PackResult createPackReader(
 		return FAILED_TO_CREATE_ZSTD_PACK_RESULT;
 	}
 
-#if __linux__ || __APPLE__
-	FILE* file = fopen(
+	FILE* file = openFile(
 		filePath,
-		"r");
-#elif _WIN32
-	FILE* file;
-
-	errno_t error = fopen_s(
-		file,
-		filePath,
-		"r");
-
-	if (error != 0)
-		file = NULL;
-#else
-#error Unsupported operating system
-#endif
+		"rb");
 
 	if (file == NULL)
 	{
@@ -146,13 +126,13 @@ PackResult createPackReader(
 
 	char header[PACK_HEADER_SIZE];
 
-	size_t readResult = fread(
+	size_t result = fread(
 		header,
 		sizeof(char),
 		PACK_HEADER_SIZE,
 		file);
 
-	if (readResult != PACK_HEADER_SIZE)
+	if (result != PACK_HEADER_SIZE)
 	{
 		fclose(file);
 		ZSTD_freeDCtx(zstdContext);
@@ -192,13 +172,13 @@ PackResult createPackReader(
 
 	uint64_t itemCount;
 
-	readResult = fread(
+	result = fread(
 		&itemCount,
 		sizeof(uint64_t),
 		1,
 		file);
 
-	if (readResult != sizeof(uint64_t))
+	if (result != 1)
 	{
 		fclose(file);
 		ZSTD_freeDCtx(zstdContext);
@@ -329,61 +309,63 @@ PackResult readPackItemData(
 
 	FILE* file = packReader->file;
 	PackItem* item = &packReader->items[index];
-	uint64_t zipSize = item->info.zipSize;
 
-	uint8_t* zipData = malloc(
-		zipSize * sizeof(uint8_t));
-
-	if (zipData == NULL)
-		return FAILED_TO_ALLOCATE_PACK_RESULT;
-
-#if __linux__ || __APPLE__
-	int seekResult = fseeko(
+	int seekResult = seekFile(
 		file,
 		(off_t)item->info.fileOffset,
 		SEEK_SET);
-#elif _WIN32
-	int seekResult = _fseeki64(
-		file,
-		(__int64)item->info.fileOffset,
-		SEEK_SET);
-#else
-#error Unsupported operating system
-#endif
 
 	if (seekResult != 0)
-	{
-		free(zipData);
 		return FAILED_TO_SEEK_FILE_PACK_RESULT;
-	}
 
-	size_t readResult = fread(
-		zipData,
-		sizeof(uint8_t),
-		zipSize,
-		file);
-
-	if (readResult != zipSize)
-	{
-		free(zipData);
-		return FAILED_TO_READ_FILE_PACK_RESULT;
-	}
-
+	uint64_t zipSize = item->info.zipSize;
 	uint64_t itemSize = item->info.itemSize;
 
-	size_t decompressResult = ZSTD_decompressDCtx(
-		packReader->zstdContext,
-		buffer,
-		itemSize,
-		zipData,
-		zipSize);
-
-	free(zipData);
-
-	if (ZSTD_isError(decompressResult) ||
-		decompressResult != itemSize)
+	if (zipSize > 0)
 	{
-		return FAILED_TO_DECOMPRESS_PACK_RESULT;
+		uint8_t* zipData = malloc(
+			zipSize * sizeof(uint8_t));
+
+		if (zipData == NULL)
+			return FAILED_TO_ALLOCATE_PACK_RESULT;
+
+		size_t result = fread(
+			zipData,
+			sizeof(uint8_t),
+			zipSize,
+			file);
+
+		if (result != zipSize)
+		{
+			free(zipData);
+			return FAILED_TO_READ_FILE_PACK_RESULT;
+		}
+
+		result = ZSTD_decompressDCtx(
+			packReader->zstdContext,
+			buffer,
+			itemSize,
+			zipData,
+			zipSize);
+
+		free(zipData);
+
+		if (ZSTD_isError(result) ||
+			result != itemSize)
+		{
+			return FAILED_TO_DECOMPRESS_PACK_RESULT;
+		}
+	}
+	else
+	{
+		size_t result = fread(
+			buffer,
+			sizeof(uint8_t),
+			itemSize,
+			file);
+
+		if (result != itemSize)
+			return FAILED_TO_READ_FILE_PACK_RESULT;
 	}
 
 	return SUCCESS_PACK_RESULT;
