@@ -10,12 +10,12 @@ typedef struct ItemInfo
 {
 	uint64_t itemSize;
 	uint64_t fileOffset;
-	uint64_t pathSize;
+	uint8_t pathSize;
 } ItemInfo;
 typedef struct PackItem
 {
 	ItemInfo info;
-	char* path;
+	const char* path;
 } PackItem;
 
 struct PackReader
@@ -31,9 +31,7 @@ inline static void destroyPackItems(
 	PackItem* items)
 {
 	for (uint64_t i = 0; i < itemCount; i++)
-	{
 		free(items[i].path);
-	}
 
 	free(items);
 }
@@ -109,9 +107,21 @@ PackResult createPackReader(
 	if (packReader == NULL)
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
+#if _WIN32
+	FILE* file;
+
+	errno_t error = fopen_s(
+		file,
+		filePath,
+		"r");
+
+	if (error != 0)
+		file = NULL;
+#else
 	FILE* file = fopen(
 		filePath,
 		"r");
+#endif
 
 	if (file == NULL)
 	{
@@ -220,4 +230,149 @@ uint64_t getPackItemCount(
 {
 	assert(packReader != NULL);
 	return packReader->itemCount;
+}
+
+static int comparePackItems(
+	const void* _a,
+	const void* _b)
+{
+	const PackItem* a = _a;
+	const PackItem* b = _b;
+
+	int difference =
+		a->info.pathSize -
+		b->info.pathSize;
+
+	if (difference != 0)
+		return difference;
+
+	return memcmp(
+		a->path,
+		b->path,
+		a->info.pathSize);
+}
+bool getPackItemIndex(
+	PackReader packReader,
+	const char* path,
+	uint64_t* index)
+{
+	assert(packReader != NULL);
+	assert(path != NULL);
+	assert(index != NULL);
+
+	PackItem* searchItem =
+		&packReader->searchItem;
+	searchItem->path = path;
+
+	PackItem* item = bsearch(
+		searchItem,
+		packReader->items,
+		packReader->itemCount,
+		sizeof(PackItem),
+		comparePackItems);
+
+	if (item == NULL)
+		return false;
+
+	*index = item - packReader->items;
+	return true;
+}
+uint64_t getPackItemDataSize(
+	PackReader packReader,
+	uint64_t index)
+{
+	assert(packReader != NULL);
+	assert(index < packReader->itemCount);
+	return packReader->items[index].info.itemSize;
+}
+PackResult readPackItemData(
+	PackReader packReader,
+	uint64_t index,
+	uint64_t size,
+	uint64_t offset,
+	void* buffer)
+{
+	assert(packReader != NULL);
+	assert(index < packReader->itemCount);
+	assert(size != 0);
+	assert(buffer != NULL);
+
+	assert(size + offset <=
+		packReader->items[index].info.itemSize);
+
+	FILE* file = packReader->file;
+
+#if __linux__ || __APPLE__
+	off_t fileOffset = (off_t)(offset +
+		packReader->items[index].info.fileOffset);
+
+	int seekResult = fseeko(
+		file,
+		fileOffset,
+		SEEK_SET);
+#elif _WIN32
+	__int64 fileOffset = (__int64)(offset +
+		packReader->items[index].info.fileOffset);
+
+	int seekResult = _fseeki64(
+		file,
+		fileOffset,
+		SEEK_SET);
+#endif
+
+	if (seekResult != 0)
+		return FAILED_TO_SEEK_FILE_PACK_RESULT;
+
+	size_t readResult = fread(
+		buffer,
+		sizeof(char),
+		size,
+		file);
+
+	if (readResult != size)
+		return FAILED_TO_READ_FILE_PACK_RESULT;
+
+	return SUCCESS_PACK_RESULT;
+}
+
+PackResult createPackItemData(
+	PackReader packReader,
+	uint64_t index,
+	uint64_t* _size,
+	uint8_t** _data)
+{
+	assert(packReader != NULL);
+	assert(index < packReader->itemCount);
+	assert(_size != NULL);
+	assert(_data != NULL);
+
+	uint64_t size =
+		packReader->items->info.itemSize;
+	uint8_t* data = malloc(
+		size * sizeof(uint8_t));
+
+	if (data == NULL)
+		return FAILED_TO_ALLOCATE_PACK_RESULT;
+
+	PackResult result = readPackItemData(
+		packReader,
+		index,
+		size,
+		0,
+		data);
+
+	if (result != SUCCESS_PACK_RESULT)
+	{
+		free(data);
+		return result;
+	}
+
+	*_size = size;
+	*_data = data;
+	return SUCCESS_PACK_RESULT;
+}
+void destroyPackItemData(
+	uint8_t* data)
+{
+	free(data);
 }

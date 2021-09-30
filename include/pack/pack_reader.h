@@ -1,6 +1,8 @@
 #pragma once
 #include "pack/defines.h"
+
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct PackReader* PackReader;
 
@@ -12,3 +14,25 @@ void destroyPackReader(
 
 uint64_t getPackItemCount(
 	PackReader packReader);
+
+bool getPackItemIndex(
+	PackReader packReader,
+	const char* path,
+	uint64_t* index);
+uint64_t getPackItemDataSize(
+	PackReader packReader,
+	uint64_t index);
+PackResult readPackItemData(
+	PackReader packReader,
+	uint64_t index,
+	uint64_t size,
+	uint64_t offset,
+	void* buffer);
+
+PackResult createPackItemData(
+	PackReader packReader,
+	uint64_t index,
+	uint64_t* size,
+	uint8_t** data);
+void destroyPackItemData(
+	uint8_t* data);
