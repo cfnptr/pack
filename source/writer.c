@@ -12,22 +12,26 @@ inline static PackResult writePackItems(
 	FILE* packFile,
 	uint64_t itemCount,
 	const char** itemPaths,
-	bool printProgress,
-	uint64_t* errorItemIndex)
+	bool printProgress)
 {
 	for (uint64_t i = 0; i < itemCount; i++)
 	{
 		const char* itemPath = itemPaths[i];
+
+		if (printProgress == true)
+			printf("Packing \"%s\" file. ", itemPath);
+
+		size_t pathSize = strlen(itemPath);
+
+		if (pathSize > UINT8_MAX)
+			return BAD_DATA_SIZE_PACK_RESULT;
 
 		FILE* itemFile = openFile(
 			itemPath,
 			"rb");
 
 		if (itemFile == NULL)
-		{
-			*errorItemIndex = i;
 			return FAILED_TO_OPEN_FILE_PACK_RESULT;
-		}
 
 		int seekResult = seekFile(
 			itemFile,
@@ -37,7 +41,6 @@ inline static PackResult writePackItems(
 		if (seekResult != 0)
 		{
 			fclose(itemFile);
-			*errorItemIndex = i;
 			return FAILED_TO_SEEK_FILE_PACK_RESULT;
 		}
 
@@ -46,7 +49,6 @@ inline static PackResult writePackItems(
 		if (itemSize == 0)
 		{
 			fclose(itemFile);
-			*errorItemIndex = i;
 			return BAD_DATA_SIZE_PACK_RESULT;
 		}
 
@@ -58,7 +60,6 @@ inline static PackResult writePackItems(
 		if (seekResult != 0)
 		{
 			fclose(itemFile);
-			*errorItemIndex = i;
 			return FAILED_TO_SEEK_FILE_PACK_RESULT;
 		}
 
@@ -68,7 +69,6 @@ inline static PackResult writePackItems(
 		if (itemData == NULL)
 		{
 			fclose(itemFile);
-			*errorItemIndex = i;
 			return FAILED_TO_ALLOCATE_PACK_RESULT;
 		}
 
@@ -83,7 +83,6 @@ inline static PackResult writePackItems(
 		if (result != itemSize)
 		{
 			free(itemData);
-			*errorItemIndex = i;
 			return FAILED_TO_READ_FILE_PACK_RESULT;
 		}
 
@@ -93,7 +92,6 @@ inline static PackResult writePackItems(
 		if (zipData == NULL)
 		{
 			free(itemData);
-			*errorItemIndex = i;
 			return FAILED_TO_ALLOCATE_PACK_RESULT;
 		}
 
@@ -111,7 +109,7 @@ inline static PackResult writePackItems(
 			zipSize,
 			itemSize,
 			tellFile(packFile),
-			strlen(itemPath),
+			pathSize,
 		};
 
 		result = fwrite(
@@ -124,7 +122,6 @@ inline static PackResult writePackItems(
 		{
 			free(zipData);
 			free(itemData);
-			*errorItemIndex = i;
 			return FAILED_TO_WRITE_FILE_PACK_RESULT;
 		}
 
@@ -138,7 +135,6 @@ inline static PackResult writePackItems(
 		{
 			free(zipData);
 			free(itemData);
-			*errorItemIndex = i;
 			return FAILED_TO_WRITE_FILE_PACK_RESULT;
 		}
 
@@ -154,7 +150,6 @@ inline static PackResult writePackItems(
 			{
 				free(zipData);
 				free(itemData);
-				*errorItemIndex = i;
 				return FAILED_TO_WRITE_FILE_PACK_RESULT;
 			}
 		}
@@ -170,7 +165,6 @@ inline static PackResult writePackItems(
 			{
 				free(zipData);
 				free(itemData);
-				*errorItemIndex = i;
 				return FAILED_TO_WRITE_FILE_PACK_RESULT;
 			}
 		}
@@ -182,10 +176,7 @@ inline static PackResult writePackItems(
 		{
 			int progress = (int)((float)(i + 1) /
 				(float)itemCount * 100.0f);
-
-			printf("Packed %s file. [%d%%]\n",
-				itemPath,
-				progress);
+			printf("[%d%%]\n", progress);
 		}
 	}
 
@@ -211,13 +202,11 @@ PackResult createItemPack(
 	const char* filePath,
 	uint64_t itemCount,
 	const char** _itemPaths,
-	bool printProgress,
-	uint64_t* errorItemIndex)
+	bool printProgress)
 {
 	assert(filePath != NULL);
 	assert(itemCount != 0);
 	assert(_itemPaths != NULL);
-	assert(errorItemIndex != NULL);
 
 	const char** itemPaths = malloc(
 		itemCount * sizeof(const char*));
@@ -284,8 +273,7 @@ PackResult createItemPack(
 		packFile,
 		itemCount,
 		itemPaths,
-		printProgress,
-		errorItemIndex);
+		printProgress);
 
 	free(itemPaths);
 	fclose(packFile);

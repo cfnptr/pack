@@ -448,12 +448,10 @@ inline static void removePackItemFiles(
 PackResult decoupleItemPack(
 	const char* packPath,
 	uint64_t* _itemCount,
-	bool printProgress,
-	uint64_t* errorItemIndex)
+	bool printProgress)
 {
 	assert(packPath != NULL);
 	assert(_itemCount != NULL);
-	assert(errorItemIndex != NULL);
 
 	PackReader packReader;
 
@@ -465,32 +463,61 @@ PackResult decoupleItemPack(
 		return packResult;
 
 	uint64_t itemCount = packReader->itemCount;
+	PackItem* items = packReader->items;
+
+	uint64_t maxItemSize = 0;
 
 	for (uint64_t i = 0; i < itemCount; i++)
 	{
-		uint64_t itemSize;
-		uint8_t* itemData;
+		if (items[i].info.itemSize > maxItemSize)
+			maxItemSize = items[i].info.itemSize;
+	}
 
-		packResult = createPackItemData(
+	uint8_t* itemData = malloc(
+		maxItemSize * sizeof(uint8_t));
+
+	for (uint64_t i = 0; i < itemCount; i++)
+	{
+		PackItem* item = &items[i];
+
+		if (printProgress == true)
+			printf("Unpacking \"%s\" file. ", item->path);
+
+		uint64_t itemSize = item->info.itemSize;
+
+		packResult = readPackItemData(
 			packReader,
 			i,
-			&itemSize,
-			&itemData);
+			itemData);
 
 		if (packResult != SUCCESS_PACK_RESULT)
 		{
 			removePackItemFiles(
 				i,
-				packReader->items);
+				items);
+			free(itemData);
 			destroyPackReader(packReader);
-			*errorItemIndex = i;
 			return packResult;
 		}
 
-		const char* itemPath =
-			packReader->items[i].path;
+		uint8_t pathSize = item->info.pathSize;
 
-		// TODO: handle directories
+		char itemPath[UINT8_MAX + 1];
+
+		memcpy(
+			itemPath,
+			item->path,
+			pathSize);
+		itemPath[pathSize] = 0;
+
+		for (uint8_t j = 0; j < pathSize; j++)
+		{
+			if (itemPath[j] == '/' ||
+				itemPath[j] == '\\')
+			{
+				itemPath[j] = '-';
+			}
+		}
 
 		FILE* itemFile = openFile(
 			itemPath,
@@ -500,9 +527,9 @@ PackResult decoupleItemPack(
 		{
 			removePackItemFiles(
 				i,
-				packReader->items);
+				items);
+			free(itemData);
 			destroyPackReader(packReader);
-			*errorItemIndex = i;
 			return FAILED_TO_OPEN_FILE_PACK_RESULT;
 		}
 
@@ -518,25 +545,21 @@ PackResult decoupleItemPack(
 		{
 			removePackItemFiles(
 				i,
-				packReader->items);
+				items);
+			free(itemData);
 			destroyPackReader(packReader);
-			*errorItemIndex = i;
 			return FAILED_TO_OPEN_FILE_PACK_RESULT;
 		}
-
-		destroyPackItemData(itemData);
 
 		if (printProgress == true)
 		{
 			int progress = (int)((float)(i + 1) /
 				(float)itemCount * 100.0f);
-
-			printf("Unpacked %s file. [%d%%]\n",
-				itemPath,
-				progress);
+			printf("[%d%%]\n", progress);
 		}
 	}
 
+	free(itemData);
 	destroyPackReader(packReader);
 
 	*_itemCount = itemCount;

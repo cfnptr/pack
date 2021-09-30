@@ -40,5 +40,4 @@ void destroyPackItemData(
 PackResult decoupleItemPack(
 	const char* packPath,
 	uint64_t* itemCount,
-	bool printProgress,
-	uint64_t* errorItemIndex);
+	bool printProgress);

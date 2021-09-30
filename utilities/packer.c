@@ -14,19 +14,15 @@ int main(int argc, char *argv[])
 	const char* packPath = argv[1];
 	const char** itemPaths = (const char**)argv + 2;
 
-	uint64_t errorItemIndex;
-
 	PackResult result = createItemPack(
 		packPath,
 		argc - 2,
 		itemPaths,
-		true,
-		&errorItemIndex);
+		true);
 
 	if (result != SUCCESS_PACK_RESULT)
 	{
-		printf("Error at item %llu: %s.\n",
-			errorItemIndex,
+		printf("\nError: %s.\n",
 			packResultToString(result));
 		return EXIT_SUCCESS;
 	}

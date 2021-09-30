@@ -15,18 +15,15 @@ int main(int argc, char *argv[])
 	const char* packPath = argv[1];
 
 	uint64_t itemCount;
-	uint64_t errorItemIndex;
 
 	PackResult result = decoupleItemPack(
 		packPath,
 		&itemCount,
-		true,
-		&errorItemIndex);
+		true);
 
 	if (result != SUCCESS_PACK_RESULT)
 	{
-		printf("Error at item %llu: %s.\n",
-			errorItemIndex,
+		printf("\nError: %s.\n",
 			packResultToString(result));
 		return EXIT_SUCCESS;
 	}
