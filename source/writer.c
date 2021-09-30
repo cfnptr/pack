@@ -186,7 +186,6 @@ inline static PackResult writePackItems(
 			printf("Packed %s file. [%d%%]\n",
 				itemPath,
 				progress);
-			fflush(stdout);
 		}
 	}
 

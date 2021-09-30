@@ -1,25 +1,25 @@
-#include "pack/writer.h"
+#include "pack/reader.h"
+#include "pack/file.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 int main(int argc, char *argv[])
 {
-	if (argc <= 2)
+	if (argc <= 1)
 	{
-		printf("Usage: <path-to-pack> <path-to-item>...\n");
+		printf("Usage: <path-to-pack>\n");
 		return EXIT_SUCCESS;
 	}
 
 	const char* packPath = argv[1];
-	const char** itemPaths = (const char**)argv + 2;
 
+	uint64_t itemCount;
 	uint64_t errorItemIndex;
 
-	PackResult result = createItemPack(
+	PackResult result = decoupleItemPack(
 		packPath,
-		argc - 2,
-		itemPaths,
+		&itemCount,
 		true,
 		&errorItemIndex);
 
@@ -31,6 +31,6 @@ int main(int argc, char *argv[])
 		return EXIT_SUCCESS;
 	}
 
-	printf("Packed %d items.\n", argc - 2);
+	printf("Unpacked %llu items.\n", itemCount);
 	return EXIT_SUCCESS;
 }

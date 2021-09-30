@@ -36,3 +36,9 @@ PackResult createPackItemData(
 	uint8_t** data);
 void destroyPackItemData(
 	uint8_t* data);
+
+PackResult decoupleItemPack(
+	const char* packPath,
+	uint64_t* itemCount,
+	bool printProgress,
+	uint64_t* errorItemIndex);

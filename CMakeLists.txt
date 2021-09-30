@@ -51,4 +51,12 @@ if (PACK_BUILD_UTILITIES)
 	target_include_directories(packer PRIVATE
 		${PROJECT_BINARY_DIR}
 		${PROJECT_SOURCE_DIR}/include)
+
+	add_executable(unpacker
+			utilities/unpacker.c)
+	target_link_libraries(unpacker PRIVATE
+			pack)
+	target_include_directories(unpacker PRIVATE
+			${PROJECT_BINARY_DIR}
+			${PROJECT_SOURCE_DIR}/include)
 endif ()
