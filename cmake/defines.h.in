@@ -30,7 +30,7 @@ typedef enum PackResult
 typedef struct PackItemInfo
 {
 	uint32_t zipSize;
-	uint32_t itemSize;
+	uint32_t dataSize;
 	uint64_t fileOffset;
 	uint8_t pathSize;
 } PackItemInfo;

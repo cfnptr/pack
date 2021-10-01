@@ -19,6 +19,10 @@ struct PackReader
 	FILE* file;
 	uint64_t itemCount;
 	PackItem* items;
+	uint8_t* dataBuffer;
+	uint32_t dataSize;
+	uint8_t* zipBuffer;
+	uint32_t zipSize;
 	PackItem searchItem;
 };
 
@@ -58,7 +62,7 @@ inline static PackResult createPackItems(
 			return FAILED_TO_READ_FILE_PACK_RESULT;
 		}
 
-		if (info.itemSize == 0 ||
+		if (info.dataSize == 0 ||
 			info.pathSize == 0)
 		{
 			destroyPackItems(i, items);
@@ -89,7 +93,7 @@ inline static PackResult createPackItems(
 		}
 
 		int64_t fileOffset = info.zipSize > 0 ?
-			info.zipSize : info.itemSize;
+			info.zipSize : info.dataSize;
 
 		int seekResult = seekFile(
 			packFile,
@@ -232,6 +236,10 @@ PackResult createPackReader(
 	packReader->file = file;
 	packReader->itemCount = itemCount;
 	packReader->items = items;
+	packReader->dataBuffer = NULL;
+	packReader->dataSize = 0;
+	packReader->zipBuffer = NULL;
+	packReader->zipSize = 0;
 
 	memset(
 		&packReader->searchItem,
@@ -247,6 +255,8 @@ void destroyPackReader(
 	if (packReader == NULL)
 		return;
 
+	free(packReader->zipBuffer);
+	free(packReader->dataBuffer);
 	destroyPackItems(
 		packReader->itemCount,
 		packReader->items);
@@ -314,15 +324,7 @@ uint32_t getPackItemDataSize(
 {
 	assert(packReader != NULL);
 	assert(index < packReader->itemCount);
-	return packReader->items[index].info.itemSize;
-}
-uint32_t getPackItemZipSize(
-	PackReader packReader,
-	uint64_t index)
-{
-	assert(packReader != NULL);
-	assert(index < packReader->itemCount);
-	return packReader->items[index].info.zipSize;
+	return packReader->items[index].info.dataSize;
 }
 const char* getPackItemPath(
 	PackReader packReader,
@@ -336,15 +338,74 @@ const char* getPackItemPath(
 PackResult readPackItemData(
 	PackReader packReader,
 	uint64_t index,
-	void* dataBuffer,
-	void* zipBuffer)
+	uint32_t* size,
+	uint8_t** data)
 {
 	assert(packReader != NULL);
 	assert(index < packReader->itemCount);
-	assert(dataBuffer != NULL);
+	assert(size != NULL);
+	assert(data != NULL);
+
+	PackItemInfo info = packReader->items[index].info;
+	uint8_t* dataBuffer = packReader->dataBuffer;
+
+	if (dataBuffer == NULL)
+	{
+		dataBuffer = malloc(
+			info.dataSize * sizeof(uint8_t));
+
+		if (dataBuffer == NULL)
+			return FAILED_TO_ALLOCATE_PACK_RESULT;
+
+		packReader->dataBuffer = dataBuffer;
+		packReader->dataSize = info.dataSize;
+	}
+	else
+	{
+		if (info.dataSize > packReader->dataSize)
+		{
+			dataBuffer = realloc(
+				dataBuffer,
+				info.dataSize * sizeof(uint8_t));
+
+			if (dataBuffer == NULL)
+				return FAILED_TO_ALLOCATE_PACK_RESULT;
+
+			packReader->dataBuffer = dataBuffer;
+			packReader->dataSize = info.dataSize;
+		}
+	}
+
+	uint8_t* zipBuffer = packReader->zipBuffer;
+
+	if (zipBuffer == NULL)
+	{
+		zipBuffer = malloc(
+			info.zipSize * sizeof(uint8_t));
+
+		if (zipBuffer == NULL)
+			return FAILED_TO_ALLOCATE_PACK_RESULT;
+
+		packReader->zipBuffer = zipBuffer;
+		packReader->zipSize = info.zipSize;
+	}
+	else
+	{
+		if (info.zipSize > packReader->zipSize)
+		{
+			zipBuffer = realloc(
+				zipBuffer,
+				info.zipSize * sizeof(uint8_t));
+
+			if (zipBuffer == NULL)
+				return FAILED_TO_ALLOCATE_PACK_RESULT;
+
+			packReader->zipBuffer = zipBuffer;
+			packReader->zipSize = info.zipSize;
+		}
+	}
 
 	FILE* file = packReader->file;
-	PackItemInfo info = packReader->items[index].info;
 
 	int64_t fileOffset = (int64_t)(info.fileOffset +
 		sizeof(PackItemInfo) + info.pathSize);
@@ -359,64 +420,26 @@ PackResult readPackItemData(
 
 	if (info.zipSize > 0)
 	{
-		if (zipBuffer == NULL)
+		size_t result = fread(
+			zipBuffer,
+			sizeof(uint8_t),
+			info.zipSize,
+			file);
+
+		if (result != info.zipSize)
+			return FAILED_TO_READ_FILE_PACK_RESULT;
+
+		result = ZSTD_decompressDCtx(
+			packReader->zstdContext,
+			dataBuffer,
+			info.dataSize,
+			zipBuffer,
+			info.zipSize);
+
+		if (ZSTD_isError(result) ||
+			result != info.dataSize)
 		{
-			uint8_t* zipData = malloc(
-				info.zipSize * sizeof(uint8_t));
-
-			if (zipData == NULL)
-				return FAILED_TO_ALLOCATE_PACK_RESULT;
-
-			size_t result = fread(
-				zipData,
-				sizeof(uint8_t),
-				info.zipSize,
-				file);
-
-			if (result != info.zipSize)
-			{
-				free(zipData);
-				return FAILED_TO_READ_FILE_PACK_RESULT;
-			}
-
-			result = ZSTD_decompressDCtx(
-				packReader->zstdContext,
-				dataBuffer,
-				info.itemSize,
-				zipData,
-				info.zipSize);
-
-			free(zipData);
-
-			if (ZSTD_isError(result) ||
-				result != info.itemSize)
-			{
-				return FAILED_TO_DECOMPRESS_PACK_RESULT;
-			}
-		}
-		else
-		{
-			size_t result = fread(
-				zipBuffer,
-				sizeof(uint8_t),
-				info.zipSize,
-				file);
-
-			if (result != info.zipSize)
-				return FAILED_TO_READ_FILE_PACK_RESULT;
-
-			result = ZSTD_decompressDCtx(
-				packReader->zstdContext,
-				dataBuffer,
-				info.itemSize,
-				zipBuffer,
-				info.zipSize);
-
-			if (ZSTD_isError(result) ||
-				result != info.itemSize)
-			{
-				return FAILED_TO_DECOMPRESS_PACK_RESULT;
-			}
+			return FAILED_TO_DECOMPRESS_PACK_RESULT;
 		}
 	}
 	else
@@ -424,55 +447,25 @@ PackResult readPackItemData(
 		size_t result = fread(
 			dataBuffer,
 			sizeof(uint8_t),
-			info.itemSize,
+			info.dataSize,
 			file);
 
-		if (result != info.itemSize)
+		if (result != info.dataSize)
 			return FAILED_TO_READ_FILE_PACK_RESULT;
 	}
 
-	return SUCCESS_PACK_RESULT;
-}
-
-PackResult createPackItemData(
-	PackReader packReader,
-	uint64_t index,
-	uint32_t* _size,
-	uint8_t** _data)
-{
-	assert(packReader != NULL);
-	assert(index < packReader->itemCount);
-	assert(_size != NULL);
-	assert(_data != NULL);
-
-	uint32_t size =
-		packReader->items[index].info.itemSize;
-	uint8_t* data = malloc(
-		size * sizeof(uint8_t));
-
-	if (data == NULL)
-		return FAILED_TO_ALLOCATE_PACK_RESULT;
-
-	PackResult result = readPackItemData(
-		packReader,
-		index,
-		data,
-		NULL);
-
-	if (result != SUCCESS_PACK_RESULT)
-	{
-		free(data);
-		return result;
-	}
-
-	*_size = size;
-	*_data = data;
+	*size = info.dataSize;
+	*data = dataBuffer;
 	return SUCCESS_PACK_RESULT;
 }
 void destroyPackItemData(
-	uint8_t* data)
+	PackReader packReader)
 {
-	free(data);
+	assert(packReader != NULL);
+	free(packReader->dataBuffer);
+	free(packReader->zipBuffer);
+	packReader->dataBuffer = NULL;
+	packReader->zipBuffer = NULL;
 }
 
 inline static void removePackItemFiles(
@@ -502,36 +495,6 @@ PackResult unpackItems(
 	uint64_t itemCount = packReader->itemCount;
 	PackItem* items = packReader->items;
 
-	uint32_t maxDataSize = 0;
-	uint32_t maxZipSize = 0;
-
-	for (uint64_t i = 0; i < itemCount; i++)
-	{
-		if (items[i].info.itemSize > maxDataSize)
-			maxDataSize = items[i].info.itemSize;
-		if (items[i].info.zipSize > maxZipSize)
-			maxZipSize = items[i].info.zipSize;
-	}
-
-	uint8_t* itemData = malloc(
-		maxDataSize * sizeof(uint8_t));
-
-	if (itemData == NULL)
-	{
-		destroyPackReader(packReader);
-		return FAILED_TO_ALLOCATE_PACK_RESULT;
-	}
-
-	uint8_t* zipData = malloc(
-		maxZipSize * sizeof(uint8_t));
-
-	if (zipData == NULL)
-	{
-		free(itemData);
-		destroyPackReader(packReader);
-		return FAILED_TO_ALLOCATE_PACK_RESULT;
-	}
-
 	for (uint64_t i = 0; i < itemCount; i++)
 	{
 		PackItem* item = &items[i];
@@ -542,21 +505,20 @@ PackResult unpackItems(
 			fflush(stdout);
 		}
 
-		uint32_t itemSize = item->info.itemSize;
+		uint32_t dataSize;
+		uint8_t* dataBuffer;
 
 		packResult = readPackItemData(
 			packReader,
 			i,
-			itemData,
-			zipData);
+			&dataSize,
+			&dataBuffer);
 
 		if (packResult != SUCCESS_PACK_RESULT)
 		{
 			removePackItemFiles(
 				i,
 				items);
-			free(zipData);
-			free(itemData);
 			destroyPackReader(packReader);
 			return packResult;
 		}
@@ -589,27 +551,23 @@ PackResult unpackItems(
 			removePackItemFiles(
 				i,
 				items);
-			free(zipData);
-			free(itemData);
 			destroyPackReader(packReader);
 			return FAILED_TO_OPEN_FILE_PACK_RESULT;
 		}
 
 		size_t result = fwrite(
-			itemData,
+			dataBuffer,
 			sizeof(uint8_t),
-			itemSize,
+			dataSize,
 			itemFile);
 
 		fclose(itemFile);
 
-		if (result != itemSize)
+		if (result != dataSize)
 		{
 			removePackItemFiles(
 				i,
 				items);
-			free(zipData);
-			free(itemData);
 			destroyPackReader(packReader);
 			return FAILED_TO_OPEN_FILE_PACK_RESULT;
 		}
@@ -623,8 +581,6 @@ PackResult unpackItems(
 		}
 	}
 
-	free(zipData);
-	free(itemData);
 	destroyPackReader(packReader);
 
 	*_itemCount = itemCount;

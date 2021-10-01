@@ -101,7 +101,7 @@ inline static PackResult writePackItems(
 		{
 			uint8_t* newBuffer = realloc(
 				itemData,
-				itemSize);
+				itemSize * sizeof(uint8_t));
 
 			if (newBuffer == NULL)
 			{
@@ -115,7 +115,7 @@ inline static PackResult writePackItems(
 
 			newBuffer = realloc(
 				zipData,
-				itemSize);
+				itemSize * sizeof(uint8_t));
 
 			if (newBuffer == NULL)
 			{

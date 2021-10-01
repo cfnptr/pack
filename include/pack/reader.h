@@ -20,9 +20,6 @@ bool getPackItemIndex(
 uint32_t getPackItemDataSize(
 	PackReader packReader,
 	uint64_t index);
-uint32_t getPackItemZipSize(
-	PackReader packReader,
-	uint64_t index);
 const char* getPackItemPath(
 	PackReader packReader,
 	uint64_t index);
@@ -30,16 +27,10 @@ const char* getPackItemPath(
 PackResult readPackItemData(
 	PackReader packReader,
 	uint64_t index,
-	void* dataBuffer,
-	void* zipBuffer);
-
-PackResult createPackItemData(
-	PackReader packReader,
-	uint64_t index,
 	uint32_t* size,
 	uint8_t** data);
 void destroyPackItemData(
-	uint8_t* data);
+	PackReader packReader);
 
 PackResult unpackItems(
 	const char* packPath,

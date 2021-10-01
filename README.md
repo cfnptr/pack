@@ -40,7 +40,7 @@ cmake --build build/
 * Usage: ```unpacker <path-to-pack>```
 
 ### pack-info
-* Description: gathers base packet information.
+* Description: shows base packet information.
 * Usage: ```pack-info <path-to-pack>```
 
 ## Third-party
