@@ -380,14 +380,17 @@ PackResult readPackItemData(
 
 	if (zipBuffer == NULL)
 	{
-		zipBuffer = malloc(
-			info.zipSize * sizeof(uint8_t));
+		if (info.zipSize > 0)
+		{
+			zipBuffer = malloc(
+				info.zipSize * sizeof(uint8_t));
 
-		if (zipBuffer == NULL)
-			return FAILED_TO_ALLOCATE_PACK_RESULT;
+			if (zipBuffer == NULL)
+				return FAILED_TO_ALLOCATE_PACK_RESULT;
 
-		packReader->zipBuffer = zipBuffer;
-		packReader->zipSize = info.zipSize;
+			packReader->zipBuffer = zipBuffer;
+			packReader->zipSize = info.zipSize;
+		}
 	}
 	else
 	{

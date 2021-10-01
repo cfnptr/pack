@@ -5,7 +5,7 @@ if (${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
 endif ()
 
 project(pack 
-	VERSION 0.1.0
+	VERSION 0.2.0
 	DESCRIPTION "Simple data packing library"
 	HOMEPAGE_URL "https://github.com/cfnptr/pack"
 	LANGUAGES C)
@@ -13,6 +13,7 @@ project(pack
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
+option(PACK_BUILD_SHARED "Build PACK shared library" ON)
 option(PACK_BUILD_UTILITIES "Build PACK utility programs" ON)
 
 set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
@@ -32,22 +33,35 @@ configure_file(
 	cmake/defines.h.in
 	pack/defines.h)
 
-add_library(pack STATIC
+add_library(pack-static STATIC
 	source/common.c
 	source/reader.c
 	source/writer.c)
-target_link_libraries(pack PUBLIC
+target_link_libraries(pack-static PUBLIC
 	libzstd_static)
-target_include_directories(pack PUBLIC
+target_include_directories(pack-static PUBLIC
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}/include
 	${PROJECT_SOURCE_DIR}/libraries/zstd/lib)
+
+if (PACK_BUILD_SHARED)
+	add_library(pack-shared SHARED
+		source/common.c
+		source/reader.c
+		source/writer.c)
+	target_link_libraries(pack-shared PUBLIC
+		libzstd_static)
+	target_include_directories(pack-shared PUBLIC
+		${PROJECT_BINARY_DIR}
+		${PROJECT_SOURCE_DIR}/include
+		${PROJECT_SOURCE_DIR}/libraries/zstd/lib)
+endif ()
 
 if (PACK_BUILD_UTILITIES)
 	add_executable(packer
 		utilities/packer.c)
 	target_link_libraries(packer PRIVATE
-		pack)
+		pack-static)
 	target_include_directories(packer PRIVATE
 		${PROJECT_BINARY_DIR}
 		${PROJECT_SOURCE_DIR}/include)
@@ -55,7 +69,7 @@ if (PACK_BUILD_UTILITIES)
 	add_executable(unpacker
 		utilities/unpacker.c)
 	target_link_libraries(unpacker PRIVATE
-		pack)
+		pack-static)
 	target_include_directories(unpacker PRIVATE
 		${PROJECT_BINARY_DIR}
 		${PROJECT_SOURCE_DIR}/include)
@@ -63,7 +77,7 @@ if (PACK_BUILD_UTILITIES)
 	add_executable(pack-info
 		utilities/pack_info.c)
 	target_link_libraries(pack-info PRIVATE
-		pack)
+		pack-static)
 	target_include_directories(pack-info PRIVATE
 		${PROJECT_BINARY_DIR}
 		${PROJECT_SOURCE_DIR}/include)

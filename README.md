@@ -27,6 +27,7 @@ cmake --build build/
 ### CMake options
 | Name                 | Description                         | Default value |
 | -------------------- | ----------------------------------- | ------------- |
+| PACK_BUILD_SHARED    | Build PACK shared library           | ON            |
 | PACK_BUILD_UTILITIES | Build PACK utility programs         | ON            |
 
 ## Utilities
