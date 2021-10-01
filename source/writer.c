@@ -258,28 +258,28 @@ static int comparePackItemPaths(
 
 	return memcmp(a, b, al);
 }
-PackResult packItems(
+PackResult packFiles(
 	const char* filePath,
-	uint64_t itemCount,
-	const char** _itemPaths,
+	uint64_t fileCount,
+	const char** filePaths,
 	bool printProgress)
 {
 	assert(filePath != NULL);
-	assert(itemCount != 0);
-	assert(_itemPaths != NULL);
+	assert(fileCount != 0);
+	assert(filePaths != NULL);
 
 	const char** itemPaths = malloc(
-		itemCount * sizeof(const char*));
+		fileCount * sizeof(const char*));
 
 	if (itemPaths == NULL)
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
-	for (uint64_t i = 0; i < itemCount; i++)
-		itemPaths[i] = _itemPaths[i];
+	for (uint64_t i = 0; i < fileCount; i++)
+		itemPaths[i] = filePaths[i];
 
 	qsort(
 		itemPaths,
-		itemCount,
+		fileCount,
 		sizeof(const char*),
 		comparePackItemPaths);
 
@@ -316,7 +316,7 @@ PackResult packItems(
 	}
 
 	writeResult = fwrite(
-		&itemCount,
+		&fileCount,
 		sizeof(uint64_t),
 		1,
 		packFile);
@@ -331,7 +331,7 @@ PackResult packItems(
 
 	PackResult packResult = writePackItems(
 		packFile,
-		itemCount,
+		fileCount,
 		itemPaths,
 		printProgress);
 

@@ -2,8 +2,17 @@
 #include "pack/defines.h"
 #include <stdbool.h>
 
-PackResult packItems(
-	const char* filePath,
-	uint64_t itemCount,
-	const char** itemPaths,
+/*
+ * Pack files to the pack.
+ * Returns operation pack result.
+ *
+ * packPath - pack file path string.
+ * fileCount - to pack file count.
+ * filePaths - pack item path strings.
+ * printProgress - printf reading progress.
+ */
+PackResult packFiles(
+	const char* packPath,
+	uint64_t fileCount,
+	const char** filePaths,
 	bool printProgress);

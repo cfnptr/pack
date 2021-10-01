@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 		return EXIT_SUCCESS;
 	}
 
-	PackResult result = packItems(
+	PackResult result = packFiles(
 		argv[1],
 		argc - 2,
 		(const char**)argv + 2,
@@ -24,6 +24,6 @@ int main(int argc, char *argv[])
 		return EXIT_SUCCESS;
 	}
 
-	printf("Packed %d items.\n", argc - 2);
+	printf("Packed %d files.\n", argc - 2);
 	return EXIT_SUCCESS;
 }

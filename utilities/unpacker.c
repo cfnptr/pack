@@ -11,13 +11,11 @@ int main(int argc, char *argv[])
 		return EXIT_SUCCESS;
 	}
 
-	const char* packPath = argv[1];
+	uint64_t filesCount;
 
-	uint64_t itemCount;
-
-	PackResult result = unpackItems(
-		packPath,
-		&itemCount,
+	PackResult result = unpackFiles(
+		argv[1],
+		&filesCount,
 		true);
 
 	if (result != SUCCESS_PACK_RESULT)
@@ -27,6 +25,6 @@ int main(int argc, char *argv[])
 		return EXIT_SUCCESS;
 	}
 
-	printf("Unpacked %llu items.\n", itemCount);
+	printf("Unpacked %llu files.\n", filesCount);
 	return EXIT_SUCCESS;
 }

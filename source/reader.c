@@ -461,7 +461,7 @@ PackResult readPackItemData(
 	*data = dataBuffer;
 	return SUCCESS_PACK_RESULT;
 }
-void destroyPackItemData(
+void freePackItemData(
 	PackReader packReader)
 {
 	assert(packReader != NULL);
@@ -478,18 +478,18 @@ inline static void removePackItemFiles(
 	for (uint64_t i = 0; i < itemCount; i++)
 		remove(packItems[i].path);
 }
-PackResult unpackItems(
-	const char* packPath,
-	uint64_t* _itemCount,
+PackResult unpackFiles(
+	const char* filePath,
+	uint64_t* fileCount,
 	bool printProgress)
 {
-	assert(packPath != NULL);
-	assert(_itemCount != NULL);
+	assert(filePath != NULL);
+	assert(fileCount != NULL);
 
 	PackReader packReader;
 
 	PackResult packResult = createPackReader(
-		packPath,
+		filePath,
 		&packReader);
 
 	if (packResult != SUCCESS_PACK_RESULT)
@@ -586,6 +586,6 @@ PackResult unpackItems(
 
 	destroyPackReader(packReader);
 
-	*_itemCount = itemCount;
+	*fileCount = itemCount;
 	return SUCCESS_PACK_RESULT;
 }
