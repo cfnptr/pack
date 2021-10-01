@@ -461,7 +461,7 @@ PackResult readPackItemData(
 	*data = dataBuffer;
 	return SUCCESS_PACK_RESULT;
 }
-void freePackItemData(
+void freePackReaderBuffers(
 	PackReader packReader)
 {
 	assert(packReader != NULL);

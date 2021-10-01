@@ -9,7 +9,7 @@
  * filePath - pack file path string.
  * majorVersion - major pack version.
  * minorVersion - minor pack version.
- * patchVersion - path pack version.
+ * patchVersion - patch pack version.
  * isLittleEndian - is pack data little endian.
  * itemCount - stored pack item count.
  */

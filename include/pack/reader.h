@@ -10,7 +10,7 @@ typedef struct PackReader* PackReader;
  * Returns operation pack result.
  *
  * filePath - pack file path string.
- * packReader - pointer to the packReader value.
+ * packReader - pack reader instance.
  */
 PackResult createPackReader(
 	const char* filePath,
@@ -34,7 +34,7 @@ uint64_t getPackItemCount(
  *
  * packReader - pack reader instance.
  * path - pack item path string.
- * index - pointer to the index value.
+ * index - pack item index.
  */
 bool getPackItemIndex(
 	PackReader packReader,
@@ -67,8 +67,8 @@ const char* getPackItemPath(
  *
  * packReader - pack reader instance.
  * index - pack reader item index.
- * size - pointer to the size value.
- * data - pointer to the data value.
+ * size - item data size.
+ * data - item data buffer.
  */
 PackResult readPackItemData(
 	PackReader packReader,
@@ -80,7 +80,7 @@ PackResult readPackItemData(
  * Free pack reader buffers.
  * (Decreases reader memory usage)
  */
-void freePackItemData(
+void freePackReaderBuffers(
 	PackReader packReader);
 
 /*
