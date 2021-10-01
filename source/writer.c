@@ -36,7 +36,10 @@ inline static PackResult writePackItems(
 		const char* itemPath = itemPaths[i];
 
 		if (printProgress == true)
+		{
 			printf("Packing \"%s\" file. ", itemPath);
+			fflush(stdout);
+		}
 
 		size_t pathSize = strlen(itemPath);
 
@@ -222,6 +225,7 @@ inline static PackResult writePackItems(
 			int progress = (int)((float)(i + 1) /
 				(float)itemCount * 100.0f);
 			printf("[%d%%]\n", progress);
+			fflush(stdout);
 		}
 	}
 

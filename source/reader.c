@@ -537,7 +537,10 @@ PackResult unpackItems(
 		PackItem* item = &items[i];
 
 		if (printProgress == true)
+		{
 			printf("Unpacking \"%s\" file. ", item->path);
+			fflush(stdout);
+		}
 
 		uint32_t itemSize = item->info.itemSize;
 
@@ -616,6 +619,7 @@ PackResult unpackItems(
 			int progress = (int)((float)(i + 1) /
 				(float)itemCount * 100.0f);
 			printf("[%d%%]\n", progress);
+			fflush(stdout);
 		}
 	}
 
