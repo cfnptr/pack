@@ -8,8 +8,6 @@
 #include <assert.h>
 #include <string.h>
 
-// TODO: use zip stream instead of malloc
-
 inline static PackResult writePackItems(
 	FILE* packFile,
 	uint64_t itemCount,

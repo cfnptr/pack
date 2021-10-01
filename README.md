@@ -1,5 +1,3 @@
-# Work in Progress!
-
 ## Features
 * Compressed file pack creation
 * Runtime file pack reading
@@ -30,6 +28,20 @@ cmake --build build/
 | Name                 | Description                         | Default value |
 | -------------------- | ----------------------------------- | ------------- |
 | PACK_BUILD_UTILITIES | Build PACK utility programs         | ON            |
+
+## Utilities
+
+### packer
+* Description: creates compressed data pack from files.
+* Usage: ```packer <path-to-pack> <path-to-item>...```
+
+### unpacker
+* Description: extracts compressed data pack files.
+* Usage: ```unpacker <path-to-pack>```
+
+### pack-info
+* Description: gathers base packet information.
+* Usage: ```pack-info <path-to-pack>```
 
 ## Third-party
 * [zstd](https://github.com/facebook/zstd/) (BSD License)
