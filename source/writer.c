@@ -143,15 +143,24 @@ inline static PackResult writePackItems(
 			return FAILED_TO_READ_FILE_PACK_RESULT;
 		}
 
-		size_t zipSize = ZSTD_compress(
-			zipData,
-			itemSize,
-			itemData,
-			itemSize,
-			ZSTD_maxCLevel());
+		size_t zipSize;
 
-		if (ZSTD_isError(zipSize) ||
-			zipSize >= itemSize)
+		if (itemSize > 1)
+		{
+			zipSize = ZSTD_compress(
+				zipData,
+				itemSize - 1,
+				itemData,
+				itemSize,
+				ZSTD_maxCLevel());
+
+			if (ZSTD_isError(zipSize) ||
+				zipSize >= itemSize)
+			{
+				zipSize = 0;
+			}
+		}
+		else
 		{
 			zipSize = 0;
 		}
