@@ -29,11 +29,10 @@ typedef enum PackResult
 
 typedef struct PackItemInfo
 {
-	uint64_t zipSize;
-	uint64_t itemSize;
+	uint32_t zipSize;
+	uint32_t itemSize;
 	uint64_t fileOffset;
 	uint8_t pathSize;
-
 } PackItemInfo;
 
 inline static const char* packResultToString(

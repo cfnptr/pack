@@ -2,7 +2,7 @@
 #include "pack/defines.h"
 #include <stdbool.h>
 
-PackResult createItemPack(
+PackResult packItems(
 	const char* filePath,
 	uint64_t itemCount,
 	const char** itemPaths,

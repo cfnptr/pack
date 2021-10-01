@@ -1,14 +1,13 @@
 #include "pack/reader.h"
-#include "pack/file.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 int main(int argc, char *argv[])
 {
-	if (argc <= 1)
+	if (argc != 2)
 	{
-		printf("Usage: <path-to-pack>\n");
+		printf("Usage: unpacker <path-to-pack>\n");
 		return EXIT_SUCCESS;
 	}
 
@@ -16,7 +15,7 @@ int main(int argc, char *argv[])
 
 	uint64_t itemCount;
 
-	PackResult result = decoupleItemPack(
+	PackResult result = unpackItems(
 		packPath,
 		&itemCount,
 		true);

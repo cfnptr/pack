@@ -7,17 +7,14 @@ int main(int argc, char *argv[])
 {
 	if (argc <= 2)
 	{
-		printf("Usage: <path-to-pack> <path-to-item>...\n");
+		printf("Usage: packer <path-to-pack> <path-to-item>...\n");
 		return EXIT_SUCCESS;
 	}
 
-	const char* packPath = argv[1];
-	const char** itemPaths = (const char**)argv + 2;
-
-	PackResult result = createItemPack(
-		packPath,
+	PackResult result = packItems(
+		argv[1],
 		argc - 2,
-		itemPaths,
+		(const char**)argv + 2,
 		true);
 
 	if (result != SUCCESS_PACK_RESULT)

@@ -8,12 +8,31 @@
 #include <assert.h>
 #include <string.h>
 
+// TODO: use zip stream instead of malloc
+
 inline static PackResult writePackItems(
 	FILE* packFile,
 	uint64_t itemCount,
 	const char** itemPaths,
 	bool printProgress)
 {
+	uint32_t bufferSize = 1;
+
+	uint8_t* itemData = malloc(
+		sizeof(uint8_t));
+
+	if (itemData == NULL)
+		return FAILED_TO_ALLOCATE_PACK_RESULT;
+
+	uint8_t* zipData = malloc(
+		sizeof(uint8_t));
+
+	if (zipData == NULL)
+	{
+		free(itemData);
+		return FAILED_TO_ALLOCATE_PACK_RESULT;
+	}
+
 	for (uint64_t i = 0; i < itemCount; i++)
 	{
 		const char* itemPath = itemPaths[i];
@@ -24,14 +43,22 @@ inline static PackResult writePackItems(
 		size_t pathSize = strlen(itemPath);
 
 		if (pathSize > UINT8_MAX)
+		{
+			free(zipData);
+			free(itemData);
 			return BAD_DATA_SIZE_PACK_RESULT;
+		}
 
 		FILE* itemFile = openFile(
 			itemPath,
 			"rb");
 
 		if (itemFile == NULL)
+		{
+			free(zipData);
+			free(itemData);
 			return FAILED_TO_OPEN_FILE_PACK_RESULT;
+		}
 
 		int seekResult = seekFile(
 			itemFile,
@@ -41,14 +68,18 @@ inline static PackResult writePackItems(
 		if (seekResult != 0)
 		{
 			fclose(itemFile);
+			free(zipData);
+			free(itemData);
 			return FAILED_TO_SEEK_FILE_PACK_RESULT;
 		}
 
-		uint64_t itemSize = tellFile(itemFile);
+		uint32_t itemSize = tellFile(itemFile);
 
 		if (itemSize == 0)
 		{
 			fclose(itemFile);
+			free(zipData);
+			free(itemData);
 			return BAD_DATA_SIZE_PACK_RESULT;
 		}
 
@@ -60,16 +91,40 @@ inline static PackResult writePackItems(
 		if (seekResult != 0)
 		{
 			fclose(itemFile);
+			free(zipData);
+			free(itemData);
 			return FAILED_TO_SEEK_FILE_PACK_RESULT;
 		}
 
-		uint8_t* itemData = malloc(
-			itemSize * sizeof(uint8_t));
-
-		if (itemData == NULL)
+		if (itemSize > bufferSize)
 		{
-			fclose(itemFile);
-			return FAILED_TO_ALLOCATE_PACK_RESULT;
+			uint8_t* newBuffer = realloc(
+				itemData,
+				itemSize);
+
+			if (newBuffer == NULL)
+			{
+				fclose(itemFile);
+				free(zipData);
+				free(itemData);
+				return FAILED_TO_ALLOCATE_PACK_RESULT;
+			}
+
+			itemData = newBuffer;
+
+			newBuffer = realloc(
+				zipData,
+				itemSize);
+
+			if (newBuffer == NULL)
+			{
+				fclose(itemFile);
+				free(zipData);
+				free(itemData);
+				return FAILED_TO_ALLOCATE_PACK_RESULT;
+			}
+
+			zipData = newBuffer;
 		}
 
 		size_t result = fread(
@@ -82,17 +137,9 @@ inline static PackResult writePackItems(
 
 		if (result != itemSize)
 		{
+			free(zipData);
 			free(itemData);
 			return FAILED_TO_READ_FILE_PACK_RESULT;
-		}
-
-		uint8_t* zipData = malloc(
-			itemSize * sizeof(uint8_t));
-
-		if (zipData == NULL)
-		{
-			free(itemData);
-			return FAILED_TO_ALLOCATE_PACK_RESULT;
 		}
 
 		size_t zipSize = ZSTD_compress(
@@ -102,8 +149,11 @@ inline static PackResult writePackItems(
 			itemSize,
 			ZSTD_maxCLevel());
 
-		if (ZSTD_isError(zipSize))
+		if (ZSTD_isError(zipSize) ||
+			zipSize >= itemSize)
+		{
 			zipSize = 0;
+		}
 
 		PackItemInfo info = {
 			zipSize,
@@ -169,9 +219,6 @@ inline static PackResult writePackItems(
 			}
 		}
 
-		free(zipData);
-		free(itemData);
-
 		if (printProgress == true)
 		{
 			int progress = (int)((float)(i + 1) /
@@ -180,6 +227,8 @@ inline static PackResult writePackItems(
 		}
 	}
 
+	free(zipData);
+	free(itemData);
 	return SUCCESS_PACK_RESULT;
 }
 static int comparePackItemPaths(
@@ -198,7 +247,7 @@ static int comparePackItemPaths(
 
 	return memcmp(a, b, al);
 }
-PackResult createItemPack(
+PackResult packItems(
 	const char* filePath,
 	uint64_t itemCount,
 	const char** _itemPaths,

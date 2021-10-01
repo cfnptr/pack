@@ -58,7 +58,7 @@ PackResult getPackInfo(
 
 	fclose(file);
 
-	if (result != sizeof(uint64_t))
+	if (result != 1)
 		return FAILED_TO_READ_FILE_PACK_RESULT;
 
 	*majorVersion = header[4];
