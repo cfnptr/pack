@@ -339,7 +339,7 @@ PackResult readPackItemData(
 	PackReader packReader,
 	uint64_t index,
 	uint32_t* size,
-	uint8_t** data)
+	const uint8_t** data)
 {
 	assert(packReader != NULL);
 	assert(index < packReader->itemCount);
@@ -506,7 +506,7 @@ PackResult unpackItems(
 		}
 
 		uint32_t dataSize;
-		uint8_t* dataBuffer;
+		const uint8_t* dataBuffer;
 
 		packResult = readPackItemData(
 			packReader,

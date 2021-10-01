@@ -28,7 +28,7 @@ PackResult readPackItemData(
 	PackReader packReader,
 	uint64_t index,
 	uint32_t* size,
-	uint8_t** data);
+	const uint8_t** data);
 void destroyPackItemData(
 	PackReader packReader);
 
