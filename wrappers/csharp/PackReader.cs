@@ -42,7 +42,7 @@ namespace Pack
         {
             if (string.IsNullOrEmpty(path))
                 throw new ArgumentNullException(nameof(path));
-            if (string.Length > byte.MaxValue)
+            if (path.Length > byte.MaxValue)
                 throw new ArgumentOutOfRangeException(nameof(path));
             return getPackItemIndex(Handle, path, ref index);
         }
@@ -69,7 +69,7 @@ namespace Pack
         {
             if (string.IsNullOrEmpty(path))
                 throw new ArgumentNullException(nameof(path));
-            if (string.Length > byte.MaxValue)
+            if (path.Length > byte.MaxValue)
                 throw new ArgumentOutOfRangeException(nameof(path));
             return readPackPathItemData(Handle, path, ref data, ref size);
         }
