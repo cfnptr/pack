@@ -2,6 +2,21 @@
 #include "pack/defines.h"
 #include <stdbool.h>
 
+// TODO: add lib version getter
+
+/*
+ * Get pack library version.
+ * Returns hardcoded version.
+ *
+ * majorVersion - major library version.
+ * minorVersion - minor library version.
+ * patchVersion - patch library version.
+ */
+void getPackLibraryVersion(
+	uint8_t* majorVersion,
+	uint8_t* minorVersion,
+	uint8_t* patchVersion);
+
 /*
  * Read pack info from the file.
  * Returns operation pack result.

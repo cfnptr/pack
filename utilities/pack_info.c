@@ -32,10 +32,14 @@ int main(int argc, char *argv[])
 		return EXIT_SUCCESS;
 	}
 
-	printf("Pack information:\n"
+	printf("Pack library [v%d.%d.%d]\n"
+		"Pack information:\n"
 		"    Version: %d.%d.%d\n"
 		"    Little endian: %s\n"
 		"    Item count: %llu\n",
+		PACK_VERSION_MAJOR,
+		PACK_VERSION_MINOR,
+		PACK_VERSION_PATCH,
 		majorVersion,
 		minorVersion,
 		patchVersion,

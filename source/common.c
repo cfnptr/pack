@@ -3,6 +3,20 @@
 
 #include <assert.h>
 
+void getPackLibraryVersion(
+	uint8_t* majorVersion,
+	uint8_t* minorVersion,
+	uint8_t* patchVersion)
+{
+	assert(majorVersion != NULL);
+	assert(minorVersion != NULL);
+	assert(patchVersion != NULL);
+
+	*majorVersion = PACK_VERSION_MAJOR;
+	*minorVersion = PACK_VERSION_MINOR;
+	*patchVersion = PACK_VERSION_PATCH;
+}
+
 PackResult getPackInfo(
 	const char* filePath,
 	uint8_t* majorVersion,
