@@ -539,14 +539,14 @@ PackResult unpackFiles(
 			fflush(stdout);
 		}
 
-		uint32_t dataSize;
 		const uint8_t* dataBuffer;
+		uint32_t dataSize;
 
 		packResult = readPackItemData(
 			packReader,
 			i,
-			&dataSize,
-			&dataBuffer);
+			&dataBuffer,
+			&dataSize);
 
 		if (packResult != SUCCESS_PACK_RESULT)
 		{
