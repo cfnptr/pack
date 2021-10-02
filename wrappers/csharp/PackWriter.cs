@@ -5,7 +5,7 @@ namespace Pack
 {
     public static class PackWriter
     {
-        private const string LibraryPath = "libpack.dylib";
+        private const string LibraryPath = "pack.dll";
         [DllImport(LibraryPath)] private static extern PackResult packFiles(string packPath, ulong fileCount, string[] filePaths, bool printProgress);
 
         public static PackResult PackFiles(string packPath, string[] filePaths, bool printProgress)

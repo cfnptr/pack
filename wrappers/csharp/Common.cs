@@ -5,7 +5,7 @@ namespace Pack
 {
     public static class Common
     {
-        private const string LibraryPath = "libpack.dylib";
+        private const string LibraryPath = "pack.dll";
         
         [DllImport(LibraryPath)] private static extern void getPackLibraryVersion(ref byte majorVersion, ref byte minorVersion, ref byte patchVersion);
         [DllImport(LibraryPath)] private static extern PackResult getPackInfo(string filePath, ref byte majorVersion, ref byte minorVersion, ref byte patchVersion, ref bool isLittleEndian, ref ulong itemCount);

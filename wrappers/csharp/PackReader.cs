@@ -6,7 +6,7 @@ namespace Pack
 {
     public class PackReader
     {
-        private const string LibraryPath = "libpack.dylib";
+        private const string LibraryPath = "pack.dll";
         
         [DllImport(LibraryPath)] protected static extern PackResult createPackReader(string filePath, ref IntPtr packReader);
         [DllImport(LibraryPath)] protected static extern void destroyPackReader(IntPtr packReader);
