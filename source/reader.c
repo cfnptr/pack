@@ -477,13 +477,13 @@ PackResult readPackPathItemData(
 
 	uint64_t index;
 
-	PackResult result = getPackItemIndex(
+	bool result = getPackItemIndex(
 		packReader,
 		path,
 		&index);
 
-	if (result != SUCCESS_PACK_RESULT)
-		return result;
+	if (result == false)
+		return FAILED_TO_READ_FILE_PACK_RESULT;
 
 	return readPackItemData(
 		packReader,
