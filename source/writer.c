@@ -166,12 +166,12 @@ inline static PackResult writePackItems(
 			zipSize = 0;
 		}
 
-		uint64_t fileOffset = (uint64_t)tellFile(packFile);
+		int64_t fileOffset = tellFile(packFile);
 
 		PackItemInfo info = {
-			zipSize,
+			(uint32_t)zipSize,
 			(uint32_t)itemSize,
-			fileOffset,
+			(uint64_t)fileOffset,
 			(uint8_t)pathSize,
 		};
 
