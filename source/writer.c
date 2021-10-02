@@ -11,7 +11,7 @@
 inline static PackResult writePackItems(
 	FILE* packFile,
 	uint64_t itemCount,
-	const char** itemPaths,
+	char** itemPaths,
 	bool printProgress)
 {
 	uint32_t bufferSize = 1;
@@ -33,7 +33,7 @@ inline static PackResult writePackItems(
 
 	for (uint64_t i = 0; i < itemCount; i++)
 	{
-		const char* itemPath = itemPaths[i];
+		char* itemPath = itemPaths[i];
 
 		if (printProgress == true)
 		{
@@ -277,12 +277,25 @@ PackResult packFiles(
 	if (itemPaths == NULL)
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
+	uint64_t itemCount = 0;
+
 	for (uint64_t i = 0; i < fileCount; i++)
-		itemPaths[i] = (char*)filePaths[i];
+	{
+		bool alreadyAdded = false;
+
+		for (uint64_t j = 0; j < itemCount; j++)
+		{
+			if (i != j && strcmp(filePaths[i], itemPaths[j]) == 0)
+				alreadyAdded = true;
+		}
+
+		if (alreadyAdded == false)
+			itemPaths[itemCount++] = (char*)filePaths[i];
+	}
 
 	qsort(
 		itemPaths,
-		fileCount,
+		itemCount,
 		sizeof(char*),
 		comparePackItemPaths);
 
@@ -319,7 +332,7 @@ PackResult packFiles(
 	}
 
 	writeResult = fwrite(
-		&fileCount,
+		&itemCount,
 		sizeof(uint64_t),
 		1,
 		packFile);
@@ -334,7 +347,7 @@ PackResult packFiles(
 
 	PackResult packResult = writePackItems(
 		packFile,
-		fileCount,
+		itemCount,
 		itemPaths,
 		printProgress);
 
