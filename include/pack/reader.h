@@ -18,12 +18,14 @@ PackResult createPackReader(
 
 /*
  * Destroy pack reader instance.
+ * packReader - pack reader instance.
  */
 void destroyPackReader(
 	PackReader packReader);
 
 /*
  * Returns pack reader item count.
+ * packReader - pack reader instance.
  */
 uint64_t getPackItemCount(
 	PackReader packReader);
@@ -79,6 +81,8 @@ PackResult readPackItemData(
 /*
  * Free pack reader buffers.
  * (Decreases reader memory usage)
+ *
+ * packReader - pack reader instance.
  */
 void freePackReaderBuffers(
 	PackReader packReader);
