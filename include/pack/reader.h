@@ -79,6 +79,21 @@ PackResult readPackItemData(
 	const uint8_t** data);
 
 /*
+ * Read pack item data.
+ * Return operation pack result.
+ *
+ * packReader - pack reader instance.
+ * path - pack item path string.
+ * size - item data size.
+ * data - item data buffer.
+*/
+PackResult readPackPathItemData(
+	PackReader packReader,
+	const char* path,
+	uint32_t* size,
+	const uint8_t** data);
+
+/*
  * Free pack reader buffers.
  * (Decreases reader memory usage)
  *

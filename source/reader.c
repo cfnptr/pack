@@ -114,7 +114,6 @@ inline static PackResult createPackItems(
 	*_items = items;
 	return SUCCESS_PACK_RESULT;
 }
-
 PackResult createPackReader(
 	const char* filePath,
 	PackReader* _packReader)
@@ -249,6 +248,7 @@ PackResult createPackReader(
 	*_packReader = packReader;
 	return SUCCESS_PACK_RESULT;
 }
+
 void destroyPackReader(
 	PackReader packReader)
 {
@@ -318,6 +318,7 @@ bool getPackItemIndex(
 	*index = item - packReader->items;
 	return true;
 }
+
 uint32_t getPackItemDataSize(
 	PackReader packReader,
 	uint64_t index)
@@ -326,6 +327,7 @@ uint32_t getPackItemDataSize(
 	assert(index < packReader->itemCount);
 	return packReader->items[index].info.dataSize;
 }
+
 const char* getPackItemPath(
 	PackReader packReader,
 	uint64_t index)
@@ -461,6 +463,35 @@ PackResult readPackItemData(
 	*data = dataBuffer;
 	return SUCCESS_PACK_RESULT;
 }
+
+PackResult readPackPathItemData(
+	PackReader packReader,
+	const char* path,
+	uint32_t* size,
+	const uint8_t** data)
+{
+	assert(packReader != NULL);
+	assert(path != NULL);
+	assert(size != NULL);
+	assert(data != NULL);
+
+	uint64_t index;
+
+	PackResult result = getPackItemIndex(
+		packReader,
+		path,
+		&index);
+
+	if (result != SUCCESS_PACK_RESULT)
+		return result;
+
+	return readPackItemData(
+		packReader,
+		index,
+		size,
+		data);
+}
+
 void freePackReaderBuffers(
 	PackReader packReader)
 {

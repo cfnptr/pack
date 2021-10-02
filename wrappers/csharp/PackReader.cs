@@ -15,6 +15,7 @@ namespace Pack
         [DllImport(LibraryPath)] protected static extern uint getPackItemDataSize(IntPtr packReader, ulong index);
         [DllImport(LibraryPath)] protected static extern string getPackItemPath(IntPtr packReader, ulong index);
         [DllImport(LibraryPath)] protected static extern PackResult readPackItemData(IntPtr packReader, ulong index, ref uint size, ref IntPtr data);
+        [DllImport(LibraryPath)] protected static extern PackResult readPackPathItemData(IntPtr packReader, string path, ref uint size, ref IntPtr data);
         [DllImport(LibraryPath)] protected static extern void freePackReaderBuffers(IntPtr packReader);
         [DllImport(LibraryPath)] protected static extern PackResult unpackFiles(string filePath, ref ulong fileCount, bool printProgress);
 
@@ -62,15 +63,19 @@ namespace Pack
                 throw new ArgumentOutOfRangeException(nameof(index));
             return readPackItemData(Handle, index, ref size, ref data);
         }
+        public PackResult ReadItemData(string path, ref uint size, ref IntPtr data)
+        {
+            if (string.IsNullOrEmpty(path))
+                throw new ArgumentNullException(nameof(path));
+            return readPackPathItemData(Handle, path, ref size, ref data);
+        }
+
         public PackResult ReadItemData(ulong index, ref byte[] data)
         {
-            if (index >= ItemCount)
-                throw new ArgumentOutOfRangeException(nameof(index));
-
             var size = uint.MinValue;
             var buffer = IntPtr.Zero;
 
-            var result = readPackItemData(Handle, index, ref size, ref buffer);
+            var result = ReadItemData(index, ref size, ref buffer);
 
             if (result != PackResult.Success)
                 return result;
@@ -82,6 +87,24 @@ namespace Pack
             Marshal.Copy(buffer, data, 0, (int)size);
             return PackResult.Success;
         }
+        public PackResult ReadItemData(string path, ref byte[] data)
+        {
+            var size = uint.MinValue;
+            var buffer = IntPtr.Zero;
+
+            var result = ReadItemData(path, ref size, ref buffer);
+
+            if (result != PackResult.Success)
+                return result;
+
+            if (size > int.MaxValue)
+                throw new ApplicationException("Unsupported item data size");
+
+            data = new byte[size];
+            Marshal.Copy(buffer, data, 0, (int)size);
+            return PackResult.Success;
+        }
+
         public PackResult ReadItemData(ulong index, ref string data)
         {
             byte[] buffer = null;
@@ -92,6 +115,17 @@ namespace Pack
 
             data = Encoding.UTF8.GetString(buffer);
             return PackResult.Success;
+        }
+        public PackResult ReadItemData(string path, ref string data)
+        {
+             byte[] buffer = null;
+             var result = ReadItemData(path, ref buffer);
+
+             if (result != PackResult.Success)
+                 return result;
+
+             data = Encoding.UTF8.GetString(buffer);
+             return PackResult.Success;
         }
 
         public void FreeBuffers()
