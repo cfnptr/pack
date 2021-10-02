@@ -306,7 +306,7 @@ PackResult packFiles(
 	if (packFile == NULL)
 	{
 		free(itemPaths);
-		return FAILED_TO_OPEN_FILE_PACK_RESULT;
+		return FAILED_TO_CREATE_FILE_PACK_RESULT;
 	}
 
 	char header[PACK_HEADER_SIZE] = {

@@ -300,9 +300,13 @@ bool getPackItemIndex(
 	assert(packReader != NULL);
 	assert(path != NULL);
 	assert(index != NULL);
+	assert(strlen(path) <= UINT8_MAX);
 
 	PackItem* searchItem =
 		&packReader->searchItem;
+
+	searchItem->info.pathSize =
+		(uint8_t)strlen(path);
 	searchItem->path = (char*)path;
 
 	PackItem* item = bsearch(
@@ -474,6 +478,7 @@ PackResult readPackPathItemData(
 	assert(path != NULL);
 	assert(data != NULL);
 	assert(size != NULL);
+	assert(strlen(path) <= UINT8_MAX);
 
 	uint64_t index;
 
@@ -483,7 +488,7 @@ PackResult readPackPathItemData(
 		&index);
 
 	if (result == false)
-		return FAILED_TO_READ_FILE_PACK_RESULT;
+		return FAILED_TO_GET_ITEM_PACK_RESULT;
 
 	return readPackItemData(
 		packReader,
