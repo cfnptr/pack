@@ -75,8 +75,8 @@ PACK_API const char* getPackItemPath(
 PACK_API PackResult readPackItemData(
 	PackReader packReader,
 	uint64_t index,
-	uint32_t* size,
-	const uint8_t** data);
+	const uint8_t** data,
+	uint32_t* size);
 
 /*
  * Read pack item data.
@@ -90,8 +90,8 @@ PACK_API PackResult readPackItemData(
 PACK_API PackResult readPackPathItemData(
 	PackReader packReader,
 	const char* path,
-	uint32_t* size,
-	const uint8_t** data);
+	const uint8_t** data,
+	uint32_t* size);
 
 /*
  * Free pack reader buffers.

@@ -340,13 +340,13 @@ const char* getPackItemPath(
 PackResult readPackItemData(
 	PackReader packReader,
 	uint64_t index,
-	uint32_t* size,
-	const uint8_t** data)
+	const uint8_t** data,
+	uint32_t* size)
 {
 	assert(packReader != NULL);
 	assert(index < packReader->itemCount);
-	assert(size != NULL);
 	assert(data != NULL);
+	assert(size != NULL);
 
 	PackItemInfo info = packReader->items[index].info;
 	uint8_t* dataBuffer = packReader->dataBuffer;
@@ -459,21 +459,21 @@ PackResult readPackItemData(
 			return FAILED_TO_READ_FILE_PACK_RESULT;
 	}
 
-	*size = info.dataSize;
 	*data = dataBuffer;
+	*size = info.dataSize;
 	return SUCCESS_PACK_RESULT;
 }
 
 PackResult readPackPathItemData(
 	PackReader packReader,
 	const char* path,
-	uint32_t* size,
-	const uint8_t** data)
+	const uint8_t** data,
+	uint32_t* size)
 {
 	assert(packReader != NULL);
 	assert(path != NULL);
-	assert(size != NULL);
 	assert(data != NULL);
+	assert(size != NULL);
 
 	uint64_t index;
 
@@ -488,8 +488,8 @@ PackResult readPackPathItemData(
 	return readPackItemData(
 		packReader,
 		index,
-		size,
-		data);
+		data,
+		size);
 }
 
 void freePackReaderBuffers(
