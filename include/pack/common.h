@@ -12,7 +12,7 @@
  * minorVersion - minor library version.
  * patchVersion - patch library version.
  */
-void getPackLibraryVersion(
+PACK_API void getPackLibraryVersion(
 	uint8_t* majorVersion,
 	uint8_t* minorVersion,
 	uint8_t* patchVersion);
@@ -28,7 +28,7 @@ void getPackLibraryVersion(
  * isLittleEndian - is pack data little endian.
  * itemCount - stored pack item count.
  */
-PackResult getPackInfo(
+PACK_API PackResult getPackInfo(
 	const char* filePath,
 	uint8_t* majorVersion,
 	uint8_t* minorVersion,

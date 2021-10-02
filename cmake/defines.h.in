@@ -10,6 +10,14 @@
 
 #define PACK_HEADER_SIZE 8
 
+#if __linux__ || __APPLE__
+#define PACK_API
+#elif _WIN32
+#define PACK_API __declspec(dllexport)
+#else
+#error Unsupported operating system
+#endif
+
 typedef enum PackResult
 {
     SUCCESS_PACK_RESULT = 0,
