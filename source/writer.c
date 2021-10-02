@@ -74,9 +74,10 @@ inline static PackResult writePackItems(
 			return FAILED_TO_SEEK_FILE_PACK_RESULT;
 		}
 
-		uint32_t itemSize = tellFile(itemFile);
+		uint64_t itemSize = (uint64_t)tellFile(itemFile);
 
-		if (itemSize == 0)
+		if (itemSize == 0 ||
+			itemSize > UINT32_MAX)
 		{
 			fclose(itemFile);
 			free(zipData);
@@ -165,11 +166,13 @@ inline static PackResult writePackItems(
 			zipSize = 0;
 		}
 
+		uint64_t fileOffset = (uint64_t)tellFile(packFile);
+
 		PackItemInfo info = {
 			zipSize,
-			itemSize,
-			tellFile(packFile),
-			pathSize,
+			(uint32_t)itemSize,
+			fileOffset,
+			(uint8_t)pathSize,
 		};
 
 		result = fwrite(
@@ -246,8 +249,8 @@ static int comparePackItemPaths(
 	const void* _a,
 	const void* _b)
 {
-	const char* a = *(const char**)_a;
-	const char* b = *(const char**)_b;
+	char* a = *(char**)_a;
+	char* b = *(char**)_b;
 	uint8_t al = (uint8_t)strlen(a);
 	uint8_t bl = (uint8_t)strlen(b);
 
@@ -268,19 +271,19 @@ PackResult packFiles(
 	assert(fileCount != 0);
 	assert(filePaths != NULL);
 
-	const char** itemPaths = malloc(
-		fileCount * sizeof(const char*));
+	char** itemPaths = malloc(
+		fileCount * sizeof(char*));
 
 	if (itemPaths == NULL)
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
 	for (uint64_t i = 0; i < fileCount; i++)
-		itemPaths[i] = filePaths[i];
+		itemPaths[i] = (char*)filePaths[i];
 
 	qsort(
 		itemPaths,
 		fileCount,
-		sizeof(const char*),
+		sizeof(char*),
 		comparePackItemPaths);
 
 	FILE* packFile = openFile(
