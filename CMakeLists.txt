@@ -5,7 +5,7 @@ if (${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
 endif ()
 
 project(pack 
-	VERSION 0.2.0
+	VERSION 1.0.0
 	DESCRIPTION "Simple data packing library"
 	HOMEPAGE_URL "https://github.com/cfnptr/pack"
 	LANGUAGES C)
