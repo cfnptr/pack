@@ -236,7 +236,13 @@ inline static PackResult writePackItems(
 		{
 			int progress = (int)((float)(i + 1) /
 				(float)itemCount * 100.0f);
-			printf("[%d%%]\n", progress);
+
+			printf("(%u/%u bytes) [%d%%]\n",
+				zipSize != 0 ?
+					(uint32_t)zipSize :
+					(uint32_t)itemSize,
+				(uint32_t)itemSize,
+				progress);
 			fflush(stdout);
 		}
 	}

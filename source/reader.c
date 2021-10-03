@@ -615,7 +615,13 @@ PackResult unpackFiles(
 		{
 			int progress = (int)((float)(i + 1) /
 				(float)itemCount * 100.0f);
-			printf("[%d%%]\n", progress);
+
+			printf("(%u/%u bytes) [%d%%]\n",
+				item->info.zipSize != 0 ?
+					item->info.zipSize :
+					item->info.dataSize,
+				item->info.dataSize,
+				progress);
 			fflush(stdout);
 		}
 	}
