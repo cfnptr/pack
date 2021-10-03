@@ -18,7 +18,7 @@ PACK_API PackResult createPackReader(
 
 /*
  * Destroy pack reader instance.
- * packReader - pack reader instance.
+ * packReader - pack reader instance or NULL.
  */
 PACK_API void destroyPackReader(
 	PackReader packReader);
