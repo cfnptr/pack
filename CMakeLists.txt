@@ -37,6 +37,8 @@ add_library(pack-static STATIC
 	source/common.c
 	source/reader.c
 	source/writer.c)
+set_target_properties(pack-static PROPERTIES
+		OUTPUT_NAME "pack")
 target_link_libraries(pack-static PUBLIC
 	libzstd_static)
 target_include_directories(pack-static PUBLIC
@@ -49,6 +51,8 @@ if (PACK_BUILD_SHARED)
 		source/common.c
 		source/reader.c
 		source/writer.c)
+	set_target_properties(pack-shared PROPERTIES
+		OUTPUT_NAME "pack")
 	target_link_libraries(pack-shared PUBLIC
 		libzstd_static)
 	target_include_directories(pack-shared PUBLIC
