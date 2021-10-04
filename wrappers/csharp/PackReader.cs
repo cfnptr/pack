@@ -6,7 +6,15 @@ namespace Pack
 {
     public class PackReader
     {
+#if PACK_TARGET_LINUX
+        private const string LibraryPath = "libpack.so";
+#elif PACK_TARGET_MACOS
+        private const string LibraryPath = "libpack.dylib";
+#elif PACK_TARGET_WINDOWS
         private const string LibraryPath = "pack.dll";
+#else
+#error Unspecified target operating system
+#endif
         
         [DllImport(LibraryPath)] protected static extern PackResult createPackReader(string filePath, ref IntPtr packReader);
         [DllImport(LibraryPath)] protected static extern void destroyPackReader(IntPtr packReader);
