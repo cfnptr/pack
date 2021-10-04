@@ -41,7 +41,7 @@ cmake --build build/
 * Usage: ```unpacker <path-to-pack>```
 
 ### pack-info
-* Description: shows base packet information.
+* Description: shows packet information.
 * Usage: ```pack-info <path-to-pack>```
 
 ## Third-party
