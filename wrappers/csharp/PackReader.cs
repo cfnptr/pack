@@ -6,28 +6,28 @@ namespace Pack
 {
     public class PackReader
     {
-        [DllImport("pack")] protected static extern PackResult createPackReader(
+        [DllImport("pack")] private static extern PackResult createPackReader(
             string filePath, ref IntPtr packReader);
-        [DllImport("pack")] protected static extern void destroyPackReader(
+        [DllImport("pack")] private static extern void destroyPackReader(
             IntPtr packReader);
-        [DllImport("pack")] protected static extern ulong getPackItemCount(
+        [DllImport("pack")] private static extern ulong getPackItemCount(
             IntPtr packReader);
-        [DllImport("pack")] protected static extern bool getPackItemIndex(
+        [DllImport("pack")] private static extern bool getPackItemIndex(
             IntPtr packReader, string path, ref ulong index);
-        [DllImport("pack")] protected static extern uint getPackItemDataSize(
+        [DllImport("pack")] private static extern uint getPackItemDataSize(
             IntPtr packReader, ulong index);
-        [DllImport("pack")] protected static extern string getPackItemPath(
+        [DllImport("pack")] private static extern string getPackItemPath(
             IntPtr packReader, ulong index);
-        [DllImport("pack")] protected static extern PackResult readPackItemData(
+        [DllImport("pack")] private static extern PackResult readPackItemData(
             IntPtr packReader, ulong index, ref IntPtr data, ref uint size);
-        [DllImport("pack")] protected static extern PackResult readPackPathItemData(
+        [DllImport("pack")] private static extern PackResult readPackPathItemData(
             IntPtr packReader, string path, ref IntPtr data, ref uint size);
-        [DllImport("pack")] protected static extern void freePackReaderBuffers(
+        [DllImport("pack")] private static extern void freePackReaderBuffers(
             IntPtr packReader);
-        [DllImport("pack")] protected static extern PackResult unpackFiles(
+        [DllImport("pack")] private static extern PackResult unpackFiles(
             string filePath, ref ulong fileCount, bool printProgress);
 
-        protected IntPtr Handle;
+        private IntPtr Handle;
 
         public ulong ItemCount => getPackItemCount(Handle);
 

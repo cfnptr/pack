@@ -5,18 +5,25 @@ namespace Pack
 {
     public static class Common
     {
-        [DllImport("pack")] private static extern void getPackLibraryVersion(ref byte majorVersion, ref byte minorVersion, ref byte patchVersion);
-        [DllImport("pack")] private static extern PackResult getPackInfo(string filePath, ref byte majorVersion, ref byte minorVersion, ref byte patchVersion, ref bool isLittleEndian, ref ulong itemCount);
+        [DllImport("pack")] private static extern void getPackLibraryVersion(
+            ref byte majorVersion, ref byte minorVersion, ref byte patchVersion);
+        [DllImport("pack")] private static extern PackResult getPackInfo(
+            string filePath, ref byte majorVersion, ref byte minorVersion, ref byte patchVersion, 
+            ref bool isLittleEndian, ref ulong itemCount);
 
-        public static void GetPackLibraryVersion(ref byte majorVersion, ref byte minorVersion, ref byte patchVersion)
+        public static void GetPackLibraryVersion(
+            ref byte majorVersion, ref byte minorVersion, ref byte patchVersion)
         {
             getPackLibraryVersion(ref majorVersion, ref minorVersion, ref patchVersion);
         }
-        public static PackResult GetPackInfo(string filePath, ref byte majorVersion, ref byte minorVersion, ref byte patchVersion, ref bool isLittleEndian, ref ulong itemCount)
+        public static PackResult GetPackInfo(
+            string filePath, ref byte majorVersion, ref byte minorVersion, ref byte patchVersion, 
+            ref bool isLittleEndian, ref ulong itemCount)
         {
             if (string.IsNullOrEmpty(filePath))
                 throw new ArgumentNullException(nameof(filePath));
-            return getPackInfo(filePath, ref majorVersion, ref minorVersion, ref patchVersion, ref isLittleEndian, ref itemCount);
+            return getPackInfo(filePath, ref majorVersion, ref minorVersion, ref patchVersion, 
+                ref isLittleEndian, ref itemCount);
         }
     }
 }
