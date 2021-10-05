@@ -12,7 +12,7 @@ typedef struct PackReader* PackReader;
  * filePath - pack file path string.
  * packReader - pack reader instance.
  */
-PACK_API PackResult createPackReader(
+PackResult createPackReader(
 	const char* filePath,
 	PackReader* packReader);
 
@@ -20,14 +20,14 @@ PACK_API PackResult createPackReader(
  * Destroy pack reader instance.
  * packReader - pack reader instance or NULL.
  */
-PACK_API void destroyPackReader(
+void destroyPackReader(
 	PackReader packReader);
 
 /*
  * Returns pack reader item count.
  * packReader - pack reader instance.
  */
-PACK_API uint64_t getPackItemCount(
+uint64_t getPackItemCount(
 	PackReader packReader);
 
 /*
@@ -38,7 +38,7 @@ PACK_API uint64_t getPackItemCount(
  * path - pack item path string.
  * index - pack item index.
  */
-PACK_API bool getPackItemIndex(
+bool getPackItemIndex(
 	PackReader packReader,
 	const char* path,
 	uint64_t* index);
@@ -49,7 +49,7 @@ PACK_API bool getPackItemIndex(
  * packReader - pack reader instance.
  * index - pack reader item index.
  */
-PACK_API uint32_t getPackItemDataSize(
+uint32_t getPackItemDataSize(
 	PackReader packReader,
 	uint64_t index);
 
@@ -59,7 +59,7 @@ PACK_API uint32_t getPackItemDataSize(
  * packReader - pack reader instance.
  * index - pack reader item index.
  */
-PACK_API const char* getPackItemPath(
+const char* getPackItemPath(
 	PackReader packReader,
 	uint64_t index);
 
@@ -72,7 +72,7 @@ PACK_API const char* getPackItemPath(
  * size - item data size.
  * data - item data buffer.
  */
-PACK_API PackResult readPackItemData(
+PackResult readPackItemData(
 	PackReader packReader,
 	uint64_t index,
 	const uint8_t** data,
@@ -87,7 +87,7 @@ PACK_API PackResult readPackItemData(
  * size - item data size.
  * data - item data buffer.
 */
-PACK_API PackResult readPackPathItemData(
+PackResult readPackPathItemData(
 	PackReader packReader,
 	const char* path,
 	const uint8_t** data,
@@ -99,7 +99,7 @@ PACK_API PackResult readPackPathItemData(
  *
  * packReader - pack reader instance.
  */
-PACK_API void freePackReaderBuffers(
+void freePackReaderBuffers(
 	PackReader packReader);
 
 /*
@@ -110,7 +110,7 @@ PACK_API void freePackReaderBuffers(
  * fileCount - unpacked file count.
  * printProgress - printf reading progress.
  */
-PACK_API PackResult unpackFiles(
+PackResult unpackFiles(
 	const char* filePath,
 	uint64_t* fileCount,
 	bool printProgress);

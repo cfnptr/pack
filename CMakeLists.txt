@@ -53,7 +53,8 @@ if (PACK_BUILD_SHARED)
 	add_library(pack-shared SHARED
 		${PACK_SOURCES})
 	set_target_properties(pack-shared PROPERTIES
-		OUTPUT_NAME "pack")
+		OUTPUT_NAME "pack"
+		WINDOWS_EXPORT_ALL_SYMBOLS ON)
 	target_link_libraries(pack-shared PUBLIC
 		libzstd_static)
 	target_include_directories(pack-shared PUBLIC

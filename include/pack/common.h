@@ -2,7 +2,8 @@
 #include "pack/defines.h"
 #include <stdbool.h>
 
-// TODO: add lib version getter
+// TODO: replace with WINDOWS_EXPORT_ALL_SYMBOLS
+
 
 /*
  * Get pack library version.
@@ -12,7 +13,7 @@
  * minorVersion - minor library version.
  * patchVersion - patch library version.
  */
-PACK_API void getPackLibraryVersion(
+void getPackLibraryVersion(
 	uint8_t* majorVersion,
 	uint8_t* minorVersion,
 	uint8_t* patchVersion);
@@ -28,7 +29,7 @@ PACK_API void getPackLibraryVersion(
  * isLittleEndian - is pack data little endian.
  * itemCount - stored pack item count.
  */
-PACK_API PackResult getPackInfo(
+PackResult getPackInfo(
 	const char* filePath,
 	uint8_t* majorVersion,
 	uint8_t* minorVersion,

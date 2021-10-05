@@ -6,26 +6,16 @@ namespace Pack
 {
     public class PackReader
     {
-#if PACK_TARGET_LINUX
-        private const string LibraryPath = "libpack.so";
-#elif PACK_TARGET_MACOS
-        private const string LibraryPath = "libpack.dylib";
-#elif PACK_TARGET_WINDOWS
-        private const string LibraryPath = "pack.dll";
-#else
-#error Unspecified target operating system
-#endif
-        
-        [DllImport(LibraryPath)] protected static extern PackResult createPackReader(string filePath, ref IntPtr packReader);
-        [DllImport(LibraryPath)] protected static extern void destroyPackReader(IntPtr packReader);
-        [DllImport(LibraryPath)] protected static extern ulong getPackItemCount(IntPtr packReader);
-        [DllImport(LibraryPath)] protected static extern bool getPackItemIndex(IntPtr packReader, string path, ref ulong index);
-        [DllImport(LibraryPath)] protected static extern uint getPackItemDataSize(IntPtr packReader, ulong index);
-        [DllImport(LibraryPath)] protected static extern string getPackItemPath(IntPtr packReader, ulong index);
-        [DllImport(LibraryPath)] protected static extern PackResult readPackItemData(IntPtr packReader, ulong index, ref IntPtr data, ref uint size);
-        [DllImport(LibraryPath)] protected static extern PackResult readPackPathItemData(IntPtr packReader, string path, ref IntPtr data, ref uint size);
-        [DllImport(LibraryPath)] protected static extern void freePackReaderBuffers(IntPtr packReader);
-        [DllImport(LibraryPath)] protected static extern PackResult unpackFiles(string filePath, ref ulong fileCount, bool printProgress);
+        [DllImport("pack")] protected static extern PackResult createPackReader(string filePath, ref IntPtr packReader);
+        [DllImport("pack")] protected static extern void destroyPackReader(IntPtr packReader);
+        [DllImport("pack")] protected static extern ulong getPackItemCount(IntPtr packReader);
+        [DllImport("pack")] protected static extern bool getPackItemIndex(IntPtr packReader, string path, ref ulong index);
+        [DllImport("pack")] protected static extern uint getPackItemDataSize(IntPtr packReader, ulong index);
+        [DllImport("pack")] protected static extern string getPackItemPath(IntPtr packReader, ulong index);
+        [DllImport("pack")] protected static extern PackResult readPackItemData(IntPtr packReader, ulong index, ref IntPtr data, ref uint size);
+        [DllImport("pack")] protected static extern PackResult readPackPathItemData(IntPtr packReader, string path, ref IntPtr data, ref uint size);
+        [DllImport("pack")] protected static extern void freePackReaderBuffers(IntPtr packReader);
+        [DllImport("pack")] protected static extern PackResult unpackFiles(string filePath, ref ulong fileCount, bool printProgress);
 
         protected IntPtr Handle;
 
