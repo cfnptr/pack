@@ -5,9 +5,11 @@ namespace Pack
 {
     public static class PackWriter
     {
-        [DllImport("pack")] private static extern PackResult packFiles(string packPath, ulong fileCount, string[] filePaths, bool printProgress);
+        [DllImport("pack")] private static extern PackResult packFiles(
+            string packPath, ulong fileCount, string[] filePaths, bool printProgress);
 
-        public static PackResult PackFiles(string packPath, string[] filePaths, bool printProgress)
+        public static PackResult PackFiles(
+            string packPath, string[] filePaths, bool printProgress)
         {
             if (string.IsNullOrEmpty(packPath))
                 throw new ArgumentNullException(nameof(packPath));
