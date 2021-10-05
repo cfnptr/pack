@@ -33,13 +33,13 @@ configure_file(
 	cmake/defines.h.in
 	pack/defines.h)
 
-set(PACK_SOURCE
+set(PACK_SOURCES
 	source/common.c
 	source/reader.c
 	source/writer.c)
 
 add_library(pack-static STATIC
-	${PACK_SOURCE})
+	${PACK_SOURCES})
 set_target_properties(pack-static PROPERTIES
 	OUTPUT_NAME "pack")
 target_link_libraries(pack-static PUBLIC
@@ -51,7 +51,7 @@ target_include_directories(pack-static PUBLIC
 
 if (PACK_BUILD_SHARED)
 	add_library(pack-shared SHARED
-		${PACK_SOURCE})
+		${PACK_SOURCES})
 	set_target_properties(pack-shared PROPERTIES
 		OUTPUT_NAME "pack")
 	target_link_libraries(pack-shared PUBLIC
