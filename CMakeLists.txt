@@ -33,12 +33,15 @@ configure_file(
 	cmake/defines.h.in
 	pack/defines.h)
 
-add_library(pack-static STATIC
+set(PACK_SOURCE
 	source/common.c
 	source/reader.c
 	source/writer.c)
+
+add_library(pack-static STATIC
+	${PACK_SOURCE})
 set_target_properties(pack-static PROPERTIES
-		OUTPUT_NAME "pack")
+	OUTPUT_NAME "pack")
 target_link_libraries(pack-static PUBLIC
 	libzstd_static)
 target_include_directories(pack-static PUBLIC
@@ -48,9 +51,7 @@ target_include_directories(pack-static PUBLIC
 
 if (PACK_BUILD_SHARED)
 	add_library(pack-shared SHARED
-		source/common.c
-		source/reader.c
-		source/writer.c)
+		${PACK_SOURCE})
 	set_target_properties(pack-shared PROPERTIES
 		OUTPUT_NAME "pack")
 	target_link_libraries(pack-shared PUBLIC
