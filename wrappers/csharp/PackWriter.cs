@@ -19,7 +19,7 @@ namespace Pack
 {
     public static class PackWriter
     {
-        [DllImport("pack")] private static extern PackResult packFiles(
+        [DllImport(Pack.Lib)] private static extern PackResult packFiles(
             string packPath, ulong fileCount, string[] filePaths, bool printProgress);
 
         public static PackResult PackFiles(

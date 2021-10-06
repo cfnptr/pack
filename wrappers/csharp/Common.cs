@@ -19,9 +19,9 @@ namespace Pack
 {
     public static class Common
     {
-        [DllImport("pack")] private static extern void getPackLibraryVersion(
+        [DllImport(Pack.Lib)] private static extern void getPackLibraryVersion(
             ref byte majorVersion, ref byte minorVersion, ref byte patchVersion);
-        [DllImport("pack")] private static extern PackResult getPackInfo(string filePath, 
+        [DllImport(Pack.Lib)] private static extern PackResult getPackInfo(string filePath, 
             ref byte majorVersion, ref byte minorVersion, ref byte patchVersion, 
             ref bool isLittleEndian, ref ulong itemCount);
 
