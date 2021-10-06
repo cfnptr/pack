@@ -7,8 +7,8 @@ namespace Pack
     {
         [DllImport("pack")] private static extern void getPackLibraryVersion(
             ref byte majorVersion, ref byte minorVersion, ref byte patchVersion);
-        [DllImport("pack")] private static extern PackResult getPackInfo(
-            string filePath, ref byte majorVersion, ref byte minorVersion, ref byte patchVersion, 
+        [DllImport("pack")] private static extern PackResult getPackInfo(string filePath, 
+            ref byte majorVersion, ref byte minorVersion, ref byte patchVersion, 
             ref bool isLittleEndian, ref ulong itemCount);
 
         public static void GetPackLibraryVersion(
@@ -16,8 +16,8 @@ namespace Pack
         {
             getPackLibraryVersion(ref majorVersion, ref minorVersion, ref patchVersion);
         }
-        public static PackResult GetPackInfo(
-            string filePath, ref byte majorVersion, ref byte minorVersion, ref byte patchVersion, 
+        public static PackResult GetPackInfo(string filePath, 
+            ref byte majorVersion, ref byte minorVersion, ref byte patchVersion, 
             ref bool isLittleEndian, ref ulong itemCount)
         {
             if (string.IsNullOrEmpty(filePath))

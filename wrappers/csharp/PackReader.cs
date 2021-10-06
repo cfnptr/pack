@@ -8,10 +8,8 @@ namespace Pack
     {
         [DllImport("pack")] private static extern PackResult createPackReader(
             string filePath, ref IntPtr packReader);
-        [DllImport("pack")] private static extern void destroyPackReader(
-            IntPtr packReader);
-        [DllImport("pack")] private static extern ulong getPackItemCount(
-            IntPtr packReader);
+        [DllImport("pack")] private static extern void destroyPackReader(IntPtr packReader);
+        [DllImport("pack")] private static extern ulong getPackItemCount(IntPtr packReader);
         [DllImport("pack")] private static extern bool getPackItemIndex(
             IntPtr packReader, string path, ref ulong index);
         [DllImport("pack")] private static extern uint getPackItemDataSize(
@@ -22,28 +20,28 @@ namespace Pack
             IntPtr packReader, ulong index, ref IntPtr data, ref uint size);
         [DllImport("pack")] private static extern PackResult readPackPathItemData(
             IntPtr packReader, string path, ref IntPtr data, ref uint size);
-        [DllImport("pack")] private static extern void freePackReaderBuffers(
-            IntPtr packReader);
+        [DllImport("pack")] private static extern void freePackReaderBuffers(IntPtr packReader);
         [DllImport("pack")] private static extern PackResult unpackFiles(
             string filePath, ref ulong fileCount, bool printProgress);
 
-        private IntPtr Handle;
+        private readonly IntPtr _handle;
+        public IntPtr Handle => _handle;
 
         public ulong ItemCount => getPackItemCount(Handle);
 
         public PackReader(string filePath)
         {
-            var handle = IntPtr.Zero;
-            var result = createPackReader(filePath, ref handle);
+            if (string.IsNullOrEmpty(filePath))
+                throw new ArgumentNullException(nameof(filePath));
+
+            var result = createPackReader(filePath, ref _handle);
 
             if (result != PackResult.Success)
-                throw new Exception(result.ToString());
-
-            Handle = handle;
+                throw new PackException(result);
         }
         ~PackReader()
         {
-            destroyPackReader(Handle);
+            destroyPackReader(_handle);
         }
 
         public bool GetItemIndex(string path, ref ulong index)
@@ -52,26 +50,26 @@ namespace Pack
                 throw new ArgumentNullException(nameof(path));
             if (path.Length > byte.MaxValue)
                 throw new ArgumentOutOfRangeException(nameof(path));
-            return getPackItemIndex(Handle, path, ref index);
+            return getPackItemIndex(_handle, path, ref index);
         }
         public uint GetItemDataSize(ulong index)
         {
             if (index >= ItemCount)
                 throw new ArgumentOutOfRangeException(nameof(index));
-            return getPackItemDataSize(Handle, index);
+            return getPackItemDataSize(_handle, index);
         }
         public string GetItemPath(ulong index)
         {
             if (index >= ItemCount)
                 throw new ArgumentOutOfRangeException(nameof(index));
-            return getPackItemPath(Handle, index);
+            return getPackItemPath(_handle, index);
         }
         
         public PackResult ReadItemData(ulong index, ref IntPtr data, ref uint size)
         {
             if (index >= ItemCount)
                 throw new ArgumentOutOfRangeException(nameof(index));
-            return readPackItemData(Handle, index, ref data, ref size);
+            return readPackItemData(_handle, index, ref data, ref size);
         }
         public PackResult ReadItemData(string path, ref IntPtr data, ref uint size)
         {
@@ -79,7 +77,7 @@ namespace Pack
                 throw new ArgumentNullException(nameof(path));
             if (path.Length > byte.MaxValue)
                 throw new ArgumentOutOfRangeException(nameof(path));
-            return readPackPathItemData(Handle, path, ref data, ref size);
+            return readPackPathItemData(_handle, path, ref data, ref size);
         }
 
         public PackResult ReadItemData(ulong index, ref byte[] data)
@@ -93,7 +91,7 @@ namespace Pack
                 return result;
 
             if (size > int.MaxValue)
-                throw new ApplicationException("Unsupported item data size");
+                throw new PackException("Unsupported item data size");
             
             data = new byte[size];
             Marshal.Copy(buffer, data, 0, (int)size);
@@ -110,7 +108,7 @@ namespace Pack
                 return result;
 
             if (size > int.MaxValue)
-                throw new ApplicationException("Unsupported item data size");
+                throw new PackException("Unsupported item data size");
 
             data = new byte[size];
             Marshal.Copy(buffer, data, 0, (int)size);
@@ -142,7 +140,7 @@ namespace Pack
 
         public void FreeBuffers()
         {
-            freePackReaderBuffers(Handle);
+            freePackReaderBuffers(_handle);
         }
 
         public static PackResult UnpackFiles(string filePath, ref ulong fileCount, bool printProgress)

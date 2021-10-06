@@ -1,3 +1,5 @@
+using System;
+
 namespace Pack
 {
     public enum PackResult
@@ -16,5 +18,14 @@ namespace Pack
         BadFileType = 11,
         BadFileVersion = 12,
         BadFileEndianness = 13,
+        Count = 14,
+    }
+    
+    public class PackException : Exception
+    {
+        public PackException(PackResult result) :
+            base(result.ToString()) { }
+        public PackException(string message) :
+            base(message) { }
     }
 }
