@@ -4,6 +4,10 @@ if (${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
 	message(FATAL_ERROR "Prevented in-tree build")
 endif ()
 
+if (TARGET pack)
+	return()
+endif ()
+
 project(pack 
 	VERSION 1.0.1
 	DESCRIPTION "Simple data packing library"
