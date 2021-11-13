@@ -170,7 +170,7 @@ PackResult createPackReader(
 
 	if (result != PACK_HEADER_SIZE)
 	{
-		fclose(file);
+		closeFile(file);
 		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
 		return FAILED_TO_READ_FILE_PACK_RESULT;
@@ -181,7 +181,7 @@ PackResult createPackReader(
 		header[2] != 'C' ||
 		header[3] != 'K')
 	{
-		fclose(file);
+		closeFile(file);
 		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
 		return BAD_FILE_TYPE_PACK_RESULT;
@@ -190,7 +190,7 @@ PackResult createPackReader(
 	if (header[4] != PACK_VERSION_MAJOR ||
 		header[5] != PACK_VERSION_MINOR)
 	{
-		fclose(file);
+		closeFile(file);
 		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
 		return BAD_FILE_VERSION_PACK_RESULT;
@@ -200,7 +200,7 @@ PackResult createPackReader(
 
 	if (header[7] != !PACK_LITTLE_ENDIAN)
 	{
-		fclose(file);
+		closeFile(file);
 		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
 		return BAD_FILE_ENDIANNESS_PACK_RESULT;
@@ -216,7 +216,7 @@ PackResult createPackReader(
 
 	if (result != 1)
 	{
-		fclose(file);
+		closeFile(file);
 		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
 		return FAILED_TO_READ_FILE_PACK_RESULT;
@@ -224,7 +224,7 @@ PackResult createPackReader(
 
 	if (itemCount == 0)
 	{
-		fclose(file);
+		closeFile(file);
 		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
 		return BAD_DATA_SIZE_PACK_RESULT;
@@ -239,7 +239,7 @@ PackResult createPackReader(
 
 	if (packResult != SUCCESS_PACK_RESULT)
 	{
-		fclose(file);
+		closeFile(file);
 		ZSTD_freeDCtx(zstdContext);
 		free(packReader);
 		return packResult;
@@ -274,7 +274,7 @@ void destroyPackReader(
 	destroyPackItems(
 		packReader->itemCount,
 		packReader->items);
-	fclose(packReader->file);
+	closeFile(packReader->file);
 	ZSTD_freeDCtx(
 		packReader->zstdContext);
 	free(packReader);
@@ -614,7 +614,7 @@ PackResult unpackFiles(
 			dataSize,
 			itemFile);
 
-		fclose(itemFile);
+		closeFile(itemFile);
 
 		if (result != dataSize)
 		{

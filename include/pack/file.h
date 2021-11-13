@@ -45,3 +45,5 @@ inline static FILE* openFile(
 #else
 #error Unsupported operating system
 #endif
+
+#define closeFile(file) fclose(file)

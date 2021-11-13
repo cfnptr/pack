@@ -82,7 +82,7 @@ inline static PackResult writePackItems(
 
 		if (seekResult != 0)
 		{
-			fclose(itemFile);
+			closeFile(itemFile);
 			free(zipData);
 			free(itemData);
 			return FAILED_TO_SEEK_FILE_PACK_RESULT;
@@ -93,7 +93,7 @@ inline static PackResult writePackItems(
 		if (itemSize == 0 ||
 			itemSize > UINT32_MAX)
 		{
-			fclose(itemFile);
+			closeFile(itemFile);
 			free(zipData);
 			free(itemData);
 			return BAD_DATA_SIZE_PACK_RESULT;
@@ -106,7 +106,7 @@ inline static PackResult writePackItems(
 
 		if (seekResult != 0)
 		{
-			fclose(itemFile);
+			closeFile(itemFile);
 			free(zipData);
 			free(itemData);
 			return FAILED_TO_SEEK_FILE_PACK_RESULT;
@@ -120,7 +120,7 @@ inline static PackResult writePackItems(
 
 			if (newBuffer == NULL)
 			{
-				fclose(itemFile);
+				closeFile(itemFile);
 				free(zipData);
 				free(itemData);
 				return FAILED_TO_ALLOCATE_PACK_RESULT;
@@ -134,7 +134,7 @@ inline static PackResult writePackItems(
 
 			if (newBuffer == NULL)
 			{
-				fclose(itemFile);
+				closeFile(itemFile);
 				free(zipData);
 				free(itemData);
 				return FAILED_TO_ALLOCATE_PACK_RESULT;
@@ -149,7 +149,7 @@ inline static PackResult writePackItems(
 			itemSize,
 			itemFile);
 
-		fclose(itemFile);
+		closeFile(itemFile);
 
 		if (result != itemSize)
 		{
@@ -346,7 +346,7 @@ PackResult packFiles(
 	if (writeResult != PACK_HEADER_SIZE)
 	{
 		free(itemPaths);
-		fclose(packFile);
+		closeFile(packFile);
 		remove(filePath);
 		return FAILED_TO_WRITE_FILE_PACK_RESULT;
 	}
@@ -360,7 +360,7 @@ PackResult packFiles(
 	if (writeResult != 1)
 	{
 		free(itemPaths);
-		fclose(packFile);
+		closeFile(packFile);
 		remove(filePath);
 		return FAILED_TO_WRITE_FILE_PACK_RESULT;
 	}
@@ -372,7 +372,7 @@ PackResult packFiles(
 		printProgress);
 
 	free(itemPaths);
-	fclose(packFile);
+	closeFile(packFile);
 
 	if (packResult != SUCCESS_PACK_RESULT)
 	{

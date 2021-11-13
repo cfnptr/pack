@@ -63,7 +63,7 @@ PackResult getPackInfo(
 
 	if (result != PACK_HEADER_SIZE)
 	{
-		fclose(file);
+		closeFile(file);
 		return FAILED_TO_READ_FILE_PACK_RESULT;
 	}
 
@@ -72,7 +72,7 @@ PackResult getPackInfo(
 		header[2] != 'C' ||
 		header[3] != 'K')
 	{
-		fclose(file);
+		closeFile(file);
 		return BAD_FILE_TYPE_PACK_RESULT;
 	}
 
@@ -84,7 +84,7 @@ PackResult getPackInfo(
 		1,
 		file);
 
-	fclose(file);
+	closeFile(file);
 
 	if (result != 1)
 		return FAILED_TO_READ_FILE_PACK_RESULT;
