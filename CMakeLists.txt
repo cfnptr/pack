@@ -20,6 +20,8 @@ set(CMAKE_C_STANDARD_REQUIRED TRUE)
 option(PACK_BUILD_SHARED "Build PACK shared library" ON)
 option(PACK_BUILD_UTILITIES "Build PACK utility programs" ON)
 
+add_subdirectory(libraries/mpio)
+
 set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
 set(ZSTD_BUILD_TEST OFF CACHE BOOL "" FORCE)
 add_subdirectory(libraries/zstd/build/cmake)
@@ -47,6 +49,7 @@ add_library(pack-static STATIC
 set_target_properties(pack-static PROPERTIES
 	OUTPUT_NAME "pack")
 target_link_libraries(pack-static PUBLIC
+	mpio
 	libzstd_static)
 target_include_directories(pack-static PUBLIC
 	${PROJECT_BINARY_DIR}
@@ -60,6 +63,7 @@ if (PACK_BUILD_SHARED)
 		OUTPUT_NAME "pack"
 		WINDOWS_EXPORT_ALL_SYMBOLS ON)
 	target_link_libraries(pack-shared PUBLIC
+		mpio
 		libzstd_static)
 	target_include_directories(pack-shared PUBLIC
 		${PROJECT_BINARY_DIR}

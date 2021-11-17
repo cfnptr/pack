@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "pack/reader.h"
-#include "pack/file.h"
+#include "mpio/file.h"
 
 #include "zstd.h"
 
@@ -128,7 +128,7 @@ inline static PackResult createPackItems(
 	*_items = items;
 	return SUCCESS_PACK_RESULT;
 }
-PackResult createPackReader(
+PackResult createFilePackReader(
 	const char* filePath,
 	PackReader* _packReader)
 {
@@ -538,7 +538,7 @@ PackResult unpackFiles(
 
 	PackReader packReader;
 
-	PackResult packResult = createPackReader(
+	PackResult packResult = createFilePackReader(
 		filePath,
 		&packReader);
 

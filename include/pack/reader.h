@@ -20,13 +20,13 @@
 typedef struct PackReader* PackReader;
 
 /*
- * Create a new pack reader instance.
+ * Create a new file pack reader instance.
  * Returns operation pack result.
  *
  * filePath - pack file path string.
  * packReader - pack reader instance.
  */
-PackResult createPackReader(
+PackResult createFilePackReader(
 	const char* filePath,
 	PackReader* packReader);
 

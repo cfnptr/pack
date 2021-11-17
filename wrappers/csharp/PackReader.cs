@@ -20,7 +20,7 @@ namespace Pack
 {
     public class PackReader
     {
-        [DllImport(Pack.Lib)] private static extern PackResult createPackReader(
+        [DllImport(Pack.Lib)] private static extern PackResult createFilePackReader(
             string filePath, ref IntPtr packReader);
         [DllImport(Pack.Lib)] private static extern void destroyPackReader(IntPtr packReader);
         [DllImport(Pack.Lib)] private static extern ulong getPackItemCount(IntPtr packReader);
@@ -43,12 +43,14 @@ namespace Pack
 
         public ulong ItemCount => getPackItemCount(Handle);
 
+        // TODO: app pack reader
+
         public PackReader(string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
                 throw new ArgumentNullException(nameof(filePath));
 
-            var result = createPackReader(filePath, ref _handle);
+            var result = createFilePackReader(filePath, ref _handle);
 
             if (result != PackResult.Success)
                 throw new PackException(result);
