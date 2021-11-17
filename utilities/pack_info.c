@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 
 	PackReader packReader;
 
-	result = createPackReader(
+	result = createFilePackReader(
 		argv[1],
 		&packReader);
 
