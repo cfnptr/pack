@@ -83,8 +83,8 @@ const char* getPackItemPath(
  *
  * packReader - pack reader instance.
  * index - pack reader item index.
- * size - item data size.
  * data - item data buffer.
+ * size - item data size.
  */
 PackResult readPackItemData(
 	PackReader packReader,
@@ -98,8 +98,8 @@ PackResult readPackItemData(
  *
  * packReader - pack reader instance.
  * path - pack item path string.
- * size - item data size.
  * data - item data buffer.
+ * size - item data size.
 */
 PackResult readPackPathItemData(
 	PackReader packReader,
