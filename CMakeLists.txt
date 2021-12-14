@@ -95,4 +95,19 @@ if (PACK_BUILD_UTILITIES)
 	target_include_directories(pack-info PRIVATE
 		${PROJECT_BINARY_DIR}
 		${PROJECT_SOURCE_DIR}/include)
+		
+	if (${CMAKE_BUILD_TYPE} MATCHES "Release" AND
+		(${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR
+		${CMAKE_SYSTEM_NAME} MATCHES "Darwin"))
+
+		add_custom_command(TARGET packer POST_BUILD
+			COMMAND strip "$<TARGET_FILE:packer>"
+			VERBATIM)
+		add_custom_command(TARGET unpacker POST_BUILD
+			COMMAND strip "$<TARGET_FILE:unpacker>"
+			VERBATIM)
+		add_custom_command(TARGET pack-info POST_BUILD
+			COMMAND strip "$<TARGET_FILE:pack-info>"
+			VERBATIM)
+	endif ()
 endif ()
