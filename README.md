@@ -1,3 +1,8 @@
+# PACK
+A library providing runtime optimized packing of data into archives across different platforms.
+
+![CI](https://github.com/cfnptr/pack/actions/workflows/cmake.yml/badge.svg)
+
 ## Features
 * Compressed file pack creation
 * Runtime file pack reading
