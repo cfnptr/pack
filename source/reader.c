@@ -26,8 +26,7 @@ typedef struct PackItem
 	PackItemInfo info;
 	char* path;
 } PackItem;
-
-struct PackReader
+struct PackReader_T
 {
 	ZSTD_DCtx* zstdContext;
 	FILE* file;
@@ -130,22 +129,22 @@ inline static PackResult createPackItems(
 }
 PackResult createFilePackReader(
 	const char* filePath,
-	PackReader* _packReader)
+	PackReader* packReader)
 {
 	assert(filePath != NULL);
-	assert(_packReader != NULL);
+	assert(packReader != NULL);
 
-	PackReader packReader = malloc(
-		sizeof(struct PackReader));
+	PackReader packReaderInstance = malloc(
+		sizeof(PackReader_T));
 
-	if (packReader == NULL)
+	if (packReaderInstance == NULL)
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
 	ZSTD_DCtx* zstdContext = ZSTD_createDCtx();
 
 	if (zstdContext == NULL)
 	{
-		free(packReader);
+		free(packReaderInstance);
 		return FAILED_TO_CREATE_ZSTD_PACK_RESULT;
 	}
 
@@ -156,7 +155,7 @@ PackResult createFilePackReader(
 	if (file == NULL)
 	{
 		ZSTD_freeDCtx(zstdContext);
-		free(packReader);
+		free(packReaderInstance);
 		return FAILED_TO_OPEN_FILE_PACK_RESULT;
 	}
 
@@ -172,7 +171,7 @@ PackResult createFilePackReader(
 	{
 		closeFile(file);
 		ZSTD_freeDCtx(zstdContext);
-		free(packReader);
+		free(packReaderInstance);
 		return FAILED_TO_READ_FILE_PACK_RESULT;
 	}
 
@@ -183,7 +182,7 @@ PackResult createFilePackReader(
 	{
 		closeFile(file);
 		ZSTD_freeDCtx(zstdContext);
-		free(packReader);
+		free(packReaderInstance);
 		return BAD_FILE_TYPE_PACK_RESULT;
 	}
 
@@ -192,7 +191,7 @@ PackResult createFilePackReader(
 	{
 		closeFile(file);
 		ZSTD_freeDCtx(zstdContext);
-		free(packReader);
+		free(packReaderInstance);
 		return BAD_FILE_VERSION_PACK_RESULT;
 	}
 
@@ -202,7 +201,7 @@ PackResult createFilePackReader(
 	{
 		closeFile(file);
 		ZSTD_freeDCtx(zstdContext);
-		free(packReader);
+		free(packReaderInstance);
 		return BAD_FILE_ENDIANNESS_PACK_RESULT;
 	}
 
@@ -218,7 +217,7 @@ PackResult createFilePackReader(
 	{
 		closeFile(file);
 		ZSTD_freeDCtx(zstdContext);
-		free(packReader);
+		free(packReaderInstance);
 		return FAILED_TO_READ_FILE_PACK_RESULT;
 	}
 
@@ -226,7 +225,7 @@ PackResult createFilePackReader(
 	{
 		closeFile(file);
 		ZSTD_freeDCtx(zstdContext);
-		free(packReader);
+		free(packReaderInstance);
 		return BAD_DATA_SIZE_PACK_RESULT;
 	}
 
@@ -241,28 +240,25 @@ PackResult createFilePackReader(
 	{
 		closeFile(file);
 		ZSTD_freeDCtx(zstdContext);
-		free(packReader);
+		free(packReaderInstance);
 		return packResult;
 	}
 
-	packReader->zstdContext = zstdContext;
-	packReader->file = file;
-	packReader->itemCount = itemCount;
-	packReader->items = items;
-	packReader->dataBuffer = NULL;
-	packReader->dataSize = 0;
-	packReader->zipBuffer = NULL;
-	packReader->zipSize = 0;
+	packReaderInstance->zstdContext = zstdContext;
+	packReaderInstance->file = file;
+	packReaderInstance->itemCount = itemCount;
+	packReaderInstance->items = items;
+	packReaderInstance->dataBuffer = NULL;
+	packReaderInstance->dataSize = 0;
+	packReaderInstance->zipBuffer = NULL;
+	packReaderInstance->zipSize = 0;
 
-	memset(
-		&packReader->searchItem,
-		0,
-		sizeof(PackItem));
+	memset(&packReaderInstance->searchItem,
+		0, sizeof(PackItem));
 
-	*_packReader = packReader;
+	*packReader = packReaderInstance;
 	return SUCCESS_PACK_RESULT;
 }
-
 void destroyPackReader(
 	PackReader packReader)
 {

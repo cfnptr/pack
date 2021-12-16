@@ -16,8 +16,14 @@
 #include "pack/defines.h"
 #include <stdbool.h>
 
-// Pack reader instance handle.
-typedef struct PackReader* PackReader;
+/*
+ * Pack reader structure.
+ */
+typedef struct PackReader_T PackReader_T;
+/*
+ * Pack reader instance.
+ */
+typedef PackReader_T* PackReader;
 
 /*
  * Create a new file pack reader instance.
@@ -29,9 +35,8 @@ typedef struct PackReader* PackReader;
 PackResult createFilePackReader(
 	const char* filePath,
 	PackReader* packReader);
-
 /*
- * Destroy pack reader instance.
+ * Destroys pack reader instance.
  * packReader - pack reader instance or NULL.
  */
 void destroyPackReader(
