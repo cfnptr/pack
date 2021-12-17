@@ -17,7 +17,7 @@
 #include <stdbool.h>
 
 /*
- * Pack files to the pack.
+ * Pack files to the pack file.
  * Returns operation pack result.
  *
  * packPath - pack file path string.

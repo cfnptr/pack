@@ -22,9 +22,15 @@
 #define PACK_VERSION_PATCH @pack_VERSION_PATCH@
 #define PACK_LITTLE_ENDIAN @PACK_LITTLE_ENDIAN@
 
+/*
+ * Pack header size in bytes.
+ */
 #define PACK_HEADER_SIZE 8
 
-typedef enum PackResult
+/*
+ * PACK results.
+ */
+typedef enum PackResult_T
 {
 	SUCCESS_PACK_RESULT = 0,
 	FAILED_TO_ALLOCATE_PACK_RESULT = 1,
@@ -41,8 +47,15 @@ typedef enum PackResult
 	BAD_FILE_VERSION_PACK_RESULT = 12,
 	BAD_FILE_ENDIANNESS_PACK_RESULT = 13,
 	PACK_RESULT_COUNT = 14,
-} PackResult;
+} PackResult_T;
+/*
+ * PACK result type.
+ */
+typedef uint8_t PackResult;
 
+/*
+ * Pack item information structure.
+ */
 typedef struct PackItemInfo
 {
 	uint32_t zipSize;
@@ -51,6 +64,9 @@ typedef struct PackItemInfo
 	uint8_t pathSize;
 } PackItemInfo;
 
+/*
+ * PACK result strings.
+ */
 static const char* const packResultStrings[PACK_RESULT_COUNT] = {
 	"Success",
 	"Failed to allocate",
@@ -68,14 +84,14 @@ static const char* const packResultStrings[PACK_RESULT_COUNT] = {
 	"Bad file endianness",
 };
 
+/*
+ * Returns PACK result as string.
+ * result - PACK result.
+ */
 inline static const char* packResultToString(
 	PackResult result)
 {
-	if (result < SUCCESS_PACK_RESULT ||
-		result >= PACK_RESULT_COUNT)
-	{
-		return "Unknown pack result";
-	}
-
+	if (result >= PACK_RESULT_COUNT)
+		return "Unknown PACK result";
 	return packResultStrings[result];
 }
