@@ -43,6 +43,9 @@ inline static void destroyPackItems(
 	uint64_t itemCount,
 	PackItem* items)
 {
+	assert(itemCount == 0 ||
+		(itemCount != 0 && items != NULL));
+
 	for (uint64_t i = 0; i < itemCount; i++)
 		free(items[i].path);
 
@@ -53,6 +56,10 @@ inline static PackResult createPackItems(
 	uint64_t itemCount,
 	PackItem** _items)
 {
+	assert(packFile != NULL);
+	assert(itemCount != 0);
+	assert(_items != NULL);
+
 	PackItem* items = malloc(
 		itemCount * sizeof(PackItem));
 
@@ -287,6 +294,9 @@ static int comparePackItems(
 	const void* _a,
 	const void* _b)
 {
+	// NOTE: a and b should not be NULL!
+	// Skipping here assertions for debug build speed.
+
 	const PackItem* a = _a;
 	const PackItem* b = _b;
 
@@ -521,6 +531,9 @@ inline static void removePackItemFiles(
 	uint64_t itemCount,
 	PackItem* packItems)
 {
+	assert(itemCount == 0 ||
+		(itemCount != 0 && packItems != NULL));
+
 	for (uint64_t i = 0; i < itemCount; i++)
 		remove(packItems[i].path);
 }

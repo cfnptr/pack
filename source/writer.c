@@ -28,6 +28,10 @@ inline static PackResult writePackItems(
 	char** itemPaths,
 	bool printProgress)
 {
+	assert(packFile != NULL);
+	assert(itemCount != 0);
+	assert(itemPaths != NULL);
+
 	uint32_t bufferSize = 1;
 
 	uint8_t* itemData = malloc(
@@ -269,6 +273,9 @@ static int comparePackItemPaths(
 	const void* _a,
 	const void* _b)
 {
+	// NOTE: a and b should not be NULL!
+	// Skipping here assertions for debug build speed.
+
 	char* a = *(char**)_a;
 	char* b = *(char**)_b;
 	uint8_t al = (uint8_t)strlen(a);
