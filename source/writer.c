@@ -28,22 +28,22 @@ inline static PackResult writePackItems(
 	char** itemPaths,
 	bool printProgress)
 {
-	assert(packFile != NULL);
-	assert(itemCount != 0);
-	assert(itemPaths != NULL);
+	assert(packFile);
+	assert(itemCount > 0);
+	assert(itemPaths);
 
 	uint32_t bufferSize = 1;
 
 	uint8_t* itemData = malloc(
 		sizeof(uint8_t));
 
-	if (itemData == NULL)
+	if (!itemData)
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
 	uint8_t* zipData = malloc(
 		sizeof(uint8_t));
 
-	if (zipData == NULL)
+	if (!zipData)
 	{
 		free(itemData);
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
@@ -53,7 +53,7 @@ inline static PackResult writePackItems(
 	{
 		char* itemPath = itemPaths[i];
 
-		if (printProgress == true)
+		if (printProgress)
 		{
 			printf("Packing \"%s\" file. ", itemPath);
 			fflush(stdout);
@@ -72,7 +72,7 @@ inline static PackResult writePackItems(
 			itemPath,
 			"rb");
 
-		if (itemFile == NULL)
+		if (!itemFile)
 		{
 			free(zipData);
 			free(itemData);
@@ -122,7 +122,7 @@ inline static PackResult writePackItems(
 				itemData,
 				itemSize * sizeof(uint8_t));
 
-			if (newBuffer == NULL)
+			if (!newBuffer)
 			{
 				closeFile(itemFile);
 				free(zipData);
@@ -136,7 +136,7 @@ inline static PackResult writePackItems(
 				zipData,
 				itemSize * sizeof(uint8_t));
 
-			if (newBuffer == NULL)
+			if (!newBuffer)
 			{
 				closeFile(itemFile);
 				free(zipData);
@@ -219,7 +219,7 @@ inline static PackResult writePackItems(
 			return FAILED_TO_WRITE_FILE_PACK_RESULT;
 		}
 
-		if (zipSize != 0)
+		if (zipSize > 0)
 		{
 			result = fwrite(
 				zipData,
@@ -250,13 +250,13 @@ inline static PackResult writePackItems(
 			}
 		}
 
-		if (printProgress == true)
+		if (printProgress)
 		{
 			int progress = (int)((float)(i + 1) /
 				(float)itemCount * 100.0f);
 
 			printf("(%u/%u bytes) [%d%%]\n",
-				zipSize != 0 ?
+				zipSize > 0 ?
 					(uint32_t)zipSize :
 					(uint32_t)itemSize,
 				(uint32_t)itemSize,
@@ -283,7 +283,7 @@ static int comparePackItemPaths(
 
 	int difference = al - bl;
 
-	if (difference != 0)
+	if (difference > 0)
 		return difference;
 
 	return memcmp(a, b, al);
@@ -294,14 +294,14 @@ PackResult packFiles(
 	const char** filePaths,
 	bool printProgress)
 {
-	assert(filePath != NULL);
-	assert(fileCount != 0);
-	assert(filePaths != NULL);
+	assert(filePath);
+	assert(fileCount > 0);
+	assert(filePaths);
 
 	char** itemPaths = malloc(
 		fileCount * sizeof(char*));
 
-	if (itemPaths == NULL)
+	if (!itemPaths)
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
 	uint64_t itemCount = 0;
@@ -316,7 +316,7 @@ PackResult packFiles(
 				alreadyAdded = true;
 		}
 
-		if (alreadyAdded == false)
+		if (!alreadyAdded)
 			itemPaths[itemCount++] = (char*)filePaths[i];
 	}
 
@@ -330,7 +330,7 @@ PackResult packFiles(
 		filePath,
 		"wb");
 
-	if (packFile == NULL)
+	if (!packFile)
 	{
 		free(itemPaths);
 		return FAILED_TO_CREATE_FILE_PACK_RESULT;

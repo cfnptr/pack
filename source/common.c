@@ -22,9 +22,9 @@ void getPackLibraryVersion(
 	uint8_t* minorVersion,
 	uint8_t* patchVersion)
 {
-	assert(majorVersion != NULL);
-	assert(minorVersion != NULL);
-	assert(patchVersion != NULL);
+	assert(majorVersion);
+	assert(minorVersion);
+	assert(patchVersion);
 
 	*majorVersion = PACK_VERSION_MAJOR;
 	*minorVersion = PACK_VERSION_MINOR;
@@ -39,18 +39,18 @@ PackResult getPackInfo(
 	bool* isLittleEndian,
 	uint64_t* _itemCount)
 {
-	assert(filePath != NULL);
-	assert(majorVersion != NULL);
-	assert(minorVersion != NULL);
-	assert(patchVersion != NULL);
-	assert(isLittleEndian != NULL);
-	assert(_itemCount != NULL);
+	assert(filePath);
+	assert(majorVersion);
+	assert(minorVersion);
+	assert(patchVersion);
+	assert(isLittleEndian);
+	assert(_itemCount);
 
 	FILE* file = openFile(
 		filePath,
 		"rb");
 
-	if (file == NULL)
+	if (!file)
 		return FAILED_TO_OPEN_FILE_PACK_RESULT;
 
 	char header[PACK_HEADER_SIZE];
