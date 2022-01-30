@@ -301,10 +301,10 @@ static int comparePackItems(
 	const PackItem* b = _b;
 
 	int difference =
-		a->info.pathSize -
-		b->info.pathSize;
+		(int)a->info.pathSize -
+		(int)b->info.pathSize;
 
-	if (difference > 0)
+	if (difference != 0)
 		return difference;
 
 	return memcmp(
