@@ -36,7 +36,7 @@ namespace Pack
             IntPtr packReader, string path, ref IntPtr data, ref uint size);
         [DllImport(Pack.Lib)] private static extern void freePackReaderBuffers(IntPtr packReader);
         [DllImport(Pack.Lib)] private static extern PackResult unpackFiles(
-            string filePath, ref ulong fileCount, bool printProgress);
+            string filePath, bool printProgress);
 
         private readonly IntPtr _handle;
         public IntPtr Handle => _handle;
@@ -166,11 +166,11 @@ namespace Pack
             freePackReaderBuffers(_handle);
         }
 
-        public static PackResult UnpackFiles(string filePath, ref ulong fileCount, bool printProgress)
+        public static PackResult UnpackFiles(string filePath, bool printProgress)
         {
             if (string.IsNullOrEmpty(filePath))
                 throw new ArgumentNullException(nameof(filePath));
-            return unpackFiles(filePath, ref fileCount, printProgress);
+            return unpackFiles(filePath, printProgress);
         }
     }
 }

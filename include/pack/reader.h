@@ -126,10 +126,8 @@ void freePackReaderBuffers(
  * Returns operation pack result.
  *
  * filePath - pack file path string.
- * fileCount - unpacked file count.
  * printProgress - printf reading progress.
  */
 PackResult unpackFiles(
 	const char* filePath,
-	uint64_t* fileCount,
 	bool printProgress);

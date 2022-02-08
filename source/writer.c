@@ -49,6 +49,8 @@ inline static PackResult writePackItems(
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 	}
 
+	uint64_t totalZipSize = 0, totalRawSize = 0;
+
 	for (uint64_t i = 0; i < itemCount; i++)
 	{
 		char* itemPath = itemPaths[i];
@@ -94,8 +96,7 @@ inline static PackResult writePackItems(
 
 		uint64_t itemSize = (uint64_t)tellFile(itemFile);
 
-		if (itemSize == 0 ||
-			itemSize > UINT32_MAX)
+		if (itemSize == 0 || itemSize > UINT32_MAX)
 		{
 			closeFile(itemFile);
 			free(zipData);
@@ -252,21 +253,33 @@ inline static PackResult writePackItems(
 
 		if (printProgress)
 		{
-			int progress = (int)((float)(i + 1) /
-				(float)itemCount * 100.0f);
+			uint32_t zipFileSize = zipSize > 0 ?
+				(uint32_t)zipSize : (uint32_t)itemSize;
+			uint32_t rawFileSize = (uint32_t)itemSize;
+
+			totalZipSize += zipFileSize;
+			totalRawSize += rawFileSize;
+
+			int progress = (int)(
+				((float)(i + 1) / (float)itemCount) * 100.0f);
 
 			printf("(%u/%u bytes) [%d%%]\n",
-				zipSize > 0 ?
-					(uint32_t)zipSize :
-					(uint32_t)itemSize,
-				(uint32_t)itemSize,
-				progress);
+				zipFileSize, rawFileSize, progress);
 			fflush(stdout);
 		}
 	}
 
 	free(zipData);
 	free(itemData);
+
+	if (printProgress)
+	{
+		int compression = (int)((1.0 -
+			(double)(totalZipSize) / (double)totalRawSize) * 100.0);
+		printf("Packed %llu files. (%llu/%llu bytes, %d%% saved)\n",
+			itemCount, totalZipSize, totalRawSize, compression);
+	}
+
 	return SUCCESS_PACK_RESULT;
 }
 static int comparePackItemPaths(
@@ -320,8 +333,7 @@ PackResult packFiles(
 			itemPaths[itemCount++] = (char*)filePaths[i];
 	}
 
-	qsort(
-		itemPaths,
+	qsort(itemPaths,
 		itemCount,
 		sizeof(char*),
 		comparePackItemPaths);

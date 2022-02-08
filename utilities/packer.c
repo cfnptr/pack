@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 {
 	if (argc <= 2)
 	{
-		printf("Usage: packer <path-to-pack> <path-to-item>...\n");
+		printf("Usage: packer <path-to-pack> <path-to-item-1>...\n");
 		return EXIT_SUCCESS;
 	}
 
@@ -38,6 +38,5 @@ int main(int argc, char *argv[])
 		return EXIT_SUCCESS;
 	}
 
-	printf("Packed %d files.\n", argc - 2);
 	return EXIT_SUCCESS;
 }

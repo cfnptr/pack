@@ -25,11 +25,8 @@ int main(int argc, char *argv[])
 		return EXIT_SUCCESS;
 	}
 
-	uint64_t filesCount;
-
 	PackResult result = unpackFiles(
 		argv[1],
-		&filesCount,
 		true);
 
 	if (result != SUCCESS_PACK_RESULT)
@@ -39,6 +36,5 @@ int main(int argc, char *argv[])
 		return EXIT_SUCCESS;
 	}
 
-	printf("Unpacked %llu files.\n", filesCount);
 	return EXIT_SUCCESS;
 }

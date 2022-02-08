@@ -535,11 +535,9 @@ inline static void removePackItemFiles(
 }
 PackResult unpackFiles(
 	const char* filePath,
-	uint64_t* fileCount,
 	bool printProgress)
 {
 	assert(filePath);
-	assert(fileCount);
 
 	PackReader packReader;
 
@@ -549,6 +547,8 @@ PackResult unpackFiles(
 
 	if (packResult != SUCCESS_PACK_RESULT)
 		return packResult;
+
+	uint64_t totalRawSize = 0, totalZipSize = 0;
 
 	uint64_t itemCount = packReader->itemCount;
 	PackItem* items = packReader->items;
@@ -629,21 +629,29 @@ PackResult unpackFiles(
 
 		if (printProgress)
 		{
-			int progress = (int)((float)(i + 1) /
-				(float)itemCount * 100.0f);
+			uint32_t rawFileSize = item->info.dataSize;
+			uint32_t zipFileSize = item->info.zipSize > 0 ?
+				item->info.zipSize : item->info.dataSize;
+
+			totalRawSize += rawFileSize;
+			totalZipSize += zipFileSize;
+
+			int progress = (int)(
+				((float)(i + 1) / (float)itemCount) * 100.0f);
 
 			printf("(%u/%u bytes) [%d%%]\n",
-				item->info.zipSize > 0 ?
-					item->info.zipSize :
-					item->info.dataSize,
-				item->info.dataSize,
-				progress);
+				rawFileSize, zipFileSize, progress);
 			fflush(stdout);
 		}
 	}
 
 	destroyPackReader(packReader);
 
-	*fileCount = itemCount;
+	if (printProgress)
+	{
+		printf("Unpacked %llu files. (%llu/%llu bytes)\n",
+			itemCount, totalRawSize, totalZipSize);
+	}
+
 	return SUCCESS_PACK_RESULT;
 }
