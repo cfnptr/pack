@@ -283,7 +283,7 @@ static int comparePackItemPaths(
 
 	int difference = al - bl;
 
-	if (difference > 0)
+	if (difference != 0)
 		return difference;
 
 	return memcmp(a, b, al);
