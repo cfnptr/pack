@@ -37,7 +37,7 @@ git clone --recursive https://github.com/cfnptr/pack
 ### packer
 
 * Description: creates compressed data pack from files.
-* Usage: ```packer <path-to-pack> <path-to-item>...```
+* Usage: ```packer <path-to-pack> <path-to-item-1>...```
 
 ### unpacker
 
