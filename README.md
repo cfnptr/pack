@@ -46,7 +46,7 @@ git clone --recursive https://github.com/cfnptr/pack
 
 ### pack-info
 
-* Description: shows packet information.
+* Description: shows pack file information.
 * Usage: ```pack-info <path-to-pack>```
 
 ## Third-party
