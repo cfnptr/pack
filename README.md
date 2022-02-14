@@ -1,6 +1,7 @@
 # PACK ![CI](https://github.com/cfnptr/pack/actions/workflows/cmake.yml/badge.svg)
 
-A library providing runtime optimized **packing** of data into archives across different platforms. For example can be used to read game resources.
+A library providing runtime optimized **packing** of data into archives across different platforms.<br/>
+For example can be used to read game resources.
 
 ## Features
 
