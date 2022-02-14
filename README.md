@@ -20,18 +20,18 @@ For example can be used to read game resources.
 * [Git 2.30+](https://git-scm.com/)
 * [CMake 3.10+](https://cmake.org/)
 
-## Cloning
-
-```
-git clone --recursive https://github.com/cfnptr/pack
-```
-
 ### CMake options
 
 | Name                 | Description                 | Default value |
 |----------------------|-----------------------------|---------------|
 | PACK_BUILD_SHARED    | Build Pack shared library   | `ON`          |
 | PACK_BUILD_UTILITIES | Build Pack utility programs | `ON`          |
+
+## Cloning
+
+```
+git clone --recursive https://github.com/cfnptr/pack
+```
 
 ## Utilities
 
