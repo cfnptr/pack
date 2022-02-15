@@ -57,14 +57,16 @@ set(PACK_SOURCES
 	source/common.c
 	source/reader.c
 	source/writer.c)
+	
+set(PACK_LINK_LIBRARIES
+	mpio libzstd_static)
 
 add_library(pack-static STATIC
 	${PACK_SOURCES})
 set_target_properties(pack-static PROPERTIES
 	OUTPUT_NAME "pack")
 target_link_libraries(pack-static PUBLIC
-	mpio
-	libzstd_static)
+	${PACK_LINK_LIBRARIES})
 target_include_directories(pack-static PUBLIC
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}/include
@@ -77,8 +79,7 @@ if (PACK_BUILD_SHARED)
 		OUTPUT_NAME "pack"
 		WINDOWS_EXPORT_ALL_SYMBOLS ON)
 	target_link_libraries(pack-shared PUBLIC
-		mpio
-		libzstd_static)
+		${PACK_LINK_LIBRARIES})
 	target_include_directories(pack-shared PUBLIC
 		${PROJECT_BINARY_DIR}
 		${PROJECT_SOURCE_DIR}/include
