@@ -21,7 +21,7 @@ namespace Pack
     public class PackReader
     {
         [DllImport(Pack.Lib)] private static extern PackResult createFilePackReader(
-            string filePath, ref IntPtr packReader);
+            string filePath, uint dataBufferCapacity, ref IntPtr packReader);
         [DllImport(Pack.Lib)] private static extern void destroyPackReader(IntPtr packReader);
         [DllImport(Pack.Lib)] private static extern ulong getPackItemCount(IntPtr packReader);
         [DllImport(Pack.Lib)] private static extern bool getPackItemIndex(
@@ -43,12 +43,13 @@ namespace Pack
 
         public ulong ItemCount => getPackItemCount(_handle);
 
-        public PackReader(string filePath)
+        public PackReader(string filePath, uint dataBufferCapacity = 0)
         {
             if (string.IsNullOrEmpty(filePath))
                 throw new ArgumentNullException(nameof(filePath));
 
-            var result = createFilePackReader(filePath, ref _handle);
+            var result = createFilePackReader(
+                filePath, dataBufferCapacity, ref _handle);
 
             if (result != PackResult.Success)
                 throw new PackException(result);

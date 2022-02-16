@@ -27,27 +27,27 @@ typedef PackReader_T* PackReader;
 
 /*
  * Create a new file pack reader instance.
- * Returns operation pack result.
+ * Returns operation Pack result.
  *
  * filePath - pack file path string.
+ * dataBufferCapacity - initial data buffer capacity or 0.
  * packReader - pack reader instance.
  */
 PackResult createFilePackReader(
 	const char* filePath,
+	uint32_t dataBufferCapacity,
 	PackReader* packReader);
 /*
  * Destroys pack reader instance.
  * packReader - pack reader instance or NULL.
  */
-void destroyPackReader(
-	PackReader packReader);
+void destroyPackReader(PackReader packReader);
 
 /*
  * Returns pack reader item count.
  * packReader - pack reader instance.
  */
-uint64_t getPackItemCount(
-	PackReader packReader);
+uint64_t getPackItemCount(PackReader packReader);
 
 /*
  * Search for the pack item index.
@@ -84,7 +84,7 @@ const char* getPackItemPath(
 
 /*
  * Read pack item data.
- * Return operation pack result.
+ * Return operation Pack result.
  *
  * packReader - pack reader instance.
  * index - pack reader item index.
@@ -99,7 +99,7 @@ PackResult readPackItemData(
 
 /*
  * Read pack item data.
- * Return operation pack result.
+ * Return operation Pack result.
  *
  * packReader - pack reader instance.
  * path - pack item path string.
@@ -123,7 +123,7 @@ void freePackReaderBuffers(
 
 /*
  * Unpack files from the pack.
- * Returns operation pack result.
+ * Returns operation Pack result.
  *
  * filePath - pack file path string.
  * printProgress - printf reading progress.

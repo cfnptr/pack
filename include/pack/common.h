@@ -17,8 +17,8 @@
 #include <stdbool.h>
 
 /*
- * Get pack library version.
- * Returns hardcoded version.
+ * Get Pack library version.
+ * Returns hardcoded version value.
  *
  * majorVersion - major library version.
  * minorVersion - minor library version.
@@ -31,7 +31,7 @@ void getPackLibraryVersion(
 
 /*
  * Read pack info from the file.
- * Returns operation pack result.
+ * Returns operation Pack result.
  *
  * filePath - pack file path string.
  * majorVersion - major pack version.

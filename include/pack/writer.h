@@ -18,7 +18,7 @@
 
 /*
  * Pack files to the pack file.
- * Returns operation pack result.
+ * Returns operation Pack result.
  *
  * packPath - pack file path string.
  * fileCount - to pack file count.
