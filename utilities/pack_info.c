@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 		minorVersion,
 		patchVersion,
 		isLittleEndian ? "TRUE" : "FALSE",
-		itemCount);
+		(long long unsigned int)itemCount);
 
 	PackReader packReader;
 
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 		printf("Item %llu:\n"
 			"    Path: %s.\n"
 			"    Size: %u.\n",
-			i,
+			(long long unsigned int)i,
 			getPackItemPath(packReader, i),
 			getPackItemDataSize(packReader, i));
 	}

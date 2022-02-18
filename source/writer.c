@@ -277,7 +277,10 @@ inline static PackResult writePackItems(
 		int compression = (int)((1.0 -
 			(double)(totalZipSize) / (double)totalRawSize) * 100.0);
 		printf("Packed %llu files. (%llu/%llu bytes, %d%% saved)\n",
-			itemCount, totalZipSize, totalRawSize, compression);
+			(long long unsigned int)itemCount,
+			(long long unsigned int)totalZipSize,
+			(long long unsigned int)totalRawSize,
+			compression);
 	}
 
 	return SUCCESS_PACK_RESULT;

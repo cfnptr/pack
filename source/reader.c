@@ -653,7 +653,9 @@ PackResult unpackFiles(
 	if (printProgress)
 	{
 		printf("Unpacked %llu files. (%llu/%llu bytes)\n",
-			itemCount, totalRawSize, totalZipSize);
+			(long long unsigned int)itemCount,
+			(long long unsigned int)totalRawSize,
+			(long long unsigned int)totalZipSize);
 	}
 
 	return SUCCESS_PACK_RESULT;
