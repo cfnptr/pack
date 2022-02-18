@@ -36,8 +36,9 @@ option(PACK_BUILD_UTILITIES "Build PACK utility programs" ON)
 
 add_subdirectory(libraries/mpio)
 
+set(ZSTD_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(ZSTD_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
-set(ZSTD_BUILD_TEST OFF CACHE BOOL "" FORCE)
 add_subdirectory(libraries/zstd/build/cmake)
 
 include(TestBigEndian)
