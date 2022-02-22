@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 	if (argc <= 2)
 	{
 		printf("Usage: packer <path-to-pack> <path-to-item-1>...\n");
-		return EXIT_SUCCESS;
+		return EXIT_FAILURE;
 	}
 
 	PackResult result = packFiles(
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	{
 		printf("\nError: %s.\n",
 			packResultToString(result));
-		return EXIT_SUCCESS;
+		return EXIT_FAILURE;
 	}
 
 	return EXIT_SUCCESS;

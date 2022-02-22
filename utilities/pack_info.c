@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 	if (argc != 2)
 	{
 		printf("Usage: pack-info <path-to-pack>\n");
-		return EXIT_SUCCESS;
+		return EXIT_FAILURE;
 	}
 
 	uint8_t majorVersion;
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	{
 		printf("\nError: %s.\n",
 			packResultToString(result));
-		return EXIT_SUCCESS;
+		return EXIT_FAILURE;
 	}
 
 	printf("Pack library [v%d.%d.%d]\n\n"
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 	{
 		printf("\nError: %s.\n",
 			packResultToString(result));
-		return EXIT_SUCCESS;
+		return EXIT_FAILURE;
 	}
 
 	itemCount = getPackItemCount(packReader);
