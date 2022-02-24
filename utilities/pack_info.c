@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	printf("Pack library [v%d.%d.%d]\n\n"
+	printf("Pack [v%d.%d.%d]\n\n"
 		"Pack information:\n"
 		"    Version: %d.%d.%d.\n"
 		"    Little endian: %s.\n"
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 		majorVersion,
 		minorVersion,
 		patchVersion,
-		isLittleEndian ? "TRUE" : "FALSE",
+		isLittleEndian ? "true" : "false",
 		(long long unsigned int)itemCount);
 
 	PackReader packReader;
@@ -85,6 +85,7 @@ int main(int argc, char *argv[])
 			(long long unsigned int)i,
 			getPackItemPath(packReader, i),
 			getPackItemDataSize(packReader, i));
+		fflush(stdout);
 	}
 
 	return EXIT_SUCCESS;
