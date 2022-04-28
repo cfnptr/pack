@@ -60,7 +60,7 @@ set(PACK_SOURCES
 	source/writer.c)
 	
 set(PACK_LINK_LIBRARIES
-	mpio libzstd_static)
+	mpio-static libzstd_static)
 
 add_library(pack-static STATIC
 	${PACK_SOURCES})
