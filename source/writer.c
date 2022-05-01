@@ -302,7 +302,7 @@ static int comparePackItemPaths(
 	if (difference != 0)
 		return difference;
 
-	return memcmp(a, b, al);
+	return memcmp(a, b, al * sizeof(uint8_t));
 }
 PackResult packFiles(
 	const char* filePath,

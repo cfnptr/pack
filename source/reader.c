@@ -309,10 +309,8 @@ static int comparePackItems(
 	if (difference != 0)
 		return difference;
 
-	return memcmp(
-		a->path,
-		b->path,
-		a->info.pathSize);
+	return memcmp(a->path, b->path,
+		a->info.pathSize * sizeof(char));
 }
 bool getPackItemIndex(
 	PackReader packReader,
@@ -588,7 +586,8 @@ PackResult unpackFiles(
 
 		char itemPath[UINT8_MAX + 1];
 
-		memcpy(itemPath, item->path, pathSize);
+		memcpy(itemPath, item->path,
+			pathSize * sizeof(char));
 		itemPath[pathSize] = 0;
 
 		for (uint8_t j = 0; j < pathSize; j++)
