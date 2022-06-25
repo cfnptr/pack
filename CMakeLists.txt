@@ -52,7 +52,7 @@ endif ()
 
 configure_file(
 	cmake/defines.h.in
-	pack/defines.h)
+	include/pack/defines.h)
 
 set(PACK_SOURCES
 	source/common.c
@@ -61,6 +61,10 @@ set(PACK_SOURCES
 	
 set(PACK_LINK_LIBRARIES
 	mpio-static libzstd_static)
+set(PACK_INCLUDE_DIRECTORIES
+	${PROJECT_BINARY_DIR}/include
+	${PROJECT_SOURCE_DIR}/include
+	${PROJECT_SOURCE_DIR}/libraries/zstd/lib)
 
 add_library(pack-static STATIC
 	${PACK_SOURCES})
@@ -69,9 +73,7 @@ set_target_properties(pack-static PROPERTIES
 target_link_libraries(pack-static PUBLIC
 	${PACK_LINK_LIBRARIES})
 target_include_directories(pack-static PUBLIC
-	${PROJECT_BINARY_DIR}
-	${PROJECT_SOURCE_DIR}/include
-	${PROJECT_SOURCE_DIR}/libraries/zstd/lib)
+	${PACK_INCLUDE_DIRECTORIES})
 
 if (PACK_BUILD_SHARED)
 	add_library(pack-shared SHARED
@@ -82,9 +84,7 @@ if (PACK_BUILD_SHARED)
 	target_link_libraries(pack-shared PUBLIC
 		${PACK_LINK_LIBRARIES})
 	target_include_directories(pack-shared PUBLIC
-		${PROJECT_BINARY_DIR}
-		${PROJECT_SOURCE_DIR}/include
-		${PROJECT_SOURCE_DIR}/libraries/zstd/lib)
+		${PACK_INCLUDE_DIRECTORIES})
 endif ()
 
 if (PACK_BUILD_UTILITIES)
@@ -93,7 +93,7 @@ if (PACK_BUILD_UTILITIES)
 	target_link_libraries(packer PRIVATE
 		pack-static)
 	target_include_directories(packer PRIVATE
-		${PROJECT_BINARY_DIR}
+		${PROJECT_BINARY_DIR}/include
 		${PROJECT_SOURCE_DIR}/include)
 
 	add_executable(unpacker
@@ -101,7 +101,7 @@ if (PACK_BUILD_UTILITIES)
 	target_link_libraries(unpacker PRIVATE
 		pack-static)
 	target_include_directories(unpacker PRIVATE
-		${PROJECT_BINARY_DIR}
+		${PROJECT_BINARY_DIR}/include
 		${PROJECT_SOURCE_DIR}/include)
 
 	add_executable(pack-info
@@ -109,7 +109,7 @@ if (PACK_BUILD_UTILITIES)
 	target_link_libraries(pack-info PRIVATE
 		pack-static)
 	target_include_directories(pack-info PRIVATE
-		${PROJECT_BINARY_DIR}
+		${PROJECT_BINARY_DIR}/include
 		${PROJECT_SOURCE_DIR}/include)
 		
 	if (${CMAKE_BUILD_TYPE} MATCHES "Release" AND
