@@ -1,22 +1,19 @@
 @ECHO OFF
 
-cmake --version
+cmake --version > nul
 
 IF NOT %ERRORLEVEL% == 0 (
     ECHO Failed to get CMake version, please check if it's installed.
-    PAUSE
-    EXIT
+    EXIT /B %ERRORLEVEL%
 )
 
-ECHO(
 ECHO Configuring project...
 
 cmake -DCMAKE_BUILD_TYPE=Release -S . -B build/
 
 IF NOT %ERRORLEVEL% == 0 (
     ECHO Failed to configure CMake project.
-    PAUSE
-    EXIT
+    EXIT /B %ERRORLEVEL%
 )
 
 ECHO(
@@ -26,8 +23,7 @@ cmake --build build/ --config Release
 
 IF NOT %ERRORLEVEL% == 0 (
     ECHO Failed to build CMake project.
-    PAUSE
-    EXIT
+    EXIT /B %ERRORLEVEL%
 )
 
-PAUSE
+EXIT /B 0
