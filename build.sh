@@ -1,24 +1,33 @@
 #!/bin/bash
-
 cd $(dirname "$BASH_SOURCE")
 
-if ! cmake --version ; then
+cmake --version > /dev/null
+status=$?
+
+if [ $status -ne 0 ]; then
     echo "Failed to get CMake version, please check if it's installed."
-    exit
+    exit $status
 fi
 
-echo ""
 echo "Configuring project..."
 
-if ! cmake -DCMAKE_BUILD_TYPE=Release -S . -B build/ ; then
+cmake -DCMAKE_BUILD_TYPE=Release -S . -B build/
+status=$?
+
+if [ $status -ne 0 ]; then
     echo "Failed to configure CMake project."
-    exit
+    exit $status
 fi
 
 echo ""
 echo "Building project..."
 
-if ! cmake --build build/ --config Release ; then
+cmake --build build/ --config Release
+status=$?
+
+if [ $status -ne 0 ]; then
     echo "Failed to build CMake project."
-    exit
+    exit $status
 fi
+
+exit 0
