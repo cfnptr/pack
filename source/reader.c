@@ -14,7 +14,7 @@
 
 #include "pack/reader.h"
 #include "mpio/file.h"
-
+#include "mpio/directory.h"
 #include "zstd.h"
 
 #include <stdlib.h>
@@ -136,6 +136,7 @@ inline static PackResult createPackItems(
 PackResult createFilePackReader(
 	const char* filePath,
 	uint32_t dataBufferCapacity,
+	bool isResourcesDirectory,
 	PackReader* packReader)
 {
 	assert(filePath);
@@ -160,7 +161,50 @@ PackResult createFilePackReader(
 
 	packReaderInstance->zstdContext = zstdContext;
 
-	FILE* file = openFile(filePath, "rb");
+#if __APPLE__
+	char* path;
+
+	if (isResourcesDirectory)
+	{
+		const char* resourcesDirectory = getResourcesDirectory();
+
+		if (!resourcesDirectory)
+		{
+			destroyPackReader(packReaderInstance);
+			return FAILED_TO_GET_DIRECTORY_PACK_RESULT;
+		}
+
+		size_t filePathLength = strlen(filePath);
+		size_t resourcesPathLength = strlen(resourcesDirectory);
+		size_t pathLength = filePathLength + resourcesPathLength + 2;
+
+		path = malloc(pathLength * sizeof(char));
+
+		if (!path)
+		{
+			destroyPackReader(packReaderInstance);
+			return FAILED_TO_ALLOCATE_PACK_RESULT;
+		}
+
+		memcpy(path, resourcesDirectory,
+			resourcesPathLength * sizeof(char));
+		path[resourcesPathLength] = '/';
+		memcpy(path + resourcesPathLength + 1, filePath,
+			filePathLength * sizeof(char));
+		path[resourcesPathLength + filePathLength + 1] = '\0';
+	}
+	else
+	{
+		path = (char*)filePath;
+	}
+#endif
+
+	FILE* file = openFile(path, "rb");
+
+#if __APPLE__
+	if (isResourcesDirectory)
+		free(path);
+#endif
 
 	if (!file)
 	{
@@ -544,6 +588,7 @@ PackResult unpackFiles(
 	PackResult packResult = createFilePackReader(
 		filePath,
 		0,
+		false,
 		&packReader);
 
 	if (packResult != SUCCESS_PACK_RESULT)

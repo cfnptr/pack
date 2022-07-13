@@ -31,11 +31,13 @@ typedef PackReader_T* PackReader;
  *
  * filePath - pack file path string.
  * dataBufferCapacity - initial data buffer capacity or 0.
+ * isResourcesDirectory - read from resources directory. (macOS)
  * packReader - pack reader instance.
  */
 PackResult createFilePackReader(
 	const char* filePath,
 	uint32_t dataBufferCapacity,
+	bool isResourcesDirectory,
 	PackReader* packReader);
 /*
  * Destroys pack reader instance.

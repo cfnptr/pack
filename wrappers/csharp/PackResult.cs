@@ -24,11 +24,12 @@ namespace Pack
         FailedToWriteFil = 5,
         FailedToReadFile = 6,
         FailedToSeekFile = 7,
-        FailedToDecompress = 8,
-        FailedToGetItem = 9,
-        BadDataSize = 10,
-        BadFileType = 11,
-        BadFileVersion = 12,
-        BadFileEndianness = 13,
+        FailedToGetDirectory = 8,
+        FailedToDecompress = 9,
+        FailedToGetItem = 10,
+        BadDataSize = 11,
+        BadFileType = 12,
+        BadFileVersion = 13,
+        BadFileEndianness = 14,
     }
 }
