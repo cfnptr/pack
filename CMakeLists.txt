@@ -34,6 +34,7 @@ set(CMAKE_C_STANDARD_REQUIRED TRUE)
 option(PACK_BUILD_SHARED "Build PACK shared library" ON)
 option(PACK_BUILD_UTILITIES "Build PACK utility programs" ON)
 
+set(MPIO_BUILD_SHARED OFF CACHE BOOL "" FORCE)
 add_subdirectory(libraries/mpio)
 
 set(ZSTD_BUILD_SHARED OFF CACHE BOOL "" FORCE)

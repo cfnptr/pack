@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
 	result = createFilePackReader(
 		argv[1],
 		0,
+		false,
 		&packReader);
 
 	if (result != SUCCESS_PACK_RESULT)

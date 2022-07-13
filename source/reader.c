@@ -161,9 +161,9 @@ PackResult createFilePackReader(
 
 	packReaderInstance->zstdContext = zstdContext;
 
-#if __APPLE__
 	char* path;
 
+#if __APPLE__
 	if (isResourcesDirectory)
 	{
 		const char* resourcesDirectory = getResourcesDirectory();
@@ -197,6 +197,8 @@ PackResult createFilePackReader(
 	{
 		path = (char*)filePath;
 	}
+#else
+	path = (char*)filePath;
 #endif
 
 	FILE* file = openFile(path, "rb");
