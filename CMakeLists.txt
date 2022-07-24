@@ -67,18 +67,14 @@ set(PACK_INCLUDE_DIRECTORIES
 	${PROJECT_SOURCE_DIR}/include
 	${PROJECT_SOURCE_DIR}/libraries/zstd/lib)
 
-add_library(pack-static STATIC
-	${PACK_SOURCES})
-set_target_properties(pack-static PROPERTIES
-	OUTPUT_NAME "pack")
+add_library(pack-static STATIC ${PACK_SOURCES})
 target_link_libraries(pack-static PUBLIC
 	${PACK_LINK_LIBRARIES})
 target_include_directories(pack-static PUBLIC
 	${PACK_INCLUDE_DIRECTORIES})
 
 if (PACK_BUILD_SHARED)
-	add_library(pack-shared SHARED
-		${PACK_SOURCES})
+	add_library(pack-shared SHARED ${PACK_SOURCES})
 	set_target_properties(pack-shared PROPERTIES
 		OUTPUT_NAME "pack"
 		WINDOWS_EXPORT_ALL_SYMBOLS ON)

@@ -11,28 +11,31 @@ For example can be used to read game resources.
 ## Usage example
 
 ```c
-PackReader packReader;
-
-PackResult packResult = createFilePackReader(
-    "resources.pack", 0, &packReader);
-
-if (packResult != SUCCESS_PACK_RESULT)
-    abort();
-
-const uint8_t* data;
-uint32_t size;
-
-packResult = readPackPathItemData(
-    packReader, "images/sky.png", &data, &size);
-
-if (packResult != SUCCESS_PACK_RESULT)
+void packReaderExample()
 {
-    destroyPackReader(packReader);
-    abort();
-}
+    PackReader packReader;
 
-// Process loaded data...
-destroyPackReader(packReader);
+    PackResult packResult = createFilePackReader(
+        "resources.pack", 0, &packReader);
+
+    if (packResult != SUCCESS_PACK_RESULT)
+        abort();
+
+    const uint8_t* data;
+    uint32_t size;
+
+    packResult = readPackPathItemData(
+        packReader, "images/sky.png", &data, &size);
+
+    if (packResult != SUCCESS_PACK_RESULT)
+    {
+        destroyPackReader(packReader);
+        abort();
+    }
+
+    // Process loaded data...
+    destroyPackReader(packReader);
+}
 ```
 
 ## Supported operating systems
