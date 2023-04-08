@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,10 +26,11 @@ namespace Pack
         [DllImport(Pack.Lib)] private static extern ulong getPackItemCount(IntPtr packReader);
         [DllImport(Pack.Lib)] private static extern bool getPackItemIndex(
             IntPtr packReader, string path, ref ulong index);
-        [DllImport(Pack.Lib)] private static extern uint getPackItemDataSize(
-            IntPtr packReader, ulong index);
-        [DllImport(Pack.Lib)] private static extern string getPackItemPath(
-            IntPtr packReader, ulong index);
+        [DllImport(Pack.Lib)] private static extern uint getPackItemDataSize(IntPtr packReader, ulong index);
+        [DllImport(Pack.Lib)] private static extern uint getPackItemZipSize(IntPtr packReader, ulong index);
+        [DllImport(Pack.Lib)] private static extern ulong getPackItemFileOffset(IntPtr packReader, ulong index);
+        [DllImport(Pack.Lib)] private static extern bool isPackItemReference(IntPtr packReader, ulong index);
+        [DllImport(Pack.Lib)] private static extern string getPackItemPath(IntPtr packReader, ulong index);
         [DllImport(Pack.Lib)] private static extern PackResult readPackItemData(
             IntPtr packReader, ulong index, ref IntPtr data, ref uint size);
         [DllImport(Pack.Lib)] private static extern PackResult readPackPathItemData(
@@ -61,9 +62,7 @@ namespace Pack
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())
-                return false;
-                
+            if (obj == null || GetType() != obj.GetType())  return false;
             return _handle == ((PackReader)obj)._handle;
         }
         public override int GetHashCode() => _handle.GetHashCode();
@@ -82,6 +81,26 @@ namespace Pack
                 throw new ArgumentOutOfRangeException(nameof(index));
             return getPackItemDataSize(_handle, index);
         }
+        public uint GetItemZipSize(ulong index)
+        {
+            if (index >= ItemCount)
+                throw new ArgumentOutOfRangeException(nameof(index));
+            return getPackItemZipSize(_handle, index);
+        }
+
+        public ulong GetItemFileOffset(ulong index)
+        {
+            if (index >= ItemCount)
+                throw new ArgumentOutOfRangeException(nameof(index));
+            return getPackItemFileOffset(_handle, index);
+        }
+        public bool IsItemReference(ulong index)
+        {
+            if (index >= ItemCount)
+                throw new ArgumentOutOfRangeException(nameof(index));
+            return isPackItemReference(_handle, index);
+        }
+
         public string GetItemPath(ulong index)
         {
             if (index >= ItemCount)
@@ -110,12 +129,8 @@ namespace Pack
             var size = uint.MinValue;
 
             var result = ReadItemData(index, ref buffer, ref size);
-
-            if (result != PackResult.Success)
-                return result;
-
-            if (size > int.MaxValue)
-                throw new PackException("Unsupported item data size");
+            if (result != PackResult.Success) return result;
+            if (size > int.MaxValue) throw new PackException("Unsupported item data size");
             
             data = new byte[size];
             Marshal.Copy(buffer, data, 0, (int)size);
@@ -127,12 +142,8 @@ namespace Pack
             var size = uint.MinValue;
 
             var result = ReadItemData(path, ref buffer, ref size);
-
-            if (result != PackResult.Success)
-                return result;
-
-            if (size > int.MaxValue)
-                throw new PackException("Unsupported item data size");
+            if (result != PackResult.Success)return result;
+            if (size > int.MaxValue) throw new PackException("Unsupported item data size");
 
             data = new byte[size];
             Marshal.Copy(buffer, data, 0, (int)size);
@@ -143,23 +154,19 @@ namespace Pack
         {
             byte[] buffer = null;
             var result = ReadItemData(index, ref buffer);
-
-            if (result != PackResult.Success)
-                return result;
+            if (result != PackResult.Success) return result;
 
             data = Encoding.UTF8.GetString(buffer);
             return PackResult.Success;
         }
         public PackResult ReadItemData(string path, ref string data)
         {
-             byte[] buffer = null;
-             var result = ReadItemData(path, ref buffer);
+            byte[] buffer = null;
+            var result = ReadItemData(path, ref buffer);
+            if (result != PackResult.Success) return result;
 
-             if (result != PackResult.Success)
-                 return result;
-
-             data = Encoding.UTF8.GetString(buffer);
-             return PackResult.Success;
+            data = Encoding.UTF8.GetString(buffer);
+            return PackResult.Success;
         }
 
         public void FreeBuffers()
@@ -167,7 +174,7 @@ namespace Pack
             freePackReaderBuffers(_handle);
         }
 
-        public static PackResult UnpackFiles(string filePath, bool printProgress)
+        public static PackResult UnpackFiles(string filePath, bool printProgress = false)
         {
             if (string.IsNullOrEmpty(filePath))
                 throw new ArgumentNullException(nameof(filePath));

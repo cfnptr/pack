@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,18 +21,14 @@ int main(int argc, char *argv[])
 {
 	if (argc != 2)
 	{
-		printf("Usage: unpacker <path-to-pack>\n");
+		printf("Usage: unpacker <pack-path>\n");
 		return EXIT_FAILURE;
 	}
 
-	PackResult result = unpackFiles(
-		argv[1],
-		true);
-
+	PackResult result = unpackFiles(argv[1], true);
 	if (result != SUCCESS_PACK_RESULT)
 	{
-		printf("\nError: %s.\n",
-			packResultToString(result));
+		printf("\nError: %s.\n", packResultToString(result));
 		return EXIT_FAILURE;
 	}
 

@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,10 +22,43 @@
 #define PACK_VERSION_PATCH @pack_VERSION_PATCH@
 #define PACK_LITTLE_ENDIAN @PACK_LITTLE_ENDIAN@
 
+#if PACK_LITTLE_ENDIAN
 /*
- * Pack header size in bytes.
+ * Pack header magic number.
  */
-#define PACK_HEADER_SIZE 8
+#define PACK_HEADER_MAGIC (('K' << 24) | ('C' << 16) | ('A' << 8) | 'P')
+#else
+/*
+ * Pack header magic number.
+ */
+#define PACK_HEADER_MAGIC (('P' << 24) | ('A' << 16) | ('C' << 8) | 'K')
+#endif
+
+
+/*
+ * Pack file header structure.
+ */
+typedef struct PackHeader
+{
+	uint32_t magic;
+	uint8_t versionMajor;
+	uint8_t versionMinor;
+	uint8_t versionPatch;
+	uint8_t isBigEndian;
+	uint64_t itemCount;
+} PackHeader;
+
+/*
+ * Pack item header structure.
+ */
+typedef struct PackItemHeader
+{
+	uint32_t zipSize;
+	uint32_t dataSize;
+	uint8_t pathSize : 8;
+	uint8_t isReference : 1;
+	uint64_t dataOffset : 55;
+} PackItemHeader;
 
 /*
  * PACK results.
@@ -53,17 +86,6 @@ typedef enum PackResult_T
  * PACK result type.
  */
 typedef uint8_t PackResult;
-
-/*
- * Pack item information structure.
- */
-typedef struct PackItemInfo
-{
-	uint32_t zipSize;
-	uint32_t dataSize;
-	uint64_t fileOffset;
-	uint8_t pathSize;
-} PackItemInfo;
 
 /*
  * PACK result strings.

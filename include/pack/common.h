@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,30 +20,17 @@
  * Get Pack library version.
  * Returns hardcoded version value.
  *
- * majorVersion - major library version.
- * minorVersion - minor library version.
- * patchVersion - patch library version.
+ * major - major version.
+ * minor - minor version.
+ * patch - patch version.
  */
-void getPackLibraryVersion(
-	uint8_t* majorVersion,
-	uint8_t* minorVersion,
-	uint8_t* patchVersion);
+void getPackLibraryVersion(uint8_t* major, uint8_t* minor, uint8_t* patch);
 
 /*
- * Read pack info from the file.
+ * Read pack header from the file.
  * Returns operation Pack result.
  *
- * filePath - pack file path string.
- * majorVersion - major pack version.
- * minorVersion - minor pack version.
- * patchVersion - patch pack version.
- * isLittleEndian - is pack data little endian.
- * itemCount - stored pack item count.
+ * filePath - file path string.
+ * packHeader - pointer to the pack header.
  */
-PackResult getPackInfo(
-	const char* filePath,
-	uint8_t* majorVersion,
-	uint8_t* minorVersion,
-	uint8_t* patchVersion,
-	bool* isLittleEndian,
-	uint64_t* itemCount);
+PackResult readPackHeader(const char* filePath, PackHeader* header);

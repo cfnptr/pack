@@ -12,27 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "pack/writer.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-
-int main(int argc, char *argv[])
+namespace Pack
 {
-	if (argc <= 2 || (argc - 2) % 2 != 0)
-	{
-		printf("Usage: packer <pack-path> <file-path-1> <item-path-1>...\n");
-		return EXIT_FAILURE;
-	}
-
-	PackResult result = packFiles(argv[1],
-		(argc - 2) / 2, (const char**)argv + 2, true);
-
-	if (result != SUCCESS_PACK_RESULT)
-	{
-		printf("\nError: %s.\n", packResultToString(result));
-		return EXIT_FAILURE;
-	}
-
-	return EXIT_SUCCESS;
+    public struct PackHeader
+    {
+        public uint magic;
+		public byte versionMajor;
+		public byte versionMinor;
+		public byte versionPatch;
+		public byte isBigEndian;
+		public ulong itemCount;
+    }
 }

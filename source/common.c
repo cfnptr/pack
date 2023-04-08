@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,82 +17,31 @@
 
 #include <assert.h>
 
-void getPackLibraryVersion(
-	uint8_t* majorVersion,
-	uint8_t* minorVersion,
-	uint8_t* patchVersion)
+void getPackLibraryVersion(uint8_t* major, uint8_t* minor, uint8_t* patch)
 {
-	assert(majorVersion);
-	assert(minorVersion);
-	assert(patchVersion);
-
-	*majorVersion = PACK_VERSION_MAJOR;
-	*minorVersion = PACK_VERSION_MINOR;
-	*patchVersion = PACK_VERSION_PATCH;
+	assert(major);
+	assert(minor);
+	assert(patch);
+	*major = PACK_VERSION_MAJOR;
+	*minor = PACK_VERSION_MINOR;
+	*patch = PACK_VERSION_PATCH;
 }
 
-PackResult getPackInfo(
-	const char* filePath,
-	uint8_t* majorVersion,
-	uint8_t* minorVersion,
-	uint8_t* patchVersion,
-	bool* isLittleEndian,
-	uint64_t* _itemCount)
+PackResult readPackHeader(const char* filePath, PackHeader* _header)
 {
 	assert(filePath);
-	assert(majorVersion);
-	assert(minorVersion);
-	assert(patchVersion);
-	assert(isLittleEndian);
-	assert(_itemCount);
+	assert(_header);
 
-	FILE* file = openFile(
-		filePath,
-		"rb");
+	FILE* file = openFile(filePath, "rb");
+	if (!file) return FAILED_TO_OPEN_FILE_PACK_RESULT;
 
-	if (!file)
-		return FAILED_TO_OPEN_FILE_PACK_RESULT;
-
-	char header[PACK_HEADER_SIZE];
-
-	size_t result = fread(
-		header,
-		sizeof(char),
-		PACK_HEADER_SIZE,
-		file);
-
-	if (result != PACK_HEADER_SIZE)
-	{
-		closeFile(file);
-		return FAILED_TO_READ_FILE_PACK_RESULT;
-	}
-
-	if (header[0] != 'P' ||
-		header[1] != 'A' ||
-		header[2] != 'C' ||
-		header[3] != 'K')
-	{
-		closeFile(file);
-		return BAD_FILE_TYPE_PACK_RESULT;
-	}
-
-	uint64_t itemCount;
-
-	result = fread(
-		&itemCount,
-		sizeof(uint64_t),
-		1,
-		file);
-
+	PackHeader header;
+	size_t result = fread(&header, sizeof(PackHeader), 1, file);
 	closeFile(file);
 
-	if (result != 1)
-		return FAILED_TO_READ_FILE_PACK_RESULT;
+	if (result != 1) return FAILED_TO_READ_FILE_PACK_RESULT;
+	if (header.magic != PACK_HEADER_MAGIC) return BAD_FILE_TYPE_PACK_RESULT;
 
-	*majorVersion = header[4];
-	*minorVersion = header[5];
-	*patchVersion = header[6];
-	*isLittleEndian = !header[7];
-	*_itemCount = itemCount;
+	*_header = header;
 	return SUCCESS_PACK_RESULT;
 }

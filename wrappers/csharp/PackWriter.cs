@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,16 +20,16 @@ namespace Pack
     public static class PackWriter
     {
         [DllImport(Pack.Lib)] private static extern PackResult packFiles(
-            string packPath, ulong fileCount, string[] filePaths, bool printProgress);
+            string packPath, ulong fileCount, string[] fileItemPaths, bool printProgress);
 
-        public static PackResult PackFiles(
-            string packPath, string[] filePaths, bool printProgress)
+        public static PackResult PackFiles( string packPath,
+            string[] fileItemPaths, bool printProgress = false)
         {
             if (string.IsNullOrEmpty(packPath))
                 throw new ArgumentNullException(nameof(packPath));
-            if (filePaths.Length == 0)
-                throw new ArgumentNullException(nameof(filePaths));
-            return packFiles(packPath, (ulong)filePaths.Length, filePaths, printProgress);
+            if (fileItemPaths.Length == 0)
+                throw new ArgumentNullException(nameof(fileItemPaths));
+            return packFiles(packPath, (ulong)fileItemPaths.Length / 2, fileItemPaths, printProgress);
         }
     }
 }

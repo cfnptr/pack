@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,23 +21,19 @@ namespace Pack
     {
         [DllImport(Pack.Lib)] private static extern void getPackLibraryVersion(
             ref byte majorVersion, ref byte minorVersion, ref byte patchVersion);
-        [DllImport(Pack.Lib)] private static extern PackResult getPackInfo(string filePath, 
-            ref byte majorVersion, ref byte minorVersion, ref byte patchVersion, 
-            ref bool isLittleEndian, ref ulong itemCount);
+        [DllImport(Pack.Lib)] private static extern PackResult readPackHeader(
+            string filePath, ref PackHeader header);
 
         public static void GetPackLibraryVersion(
             ref byte majorVersion, ref byte minorVersion, ref byte patchVersion)
         {
             getPackLibraryVersion(ref majorVersion, ref minorVersion, ref patchVersion);
         }
-        public static PackResult GetPackInfo(string filePath, 
-            ref byte majorVersion, ref byte minorVersion, ref byte patchVersion, 
-            ref bool isLittleEndian, ref ulong itemCount)
+        public static PackResult GetPackInfo(string filePath, ref PackHeader header)
         {
             if (string.IsNullOrEmpty(filePath))
                 throw new ArgumentNullException(nameof(filePath));
-            return getPackInfo(filePath, ref majorVersion, ref minorVersion, ref patchVersion, 
-                ref isLittleEndian, ref itemCount);
+            return readPackHeader(filePath, ref header);
         }
     }
 }

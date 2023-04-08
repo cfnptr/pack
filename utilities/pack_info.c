@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,70 +22,52 @@ int main(int argc, char *argv[])
 {
 	if (argc != 2)
 	{
-		printf("Usage: pack-info <path-to-pack>\n");
+		printf("Usage: pack-info <pack-path>\n");
 		return EXIT_FAILURE;
 	}
 
-	uint8_t majorVersion;
-	uint8_t minorVersion;
-	uint8_t patchVersion;
-	bool isLittleEndian;
-	uint64_t itemCount;
-
-	PackResult result = getPackInfo(
-		argv[1],
-		&majorVersion,
-		&minorVersion,
-		&patchVersion,
-		&isLittleEndian,
-		&itemCount);
+	PackHeader header;
+	PackResult result = readPackHeader(argv[1], &header);
 
 	if (result != SUCCESS_PACK_RESULT)
 	{
-		printf("\nError: %s.\n",
-			packResultToString(result));
+		printf("\nError: %s.\n", packResultToString(result));
 		return EXIT_FAILURE;
 	}
 
 	printf("Pack [v%d.%d.%d]\n\n"
 		"Pack information:\n"
-		"    Version: %d.%d.%d.\n"
-		"    Little endian: %s.\n"
-		"    Item count: %llu.\n\n",
-		PACK_VERSION_MAJOR,
-		PACK_VERSION_MINOR,
-		PACK_VERSION_PATCH,
-		majorVersion,
-		minorVersion,
-		patchVersion,
-		isLittleEndian ? "true" : "false",
-		(long long unsigned int)itemCount);
+		"    Version: %d.%d.%d\n"
+		"    Big endian: %s\n"
+		"    Item count: %llu\n\n",
+		PACK_VERSION_MAJOR, PACK_VERSION_MINOR, PACK_VERSION_PATCH,
+		header.versionMajor, header.versionMinor, header.versionPatch,
+		header.isBigEndian ? "true" : "false",
+		(long long unsigned int)header.itemCount);
 
 	PackReader packReader;
-
-	result = createFilePackReader(
-		argv[1],
-		0,
-		false,
-		&packReader);
-
+	result = createFilePackReader(argv[1], 0, false, &packReader);
 	if (result != SUCCESS_PACK_RESULT)
 	{
-		printf("\nError: %s.\n",
-			packResultToString(result));
+		printf("\nError: %s.\n", packResultToString(result));
 		return EXIT_FAILURE;
 	}
 
-	itemCount = getPackItemCount(packReader);
-
+	uint64_t itemCount = getPackItemCount(packReader);
 	for (uint64_t i = 0; i < itemCount; ++i)
 	{
 		printf("Item %llu:\n"
-			"    Path: %s.\n"
-			"    Size: %u.\n",
+			"    Path: %s\n"
+			"    Data size: %u\n"
+			"    Zip size: %u\n"
+			"    File offset: %llu\n"
+			"    Reference: %s\n",
 			(long long unsigned int)i,
 			getPackItemPath(packReader, i),
-			getPackItemDataSize(packReader, i));
+			getPackItemDataSize(packReader, i),
+			getPackItemZipSize(packReader, i),
+			(long long unsigned int)getPackItemFileOffset(packReader, i),
+			isPackItemReference(packReader, i) ? "true" : "false");
 		fflush(stdout);
 	}
 

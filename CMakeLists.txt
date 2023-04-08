@@ -1,4 +1,4 @@
-# Copyright 2021-2022 Nikita Fediuchin. All rights reserved.
+# Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,19 +14,17 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-if (${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
+if(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
 	message(FATAL_ERROR "Prevented in-tree build")
-endif ()
+endif()
 
-if (TARGET pack-static)
+if(TARGET pack-static)
 	return()
-endif ()
+endif()
 
-project(pack 
-	VERSION 1.2.0
+project(pack VERSION 1.3.0 LANGUAGES C
 	DESCRIPTION "Simple data packing library"
-	HOMEPAGE_URL "https://github.com/cfnptr/pack"
-	LANGUAGES C)
+	HOMEPAGE_URL "https://github.com/cfnptr/pack")
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
@@ -45,82 +43,57 @@ add_subdirectory(libraries/zstd/build/cmake)
 include(TestBigEndian)
 TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
 
-if (IS_BIG_ENDIAN)
+if(IS_BIG_ENDIAN)
 	set(PACK_LITTLE_ENDIAN 0)
-else ()
+else()
 	set(PACK_LITTLE_ENDIAN 1)
-endif ()
+endif()
 
-configure_file(
-	cmake/defines.h.in
-	include/pack/defines.h)
-
-set(PACK_SOURCES
-	source/common.c
-	source/reader.c
-	source/writer.c)
+configure_file(cmake/defines.h.in include/pack/defines.h)
+set(PACK_SOURCES source/common.c source/reader.c source/writer.c)
 	
-set(PACK_LINK_LIBRARIES
-	mpio-static libzstd_static)
+set(PACK_LINK_LIBRARIES mpio-static libzstd_static)
 set(PACK_INCLUDE_DIRECTORIES
-	${PROJECT_BINARY_DIR}/include
-	${PROJECT_SOURCE_DIR}/include
-	${PROJECT_SOURCE_DIR}/libraries/zstd/lib)
+	${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include
+	${PROJECT_SOURCE_DIR}/wrappers/cpp ${PROJECT_SOURCE_DIR}/libraries/zstd/lib)
 
 add_library(pack-static STATIC ${PACK_SOURCES})
-target_link_libraries(pack-static PUBLIC
-	${PACK_LINK_LIBRARIES})
-target_include_directories(pack-static PUBLIC
-	${PACK_INCLUDE_DIRECTORIES})
+target_link_libraries(pack-static PUBLIC ${PACK_LINK_LIBRARIES})
+target_include_directories(pack-static PUBLIC ${PACK_INCLUDE_DIRECTORIES})
 
-if (PACK_BUILD_SHARED)
+if(PACK_BUILD_SHARED)
 	add_library(pack-shared SHARED ${PACK_SOURCES})
 	set_target_properties(pack-shared PROPERTIES
-		OUTPUT_NAME "pack"
-		WINDOWS_EXPORT_ALL_SYMBOLS ON)
-	target_link_libraries(pack-shared PUBLIC
-		${PACK_LINK_LIBRARIES})
-	target_include_directories(pack-shared PUBLIC
-		${PACK_INCLUDE_DIRECTORIES})
-endif ()
+		OUTPUT_NAME "pack" WINDOWS_EXPORT_ALL_SYMBOLS ON)
+	target_link_libraries(pack-shared PUBLIC ${PACK_LINK_LIBRARIES})
+	target_include_directories(pack-shared PUBLIC ${PACK_INCLUDE_DIRECTORIES})
+endif()
 
-if (PACK_BUILD_UTILITIES)
-	add_executable(packer
-		utilities/packer.c)
-	target_link_libraries(packer PRIVATE
-		pack-static)
+if(PACK_BUILD_UTILITIES)
+	add_executable(packer utilities/packer.c)
+	target_link_libraries(packer PRIVATE pack-static)
 	target_include_directories(packer PRIVATE
-		${PROJECT_BINARY_DIR}/include
-		${PROJECT_SOURCE_DIR}/include)
+		${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include)
 
-	add_executable(unpacker
-		utilities/unpacker.c)
-	target_link_libraries(unpacker PRIVATE
-		pack-static)
+	add_executable(unpacker utilities/unpacker.c)
+	target_link_libraries(unpacker PRIVATE pack-static)
 	target_include_directories(unpacker PRIVATE
-		${PROJECT_BINARY_DIR}/include
-		${PROJECT_SOURCE_DIR}/include)
+		${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include)
 
-	add_executable(pack-info
-		utilities/pack_info.c)
-	target_link_libraries(pack-info PRIVATE
-		pack-static)
+	add_executable(pack-info utilities/pack_info.c)
+	target_link_libraries(pack-info PRIVATE pack-static)
 	target_include_directories(pack-info PRIVATE
-		${PROJECT_BINARY_DIR}/include
-		${PROJECT_SOURCE_DIR}/include)
+		${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include)
 		
-	if (${CMAKE_BUILD_TYPE} MATCHES "Release" AND
+	if(${CMAKE_BUILD_TYPE} MATCHES "Release" AND
 		(${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR
 		${CMAKE_SYSTEM_NAME} MATCHES "Darwin"))
 
 		add_custom_command(TARGET packer POST_BUILD
-			COMMAND strip "$<TARGET_FILE:packer>"
-			VERBATIM)
+			COMMAND strip "$<TARGET_FILE:packer>" VERBATIM)
 		add_custom_command(TARGET unpacker POST_BUILD
-			COMMAND strip "$<TARGET_FILE:unpacker>"
-			VERBATIM)
+			COMMAND strip "$<TARGET_FILE:unpacker>" VERBATIM)
 		add_custom_command(TARGET pack-info POST_BUILD
-			COMMAND strip "$<TARGET_FILE:pack-info>"
-			VERBATIM)
-	endif ()
-endif ()
+			COMMAND strip "$<TARGET_FILE:pack-info>" VERBATIM)
+	endif()
+endif()

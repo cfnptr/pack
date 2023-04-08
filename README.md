@@ -1,12 +1,15 @@
 # PACK ![CI](https://github.com/cfnptr/pack/actions/workflows/cmake.yml/badge.svg)
 
-A library providing runtime optimized **packing** of data into archives across different platforms.<br/>
-For example can be used to read game resources.
+A library providing **packing** of files into runtime reading optimized archives, across different platforms.<br/>
+For example can be used to read game resources. (images, shaders, models, levels, etc...)
 
 ## Features
 
 * Compressed file pack creation
-* Runtime file pack reading
+* Runtime optimized file pack reading
+* Duplicate file data detection
+* Maximum ZSTD compression level
+* Wrappers (C++, C#)
 
 ## Usage example
 

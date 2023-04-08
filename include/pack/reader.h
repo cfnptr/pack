@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,16 +29,13 @@ typedef PackReader_T* PackReader;
  * Create a new file pack reader instance.
  * Returns operation Pack result.
  *
- * filePath - pack file path string.
+ * filePath - file path string.
  * dataBufferCapacity - initial data buffer capacity or 0.
  * isResourcesDirectory - read from resources directory. (macOS)
  * packReader - pack reader instance.
  */
-PackResult createFilePackReader(
-	const char* filePath,
-	uint32_t dataBufferCapacity,
-	bool isResourcesDirectory,
-	PackReader* packReader);
+PackResult createFilePackReader(const char* filePath, uint32_t dataBufferCapacity,
+	bool isResourcesDirectory, PackReader* packReader);
 /*
  * Destroys pack reader instance.
  * packReader - pack reader instance or NULL.
@@ -56,80 +53,86 @@ uint64_t getPackItemCount(PackReader packReader);
  * Returns true if item exists.
  *
  * packReader - pack reader instance.
- * path - pack item path string.
- * index - pack item index.
+ * path - item path string.
+ * index - item index.
  */
-bool getPackItemIndex(
-	PackReader packReader,
-	const char* path,
-	uint64_t* index);
+bool getPackItemIndex(PackReader packReader, const char* path, uint64_t* index);
 
 /*
  * Returns pack item data size.
  *
  * packReader - pack reader instance.
- * index - pack reader item index.
+ * index - item index.
  */
-uint32_t getPackItemDataSize(
-	PackReader packReader,
-	uint64_t index);
+uint32_t getPackItemDataSize(PackReader packReader, uint64_t index);
+
+/*
+ * Returns pack item zip size, or 0 if uncompressed.
+ *
+ * packReader - pack reader instance.
+ * index - item index.
+ */
+uint32_t getPackItemZipSize(PackReader packReader, uint64_t index);
+
+/*
+ * Returns pack item data offset in the file.
+ *
+ * packReader - pack reader instance.
+ * index - item index.
+ */
+uint64_t getPackItemFileOffset(PackReader packReader, uint64_t index);
+
+/*
+ * Returns true if pack item is a reference to duplicate item.
+ *
+ * packReader - pack reader instance.
+ * index - item index.
+ */
+bool isPackItemReference(PackReader packReader, uint64_t index);
 
 /*
  * Returns pack item path string.
  *
  * packReader - pack reader instance.
- * index - pack reader item index.
+ * index - item index.
  */
-const char* getPackItemPath(
-	PackReader packReader,
-	uint64_t index);
+const char* getPackItemPath(PackReader packReader, uint64_t index);
 
 /*
  * Read pack item data.
  * Return operation Pack result.
  *
  * packReader - pack reader instance.
- * index - pack reader item index.
+ * index - item index.
  * data - item data buffer.
  * size - item data size.
  */
-PackResult readPackItemData(
-	PackReader packReader,
-	uint64_t index,
-	const uint8_t** data,
-	uint32_t* size);
+PackResult readPackItemData(PackReader packReader,
+	uint64_t index, const uint8_t** data, uint32_t* size);
 
 /*
  * Read pack item data.
  * Return operation Pack result.
  *
  * packReader - pack reader instance.
- * path - pack item path string.
+ * path - item path string.
  * data - item data buffer.
  * size - item data size.
 */
-PackResult readPackPathItemData(
-	PackReader packReader,
-	const char* path,
-	const uint8_t** data,
-	uint32_t* size);
+PackResult readPackPathItemData(PackReader packReader,
+	const char* path, const uint8_t** data, uint32_t* size);
 
 /*
- * Free pack reader buffers.
- * (Decreases reader memory usage)
- *
+ * Free pack reader buffers. (Decreases reader memory usage)
  * packReader - pack reader instance.
  */
-void freePackReaderBuffers(
-	PackReader packReader);
+void freePackReaderBuffers(PackReader packReader);
 
 /*
  * Unpack files from the pack.
  * Returns operation Pack result.
  *
- * filePath - pack file path string.
+ * filePath - file path string.
  * printProgress - printf reading progress.
  */
-PackResult unpackFiles(
-	const char* filePath,
-	bool printProgress);
+PackResult unpackFiles(const char* filePath, bool printProgress);
