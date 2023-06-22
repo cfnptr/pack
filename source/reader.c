@@ -28,7 +28,6 @@ typedef struct PackItem
 } PackItem;
 struct PackReader_T
 {
-	ZSTD_DCtx* zstdContext;
 	FILE** files;
 	uint64_t itemCount;
 	PackItem* items;
@@ -226,14 +225,6 @@ PackResult createFilePackReader(const char* filePath,
 		return packResult;
 	}
 
-	ZSTD_DCtx* zstdContext = ZSTD_createDCtx();
-	if (!zstdContext)
-	{
-		destroyPackReader(packReaderInstance);
-		return FAILED_TO_CREATE_ZSTD_PACK_RESULT;
-	}
-
-	packReaderInstance->zstdContext = zstdContext;
 	packReaderInstance->itemCount = header.itemCount;
 	packReaderInstance->items = items;
 
@@ -243,8 +234,6 @@ PackResult createFilePackReader(const char* filePath,
 void destroyPackReader(PackReader packReader)
 {
 	if (!packReader) return;
-
-	if (ZSTD_freeDCtx(packReader->zstdContext) != 0) abort();
 	destroyPackItems(packReader->itemCount, packReader->items);
 
 	FILE** files = packReader->files;
@@ -354,8 +343,7 @@ PackResult readPackItemData(PackReader packReader,
 			return FAILED_TO_READ_FILE_PACK_RESULT;
 		}
 
-		result = ZSTD_decompressDCtx(packReader->zstdContext,
-			data, header.dataSize, zipBuffer, header.zipSize);
+		result = ZSTD_decompress(data, header.dataSize, zipBuffer, header.zipSize);
 		free(zipBuffer);
 
 		if (ZSTD_isError(result) || result != header.dataSize)
