@@ -28,6 +28,7 @@ typedef struct PackItem
 } PackItem;
 struct PackReader_T
 {
+	ZSTD_DCtx** zstdContexts;
 	FILE** files;
 	uint64_t itemCount;
 	PackItem* items;
@@ -149,7 +150,6 @@ PackResult createFilePackReader(const char* filePath,
 #endif
 
 	FILE** files = calloc(threadCount, sizeof(FILE*));
-
 	if (!files)
 	{
 #if __APPLE__
@@ -161,10 +161,21 @@ PackResult createFilePackReader(const char* filePath,
 
 	packReaderInstance->files = files;
 
+	ZSTD_DCtx** zstdContexts = calloc(threadCount, sizeof(ZSTD_DCtx*));
+	if (!zstdContexts)
+	{
+#if __APPLE__
+		if (isResourcesDirectory) free(path);
+#endif
+		destroyPackReader(packReaderInstance);
+		return FAILED_TO_ALLOCATE_PACK_RESULT;
+	}
+
+	packReaderInstance->zstdContexts = zstdContexts;
+
 	for (uint32_t i = 0; i < threadCount; i++)
 	{
 		FILE* file = openFile(path, "rb");
-
 		if (!file)
 		{
 #if __APPLE__
@@ -175,6 +186,15 @@ PackResult createFilePackReader(const char* filePath,
 		}
 
 		files[i] = file;
+
+		ZSTD_DCtx* zstdContext = ZSTD_createDCtx();
+		if (!zstdContext)
+		{
+			destroyPackReader(packReaderInstance);
+			return FAILED_TO_CREATE_ZSTD_PACK_RESULT;
+		}
+
+		zstdContexts[i] = zstdContext;
 	}
 
 #if __APPLE__
@@ -237,9 +257,11 @@ void destroyPackReader(PackReader packReader)
 	destroyPackItems(packReader->itemCount, packReader->items);
 
 	FILE** files = packReader->files;
+	ZSTD_DCtx** zstdContexts = packReader->zstdContexts;
 	uint32_t threadCount = packReader->threadCount;
 	for (uint32_t i = 0; i < threadCount; i++)
 	{
+		if (ZSTD_freeDCtx(zstdContexts[i]) != 0) abort();
 		if (files[i]) closeFile(files[i]);
 	}
 	
@@ -343,7 +365,8 @@ PackResult readPackItemData(PackReader packReader,
 			return FAILED_TO_READ_FILE_PACK_RESULT;
 		}
 
-		result = ZSTD_decompress(data, header.dataSize, zipBuffer, header.zipSize);
+		result = ZSTD_decompressDCtx(packReader->zstdContexts[threadIndex],
+			data, header.dataSize, zipBuffer, header.zipSize);
 		free(zipBuffer);
 
 		if (ZSTD_isError(result) || result != header.dataSize)
