@@ -17,7 +17,7 @@
 #include <stdbool.h>
 
 /*
- * Get Pack library version.
+ * Get Pack library version. (MT-Safe)
  * Returns hardcoded version value.
  *
  * major - major version.
@@ -27,7 +27,7 @@
 void getPackLibraryVersion(uint8_t* major, uint8_t* minor, uint8_t* patch);
 
 /*
- * Read pack header from the file.
+ * Read pack header from the file. (MT-Safe)
  * Returns operation Pack result.
  *
  * filePath - file path string.

@@ -26,16 +26,16 @@ typedef struct PackReader_T PackReader_T;
 typedef PackReader_T* PackReader;
 
 /*
- * Create a new file pack reader instance.
+ * Create a new file pack reader instance. (MT-Safe)
  * Returns operation Pack result.
  *
  * filePath - file path string.
- * dataBufferCapacity - initial data buffer capacity or 0.
  * isResourcesDirectory - read from resources directory. (macOS)
+ * threadCount - concurrent access thread count.
  * packReader - pack reader instance.
  */
-PackResult createFilePackReader(const char* filePath, uint32_t dataBufferCapacity,
-	bool isResourcesDirectory, PackReader* packReader);
+PackResult createFilePackReader(const char* filePath,
+	bool isResourcesDirectory, uint32_t threadCount, PackReader* packReader);
 /*
  * Destroys pack reader instance.
  * packReader - pack reader instance or NULL.
@@ -43,13 +43,13 @@ PackResult createFilePackReader(const char* filePath, uint32_t dataBufferCapacit
 void destroyPackReader(PackReader packReader);
 
 /*
- * Returns pack reader item count.
+ * Returns pack reader item count. (MT-Safe)
  * packReader - pack reader instance.
  */
 uint64_t getPackItemCount(PackReader packReader);
 
 /*
- * Search for the pack item index.
+ * Search for the pack item index. (MT-Safe)
  * Returns true if item exists.
  *
  * packReader - pack reader instance.
@@ -59,7 +59,7 @@ uint64_t getPackItemCount(PackReader packReader);
 bool getPackItemIndex(PackReader packReader, const char* path, uint64_t* index);
 
 /*
- * Returns pack item data size.
+ * Returns pack item data size. (MT-Safe)
  *
  * packReader - pack reader instance.
  * index - item index.
@@ -67,7 +67,7 @@ bool getPackItemIndex(PackReader packReader, const char* path, uint64_t* index);
 uint32_t getPackItemDataSize(PackReader packReader, uint64_t index);
 
 /*
- * Returns pack item zip size, or 0 if uncompressed.
+ * Returns pack item zip size, or 0 if uncompressed. (MT-Safe)
  *
  * packReader - pack reader instance.
  * index - item index.
@@ -75,7 +75,7 @@ uint32_t getPackItemDataSize(PackReader packReader, uint64_t index);
 uint32_t getPackItemZipSize(PackReader packReader, uint64_t index);
 
 /*
- * Returns pack item data offset in the file.
+ * Returns pack item data offset in the file. (MT-Safe)
  *
  * packReader - pack reader instance.
  * index - item index.
@@ -83,7 +83,7 @@ uint32_t getPackItemZipSize(PackReader packReader, uint64_t index);
 uint64_t getPackItemFileOffset(PackReader packReader, uint64_t index);
 
 /*
- * Returns true if pack item is a reference to duplicate item.
+ * Returns true if pack item is a reference to duplicate item. (MT-Safe)
  *
  * packReader - pack reader instance.
  * index - item index.
@@ -91,7 +91,7 @@ uint64_t getPackItemFileOffset(PackReader packReader, uint64_t index);
 bool isPackItemReference(PackReader packReader, uint64_t index);
 
 /*
- * Returns pack item path string.
+ * Returns pack item path string. (MT-Safe)
  *
  * packReader - pack reader instance.
  * index - item index.
@@ -99,37 +99,19 @@ bool isPackItemReference(PackReader packReader, uint64_t index);
 const char* getPackItemPath(PackReader packReader, uint64_t index);
 
 /*
- * Read pack item data.
+ * Read pack item data. (MT-Safe)
  * Return operation Pack result.
  *
  * packReader - pack reader instance.
- * index - item index.
+ * itemIndex - item index.
  * data - item data buffer.
- * size - item data size.
+ * threadIndex - current thread index.
  */
 PackResult readPackItemData(PackReader packReader,
-	uint64_t index, const uint8_t** data, uint32_t* size);
+	uint64_t itemIndex, uint8_t* data, uint32_t threadIndex);
 
 /*
- * Read pack item data.
- * Return operation Pack result.
- *
- * packReader - pack reader instance.
- * path - item path string.
- * data - item data buffer.
- * size - item data size.
-*/
-PackResult readPackPathItemData(PackReader packReader,
-	const char* path, const uint8_t** data, uint32_t* size);
-
-/*
- * Free pack reader buffers. (Decreases reader memory usage)
- * packReader - pack reader instance.
- */
-void freePackReaderBuffers(PackReader packReader);
-
-/*
- * Unpack files from the pack.
+ * Unpack files from the pack. (MT-Safe)
  * Returns operation Pack result.
  *
  * filePath - file path string.

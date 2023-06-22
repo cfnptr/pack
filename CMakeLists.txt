@@ -22,7 +22,7 @@ if(TARGET pack-static)
 	return()
 endif()
 
-project(pack VERSION 1.3.0 LANGUAGES C
+project(pack VERSION 2.0.0 LANGUAGES C
 	DESCRIPTION "Simple data packing library"
 	HOMEPAGE_URL "https://github.com/cfnptr/pack")
 
@@ -35,9 +35,10 @@ option(PACK_BUILD_UTILITIES "Build PACK utility programs" ON)
 set(MPIO_BUILD_SHARED OFF CACHE BOOL "" FORCE)
 add_subdirectory(libraries/mpio)
 
-set(ZSTD_BUILD_SHARED OFF CACHE BOOL "" FORCE)
-set(ZSTD_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ZSTD_MULTITHREAD_SUPPORT OFF CACHE BOOL "" FORCE)
 set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
+set(ZSTD_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ZSTD_BUILD_SHARED OFF CACHE BOOL "" FORCE)
 add_subdirectory(libraries/zstd/build/cmake)
 
 include(TestBigEndian)

@@ -9,7 +9,7 @@ For example can be used to read game resources. (images, shaders, models, levels
 * Runtime optimized file pack reading
 * Duplicate file data detection
 * Maximum ZSTD compression level
-* Wrappers (C++, C#)
+* C++ library wrapper
 
 ## Usage example
 

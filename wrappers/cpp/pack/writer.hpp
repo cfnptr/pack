@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #pragma once
+#include <string>
 #include <exception>
-#include <string_view>
 
 extern "C"
 {
@@ -33,7 +33,7 @@ class Writer final
 {
 public:
 	/*
-	 * Pack files to the pack file.
+	 * Pack files to the pack file. (MT-Safe)
 	 * Throws runtime exception on failure.
 	 *
 	 * packPath - pack file path string.
@@ -41,10 +41,10 @@ public:
 	 * fileItemPaths - pack file and item path strings.
 	 * printProgress - printf reading progress.
 	 */
-	static void pack(string_view packPath, uint64_t fileCount,
+	static void pack(const string& packPath, uint64_t fileCount,
 		const char** fileItemPaths, bool printProgress = false)
 	{
-		auto result = packFiles(packPath.data(),
+		auto result = packFiles(packPath.c_str(),
 			fileCount, fileItemPaths, printProgress);
 		if (result != SUCCESS_PACK_RESULT)
 			throw runtime_error(packResultToString(result));

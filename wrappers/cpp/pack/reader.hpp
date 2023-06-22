@@ -13,6 +13,8 @@
 // limitations under the License.
 
 #pragma once
+#include <string>
+#include <thread>
 #include <exception>
 #include <string_view>
 
@@ -35,44 +37,103 @@ private:
 	PackReader instance = nullptr;
 public:
 	/*
-	 * Create a new file pack reader instance.
+	 * Create a new file pack reader. (MT-Safe)
+	 */
+	Reader() = default;
+
+	Reader(const Reader&) = delete;
+	Reader(Reader&& r) noexcept : instance(
+		std::exchange(r.instance, nullptr)) { }
+	
+	Reader& operator=(Reader&) = delete;
+	Reader& operator=(Reader&& r) noexcept
+	{
+		instance = std::exchange(r.instance, nullptr);
+		return *this;
+	}
+
+	/*
+	 * Create a new file pack reader and open stream. (MT-Safe)
 	 * Throws runtime exception on failure.
 	 *
-	 * filePath - file path string.
-	 * dataBufferCapacity - initial data buffer capacity or 0.
 	 * isResourcesDirectory - read from resources directory. (macOS)
+	 * threadCount - concurrent access thread count.
 	 */
-	Reader(string_view filePath, uint32_t dataBufferCapacity = 0,
-		bool isResourcesDirectory = false)
+	Reader(const string& filePath, bool isResourcesDirectory = true,
+		uint32_t threadCount = thread::hardware_concurrency())
 	{
-		auto result = createFilePackReader(filePath.data(),
-			dataBufferCapacity, isResourcesDirectory, &instance);
+		auto result = createFilePackReader(filePath.c_str(),
+			isResourcesDirectory, threadCount, &instance);
 		if (result != SUCCESS_PACK_RESULT)
 			throw runtime_error(packResultToString(result));
 	}
 	/*
-	 * Destroys pack reader instance.
+	 * Destroys pack reader stream.
 	 */
 	~Reader() { destroyPackReader(instance); }
-	
+
 	/*
-	 * Returns pack reader item count.
+	 * Open a new pack reader stream.
+	 * Throws runtime exception on failure.
+	 *
+	 * filePath - file path string.
+	 * isResourcesDirectory - read from resources directory. (macOS)
+	 * threadCount - concurrent access thread count.
+	 */
+	void open(const string& filePath, bool isResourcesDirectory = true,
+		uint32_t threadCount = thread::hardware_concurrency())
+	{
+		destroyPackReader(instance);
+		auto result = createFilePackReader(filePath.c_str(),
+			isResourcesDirectory, threadCount, &instance);
+		if (result != SUCCESS_PACK_RESULT)
+			throw runtime_error(packResultToString(result));
+	}
+	/*
+	 * Close current pack reader stream.
+	 */
+	void close() noexcept
+	{
+		destroyPackReader(instance);
+		instance = nullptr;
+	}
+	/*
+	 * Returns true if reader stream is open. (MT-Safe)
+	 */
+	bool isOpen() const noexcept { return instance; }
+
+	/*
+	 * Returns pack reader item count. (MT-Safe)
 	 */
 	uint64_t getItemCount() const noexcept { return getPackItemCount(instance); }
 
 	/*
-	 * Search for the pack item index.
+	 * Search for the pack item index. (MT-Safe)
  	 * Returns true if item exists.
 	 *
 	 * path - item path string.
 	 * index - reference to the pack item index.
 	 */
-	bool getItemIndex(string_view path, uint64_t &index) const noexcept
+	bool getItemIndex(const string& path, uint64_t &index) const noexcept
 	{
-		return getPackItemIndex(instance, path.data(), &index);
+		return getPackItemIndex(instance, path.c_str(), &index);
 	}
 	/*
-	 * Returns pack item data size.
+	 * Get pack item index. (MT-Safe)
+ 	 * Throws runtime exception on failure.
+	 *
+	 * path - item path string.
+	 */
+	uint64_t getItemIndex(const string& path) const
+	{
+		uint64_t index;
+		auto result = getPackItemIndex(instance, path.c_str(), &index);
+		if (!result) throw runtime_error("Item is not exist");
+		return index;
+	}
+
+	/*
+	 * Returns pack item data size. (MT-Safe)
 	 * index - item index.
 	 */
 	uint32_t getItemDataSize(uint64_t index) const noexcept
@@ -80,7 +141,7 @@ public:
 		return getPackItemDataSize(instance, index);
 	}
 	/*
-	 * Returns pack item zip size, or 0 if uncompressed.
+	 * Returns pack item zip size, or 0 if uncompressed. (MT-Safe)
 	 * index - item index.
 	 */
 	uint32_t getItemZipSize(uint64_t index) const noexcept
@@ -89,7 +150,7 @@ public:
 	}
 
 	/*
-	 * Returns pack item data offset in the file.
+	 * Returns pack item data offset in the file. (MT-Safe)
 	 * index - item index.
 	 */
 	uint64_t getItemFileOffset(uint64_t index) const noexcept
@@ -97,7 +158,7 @@ public:
 		return getPackItemFileOffset(instance, index);
 	}
 	/*
-	 * Returns true if pack item is a reference to duplicate item.
+	 * Returns true if pack item is a reference to duplicate item. (MT-Safe)
 	 * index - item index.
 	 */
 	bool isItemReference(uint64_t index) const noexcept
@@ -106,7 +167,7 @@ public:
 	}
 
 	/*
-	 * Returns pack item path string.
+	 * Returns pack item path string. (MT-Safe)
 	 * index - item index.
 	 */
 	string_view getItemPath(uint64_t index) const noexcept
@@ -115,54 +176,30 @@ public:
 	}
 
 	/*
-	 * Read pack item data.
+	 * Read pack item data. (MT-Safe)
 	 * Throws runtime exception on failure.
 	 *
-	 * index - item index.
-	 * data - reference to the item data buffer.
-	 * size - reference to the item data size.
+	 * itemIndex - item index.
+	 * data - item data buffer.
+	 * threadIndex - current thread index.
 	 */
-	void readItemData(uint64_t index,
-		const uint8_t*& data, uint32_t& size) const
+	void readItemData(uint64_t itemIndex, uint8_t* data, uint32_t threadIndex = 0) const
 	{
-		auto result = readPackItemData(instance, index, &data, &size);
+		auto result = readPackItemData(instance, itemIndex, data, threadIndex);
 		if (result != SUCCESS_PACK_RESULT)
 			throw runtime_error(packResultToString(result));
-	}
-	/*
-	 * Read pack item data.
-	 * Throws runtime exception on failure.
-	 *
-	 * path - item path string.
-	 * data - reference to the item data buffer.
-	 * size - reference to the item data size.
-	 */
-	void readItemData(string_view path,
-		const uint8_t*& data, uint32_t& size) const
-	{
-		auto result = readPackPathItemData(instance, path.data(), &data, &size);
-		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result));
-	}
-	
-	/*
-	 * Free pack reader buffers. (Decreases reader memory usage)
-	 */
-	void freeReaderBuffers(PackReader packReader) const noexcept
-	{
-		freePackReaderBuffers(instance);
 	}
 
 	/*
-	 * Unpack files from the pack.
+	 * Unpack files from the pack. (MT-Safe)
 	 * Throws runtime exception on failure.
 	 *
 	 * filePath - file path string.
 	 * printProgress - printf reading progress.
 	 */
-	static void unpack(string_view filePath, bool printProgress = false)
+	static void unpack(const string& filePath, bool printProgress = false)
 	{
-		auto result = unpackFiles(filePath.data(), printProgress);
+		auto result = unpackFiles(filePath.c_str(), printProgress);
 		if (result != SUCCESS_PACK_RESULT)
 			throw runtime_error(packResultToString(result));
 	}

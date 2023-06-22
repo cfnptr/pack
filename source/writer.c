@@ -31,9 +31,9 @@ typedef struct FileItemPath
 static PackResult writePackItems(FILE* packFile,
 	uint64_t itemCount, const FileItemPath* pathPairs, bool printProgress)
 {
-	assert(packFile);
+	assert(packFile != NULL);
 	assert(itemCount > 0);
-	assert(pathPairs);
+	assert(pathPairs != NULL);
 
 	uint32_t bufferSize = 1;
 	uint8_t* itemData = malloc(sizeof(uint8_t));
@@ -299,9 +299,9 @@ static int comparePackPathPairs(const void* _a, const void* _b)
 PackResult packFiles(const char* filePath, uint64_t fileCount,
 	const char** fileItemPaths, bool printProgress)
 {
-	assert(filePath);
+	assert(filePath != NULL);
 	assert(fileCount > 0);
-	assert(fileItemPaths);
+	assert(fileItemPaths != NULL);
 
 	FileItemPath* pathPairs = malloc(fileCount * sizeof(FileItemPath));
 	if (!pathPairs) return FAILED_TO_ALLOCATE_PACK_RESULT;

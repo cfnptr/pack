@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #pragma once
+#include <string>
 #include <exception>
-#include <string_view>
 
 extern "C"
 {
@@ -33,7 +33,7 @@ class Pack final
 {
 public:
 	/*
-	 * Get Pack library version.
+	 * Get Pack library version. (MT-Safe)
 	 * Returns hardcoded version value.
 	 *
 	 * major - reference to the major version.
@@ -47,17 +47,30 @@ public:
 	}
 
 	/*
-	 * Read pack header from the file.
+	 * Read pack header from the file. (MT-Safe)
 	 * Throws runtime exception on failure.
 	 *
 	 * filePath - file path string.
 	 * packHeader - pointer to the pack header.
 	 */
-	static void readHeader(string_view filePath, PackHeader& header)
+	static void readHeader(const string& filePath, PackHeader& header)
 	{
-		auto result = readPackHeader(filePath.data(), &header);
+		auto result = readPackHeader(filePath.c_str(), &header);
 		if (result != SUCCESS_PACK_RESULT)
 			throw runtime_error(packResultToString(result));
+	}
+
+	/*
+	 * Try to read pack header from the file. (MT-Safe)
+	 * Returns false on failure.
+	 *
+	 * filePath - file path string.
+	 * packHeader - pointer to the pack header.
+	 */
+	static bool tryReadHeader(const string& filePath, PackHeader& header)
+	{
+		auto result = readPackHeader(filePath.c_str(), &header);
+		return result == SUCCESS_PACK_RESULT;
 	}
 };
 
