@@ -265,6 +265,8 @@ void destroyPackReader(PackReader packReader)
 		if (files[i]) closeFile(files[i]);
 	}
 	
+	free(packReader->zstdContexts);
+	free(packReader->files);
 	free(packReader);
 }
 
