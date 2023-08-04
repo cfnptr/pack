@@ -13,31 +13,14 @@ For example can be used to read game resources. (images, shaders, models, levels
 
 ## Usage example
 
-```c
+```c++
 void packReaderExample()
 {
-    PackReader packReader;
-
-    PackResult packResult = createFilePackReader(
-        "resources.pack", 0, &packReader);
-
-    if (packResult != SUCCESS_PACK_RESULT)
-        abort();
-
-    const uint8_t* data;
-    uint32_t size;
-
-    packResult = readPackPathItemData(
-        packReader, "images/sky.png", &data, &size);
-
-    if (packResult != SUCCESS_PACK_RESULT)
-    {
-        destroyPackReader(packReader);
-        abort();
-    }
-
-    // Process loaded data...
-    destroyPackReader(packReader);
+   pack::Reader packReader("resources.pack");
+   auto itemIndex = packReader.getItemIndex("textures/sky.png");
+   auto dataSize = packReader.getItemDataSize(itemIndex);
+   vector<uint8_t> itemData(dataSize);
+   packReader.readItemData(itemIndex, itemData.data());
 }
 ```
 
@@ -50,6 +33,7 @@ void packReaderExample()
 ## Build requirements
 
 * C99 compiler
+* C++11 compiler (optional)
 * [Git 2.30+](https://git-scm.com/)
 * [CMake 3.16+](https://cmake.org/)
 
@@ -71,17 +55,17 @@ git clone --recursive https://github.com/cfnptr/pack
 ### packer
 
 * Description: creates compressed data pack from files.
-* Usage: ```packer <path-to-pack> <path-to-item-1>...```
+* Usage: ```packer <pack-path> <file-path-1> <item-path-1>...```
 
 ### unpacker
 
 * Description: extracts compressed data pack files.
-* Usage: ```unpacker <path-to-pack>```
+* Usage: ```unpacker <pack-path>```
 
 ### pack-info
 
 * Description: shows pack file information.
-* Usage: ```pack-info <path-to-pack>```
+* Usage: ```pack-info <pack-path>```
 
 ## Third-party
 
