@@ -16,6 +16,7 @@
 #include <string>
 #include <thread>
 #include <exception>
+#include <filesystem>
 #include <string_view>
 
 extern "C"
@@ -37,7 +38,7 @@ private:
 	PackReader instance = nullptr;
 public:
 	/*
-	 * Create a new file pack reader. (MT-Safe)
+	 * Create a new file pack reader.
 	 */
 	Reader() = default;
 
@@ -53,13 +54,13 @@ public:
 	}
 
 	/*
-	 * Create a new file pack reader and open stream. (MT-Safe)
+	 * Create a new file pack reader and open stream.
 	 * Throws runtime exception on failure.
 	 *
 	 * isResourcesDirectory - read from resources directory. (macOS)
 	 * threadCount - concurrent access thread count.
 	 */
-	Reader(const string& filePath, bool isResourcesDirectory = true,
+	Reader(const filesystem::path& filePath, bool isResourcesDirectory = true,
 		uint32_t threadCount = thread::hardware_concurrency())
 	{
 		auto result = createFilePackReader(filePath.c_str(),
@@ -98,7 +99,7 @@ public:
 		instance = nullptr;
 	}
 	/*
-	 * Returns true if reader stream is open. (MT-Safe)
+	 * Returns true if reader stream is open.
 	 */
 	bool isOpen() const noexcept { return instance; }
 

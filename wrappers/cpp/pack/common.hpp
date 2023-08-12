@@ -15,6 +15,7 @@
 #pragma once
 #include <string>
 #include <exception>
+#include <filesystem>
 
 extern "C"
 {
@@ -53,7 +54,7 @@ public:
 	 * filePath - file path string.
 	 * packHeader - pointer to the pack header.
 	 */
-	static void readHeader(const string& filePath, PackHeader& header)
+	static void readHeader(const filesystem::path& filePath, PackHeader& header)
 	{
 		auto result = readPackHeader(filePath.c_str(), &header);
 		if (result != SUCCESS_PACK_RESULT)
@@ -67,7 +68,7 @@ public:
 	 * filePath - file path string.
 	 * packHeader - pointer to the pack header.
 	 */
-	static bool tryReadHeader(const string& filePath, PackHeader& header)
+	static bool tryReadHeader(const filesystem::path& filePath, PackHeader& header)
 	{
 		auto result = readPackHeader(filePath.c_str(), &header);
 		return result == SUCCESS_PACK_RESULT;

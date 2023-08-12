@@ -15,6 +15,7 @@
 #pragma once
 #include <string>
 #include <exception>
+#include <filesystem>
 
 extern "C"
 {
@@ -41,7 +42,7 @@ public:
 	 * fileItemPaths - pack file and item path strings.
 	 * printProgress - printf reading progress.
 	 */
-	static void pack(const string& packPath, uint64_t fileCount,
+	static void pack(const filesystem::path& packPath, uint64_t fileCount,
 		const char** fileItemPaths, bool printProgress = false)
 	{
 		auto result = packFiles(packPath.c_str(),

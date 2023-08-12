@@ -26,7 +26,7 @@ typedef struct PackReader_T PackReader_T;
 typedef PackReader_T* PackReader;
 
 /*
- * Create a new file pack reader instance. (MT-Safe)
+ * Create a new file pack reader instance.
  * Returns operation Pack result.
  *
  * filePath - file path string.

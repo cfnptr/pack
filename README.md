@@ -33,7 +33,7 @@ void packReaderExample()
 ## Build requirements
 
 * C99 compiler
-* C++11 compiler (optional)
+* C++17 compiler (optional)
 * [Git 2.30+](https://git-scm.com/)
 * [CMake 3.16+](https://cmake.org/)
 
