@@ -56,7 +56,8 @@ public:
 	 */
 	static void readHeader(const filesystem::path& filePath, PackHeader& header)
 	{
-		auto result = readPackHeader(filePath.c_str(), &header);
+		auto path = filePath.generic_string();
+		auto result = readPackHeader(path.c_str(), &header);
 		if (result != SUCCESS_PACK_RESULT)
 			throw runtime_error(packResultToString(result));
 	}
@@ -70,7 +71,8 @@ public:
 	 */
 	static bool tryReadHeader(const filesystem::path& filePath, PackHeader& header)
 	{
-		auto result = readPackHeader(filePath.c_str(), &header);
+		auto path = filePath.generic_string();
+		auto result = readPackHeader(path.c_str(), &header);
 		return result == SUCCESS_PACK_RESULT;
 	}
 };

@@ -28,8 +28,8 @@ typedef struct FileItemPath
 	const char* itemPath;
 } FileItemPath;
 
-static PackResult writePackItems(FILE* packFile,
-	uint64_t itemCount, const FileItemPath* pathPairs, bool printProgress)
+static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
+	const FileItemPath* pathPairs, float zipThreshold, bool printProgress)
 {
 	assert(packFile != NULL);
 	assert(itemCount > 0);
@@ -84,8 +84,7 @@ static PackResult writePackItems(FILE* packFile,
 			return FAILED_TO_OPEN_FILE_PACK_RESULT;
 		}
 
-		int seekResult = seekFile(itemFile, 0, SEEK_END);
-		if (seekResult != 0)
+		if (seekFile(itemFile, 0, SEEK_END) != 0)
 		{
 			closeFile(itemFile);
 			free(itemHeaders); free(zipData); free(itemData);
@@ -100,8 +99,7 @@ static PackResult writePackItems(FILE* packFile,
 			return BAD_DATA_SIZE_PACK_RESULT;
 		}
 
-		seekResult = seekFile(itemFile, 0, SEEK_SET);
-		if (seekResult != 0)
+		if (seekFile(itemFile, 0, SEEK_SET) != 0)
 		{
 			closeFile(itemFile);
 			free(itemHeaders); free(zipData); free(itemData);
@@ -141,7 +139,20 @@ static PackResult writePackItems(FILE* packFile,
 
 		size_t zipSize = ZSTD_compress(zipData, itemSize - 1,
 			itemData, itemSize, ZSTD_maxCLevel());
-		if (ZSTD_isError(zipSize) || zipSize >= itemSize) zipSize = 0;
+		uint8_t* zipItemData; size_t zipItemSize;
+
+		if (ZSTD_isError(zipSize) || (zipThreshold +
+			(double)zipSize / (double)itemSize > 1.0))
+		{
+			zipSize = 0;
+			zipItemData = zipData;
+			zipItemSize = itemSize;
+		}
+		else
+		{
+			zipItemData = itemData;
+			zipItemSize = zipSize;
+		}
 
 		uint64_t sameDataOffset = UINT64_MAX;
 		for (size_t j = 0; j < i; j++)
@@ -149,43 +160,28 @@ static PackResult writePackItems(FILE* packFile,
 			PackItemHeader* header = &itemHeaders[j];
 			if (header->zipSize != zipSize || header->dataSize != itemSize) continue;
 
-			seekResult = seekFile(packFile, header->dataOffset, SEEK_SET);
-			if (seekResult != 0)
+			if (seekFile(packFile, header->dataOffset, SEEK_SET) != 0)
 			{
 				free(itemHeaders); free(zipData); free(itemData);
 				return FAILED_TO_SEEK_FILE_PACK_RESULT;
 			}
 
-			if (zipSize > 0)
+			if (fread(zipItemData, sizeof(uint8_t), zipItemSize, packFile) != zipItemSize)
 			{
-				result = fread(itemData, sizeof(uint8_t), zipSize, packFile);
-				if (result != zipSize)
-				{
-					free(itemHeaders); free(zipData); free(itemData);
-					return FAILED_TO_READ_FILE_PACK_RESULT;
-				}
-				if (memcmp(zipData, itemData, zipSize) == 0)
-				{
-					sameDataOffset = header->dataOffset;
-					break;
-				}
+				free(itemHeaders); free(zipData); free(itemData);
+				return FAILED_TO_READ_FILE_PACK_RESULT;
 			}
-			else
+			if (memcmp(itemData, zipData, zipItemSize) == 0)
 			{
-				result = fread(zipData, sizeof(uint8_t), itemSize, packFile);
-				if (result != itemSize)
-				{
-					free(itemHeaders); free(zipData); free(itemData);
-					return FAILED_TO_READ_FILE_PACK_RESULT;
-				}
-				if (memcmp(itemData, zipData, itemSize) == 0)
-				{
-					sameDataOffset = header->dataOffset;
-					break;
-				}
+				sameDataOffset = header->dataOffset;
+				break;
 			}
+		}
 
-			seekFile(packFile, fileOffset, SEEK_SET);
+		if (seekFile(packFile, fileOffset, SEEK_SET) != 0)
+		{
+			free(itemHeaders); free(zipData); free(itemData);
+			return FAILED_TO_SEEK_FILE_PACK_RESULT;
 		}
 
 		PackItemHeader header;
@@ -206,53 +202,35 @@ static PackResult writePackItems(FILE* packFile,
 		}
 
 		itemHeaders[i] = header;
-		result = fwrite(&header, sizeof(PackItemHeader), 1, packFile);
-		if (result != 1)
+		if (fwrite(&header, sizeof(PackItemHeader), 1, packFile) != 1)
 		{
 			free(itemHeaders); free(zipData); free(itemData);
 			return FAILED_TO_WRITE_FILE_PACK_RESULT;
 		}
 
-		result = fwrite(itemPath, sizeof(char), header.pathSize, packFile);
+		if (fwrite(itemPath, sizeof(char), header.pathSize, packFile) != header.pathSize)
+		{
+			free(itemHeaders); free(zipData); free(itemData);
+			return FAILED_TO_WRITE_FILE_PACK_RESULT;
+		}
+
 		fileOffset += sizeof(PackItemHeader) + header.pathSize;
-
-		if (result != header.pathSize)
-		{
-			free(itemHeaders); free(zipData); free(itemData);
-			return FAILED_TO_WRITE_FILE_PACK_RESULT;
-		}
 
 		if (sameDataOffset == UINT64_MAX)
 		{
-			if (zipSize > 0)
+			zipItemData = zipSize > 0 ? zipData : itemData;
+			if (fwrite(zipItemData, sizeof(uint8_t), zipItemSize, packFile) != zipItemSize)
 			{
-				result = fwrite(zipData, sizeof(uint8_t), zipSize, packFile);
-				fileOffset += zipSize;
-
-				if (result != zipSize)
-				{
-					free(itemHeaders); free(zipData); free(itemData);
-					return FAILED_TO_WRITE_FILE_PACK_RESULT;
-				}
+				free(itemHeaders); free(zipData); free(itemData);
+				return FAILED_TO_WRITE_FILE_PACK_RESULT;
 			}
-			else
-			{
-				result = fwrite(itemData, sizeof(uint8_t), itemSize, packFile);
-				fileOffset += itemSize;
 
-				if (result != itemSize)
-				{
-					free(itemHeaders); free(zipData); free(itemData);
-					return FAILED_TO_WRITE_FILE_PACK_RESULT;
-				}
-			}
+			fileOffset += zipItemSize;
 
 			if (printProgress)
 			{
 				rawFileSize += itemSize;
-				uint32_t zipItemSize = zipSize > 0 ?
-					(uint32_t)zipSize : (uint32_t)itemSize;
-				printf("(%u/%u bytes)\n", zipItemSize, (uint32_t)itemSize);
+				printf("(%u/%u bytes)\n", (uint32_t)zipItemSize, (uint32_t)itemSize);
 				fflush(stdout);
 			}
 		}
@@ -297,7 +275,7 @@ static int comparePackPathPairs(const void* _a, const void* _b)
 	return memcmp(a->itemPath, b->itemPath, al);
 }
 PackResult packFiles(const char* filePath, uint64_t fileCount,
-	const char** fileItemPaths, bool printProgress)
+	const char** fileItemPaths, float zipThreshold, bool printProgress)
 {
 	assert(filePath != NULL);
 	assert(fileCount > 0);
@@ -351,8 +329,8 @@ PackResult packFiles(const char* filePath, uint64_t fileCount,
 		return FAILED_TO_WRITE_FILE_PACK_RESULT;
 	}
 
-	PackResult packResult = writePackItems(
-		packFile, itemCount, pathPairs, printProgress);
+	PackResult packResult = writePackItems(packFile,
+		itemCount, pathPairs, zipThreshold, printProgress);
 
 	free(pathPairs);
 	closeFile(packFile);

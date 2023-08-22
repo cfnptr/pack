@@ -63,7 +63,8 @@ public:
 	Reader(const filesystem::path& filePath, bool isResourcesDirectory = true,
 		uint32_t threadCount = thread::hardware_concurrency())
 	{
-		auto result = createFilePackReader(filePath.c_str(),
+		auto path = filePath.generic_string();
+		auto result = createFilePackReader(path.c_str(),
 			isResourcesDirectory, threadCount, &instance);
 		if (result != SUCCESS_PACK_RESULT)
 			throw runtime_error(packResultToString(result));
@@ -81,11 +82,12 @@ public:
 	 * isResourcesDirectory - read from resources directory. (macOS)
 	 * threadCount - concurrent access thread count.
 	 */
-	void open(const string& filePath, bool isResourcesDirectory = true,
+	void open(const filesystem::path& filePath, bool isResourcesDirectory = true,
 		uint32_t threadCount = thread::hardware_concurrency())
 	{
 		destroyPackReader(instance);
-		auto result = createFilePackReader(filePath.c_str(),
+		auto path = filePath.generic_string();
+		auto result = createFilePackReader(path.c_str(),
 			isResourcesDirectory, threadCount, &instance);
 		if (result != SUCCESS_PACK_RESULT)
 			throw runtime_error(packResultToString(result));
@@ -115,9 +117,10 @@ public:
 	 * path - item path string.
 	 * index - reference to the pack item index.
 	 */
-	bool getItemIndex(const string& path, uint64_t &index) const noexcept
+	bool getItemIndex(const filesystem::path& path, uint64_t &index) const noexcept
 	{
-		return getPackItemIndex(instance, path.c_str(), &index);
+		auto _path = path.generic_string();
+		return getPackItemIndex(instance, _path.c_str(), &index);
 	}
 	/*
 	 * Get pack item index. (MT-Safe)
@@ -125,10 +128,11 @@ public:
 	 *
 	 * path - item path string.
 	 */
-	uint64_t getItemIndex(const string& path) const
+	uint64_t getItemIndex(const filesystem::path& path) const
 	{
 		uint64_t index;
-		auto result = getPackItemIndex(instance, path.c_str(), &index);
+		auto _path = path.generic_string();
+		auto result = getPackItemIndex(instance, _path.c_str(), &index);
 		if (!result) throw runtime_error("Item is not exist");
 		return index;
 	}
@@ -181,12 +185,47 @@ public:
 	 * Throws runtime exception on failure.
 	 *
 	 * itemIndex - item index.
-	 * data - item data buffer.
+	 * buffer - item data buffer.
 	 * threadIndex - current thread index.
 	 */
-	void readItemData(uint64_t itemIndex, uint8_t* data, uint32_t threadIndex = 0) const
+	void readItemData(uint64_t itemIndex,
+		uint8_t* buffer, uint32_t threadIndex = 0) const
 	{
-		auto result = readPackItemData(instance, itemIndex, data, threadIndex);
+		auto result = readPackItemData(instance, itemIndex, buffer, threadIndex);
+		if (result != SUCCESS_PACK_RESULT)
+			throw runtime_error(packResultToString(result));
+	}
+	/*
+	 * Read pack item data. (MT-Safe)
+	 * Throws runtime exception on failure.
+	 *
+	 * itemIndex - item index.
+	 * buffer - item data buffer.
+	 * threadIndex - current thread index.
+	 */
+	void readItemData(uint64_t itemIndex,
+		vector<uint8_t>& buffer, uint32_t threadIndex = 0) const
+	{
+		buffer.resize(getPackItemDataSize(instance, itemIndex));
+		auto result = readPackItemData(instance, itemIndex, buffer.data(), threadIndex);
+		if (result != SUCCESS_PACK_RESULT)
+			throw runtime_error(packResultToString(result));
+	}
+	/*
+	 * Read pack item data. (MT-Safe)
+	 * Throws runtime exception on failure.
+	 *
+	 * itemIndex - item index.
+	 * buffer - item data buffer.
+	 * threadIndex - current thread index.
+	 */
+	void readItemData(const filesystem::path& path,
+		vector<uint8_t>& buffer, uint32_t threadIndex = 0) const
+	{
+		auto itemIndex = getItemIndex(path);
+		buffer.resize(getPackItemDataSize(instance, itemIndex));
+		
+		auto result = readPackItemData(instance, itemIndex, buffer.data(), threadIndex);
 		if (result != SUCCESS_PACK_RESULT)
 			throw runtime_error(packResultToString(result));
 	}
@@ -198,9 +237,10 @@ public:
 	 * filePath - file path string.
 	 * printProgress - printf reading progress.
 	 */
-	static void unpack(const string& filePath, bool printProgress = false)
+	static void unpack(const filesystem::path& filePath, bool printProgress = false)
 	{
-		auto result = unpackFiles(filePath.c_str(), printProgress);
+		auto path = filePath.generic_string();
+		auto result = unpackFiles(path.c_str(), printProgress);
 		if (result != SUCCESS_PACK_RESULT)
 			throw runtime_error(packResultToString(result));
 	}

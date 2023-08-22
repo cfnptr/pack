@@ -104,11 +104,11 @@ const char* getPackItemPath(PackReader packReader, uint64_t index);
  *
  * packReader - pack reader instance.
  * itemIndex - item index.
- * data - item data buffer.
+ * buffer - item data buffer.
  * threadIndex - current thread index.
  */
 PackResult readPackItemData(PackReader packReader,
-	uint64_t itemIndex, uint8_t* data, uint32_t threadIndex);
+	uint64_t itemIndex, uint8_t* buffer, uint32_t threadIndex);
 
 /*
  * Unpack files from the pack. (MT-Safe)

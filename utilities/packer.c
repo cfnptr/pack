@@ -25,8 +25,10 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	PackResult result = packFiles(argv[1],
-		(argc - 2) / 2, (const char**)argv + 2, true);
+	// TODO: add zip threshold option to the command line arguments.
+
+	PackResult result = packFiles(argv[1], (argc - 2) / 2,
+		(const char**)argv + 2, 0.1f, true);
 
 	if (result != SUCCESS_PACK_RESULT)
 	{

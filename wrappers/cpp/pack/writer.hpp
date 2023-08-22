@@ -40,13 +40,16 @@ public:
 	 * packPath - pack file path string.
 	 * fileCount - to pack file count.
 	 * fileItemPaths - pack file and item path strings.
+	 * zipThreshold - compression threshold. (0.0 - 1.0 range)
 	 * printProgress - printf reading progress.
 	 */
-	static void pack(const filesystem::path& packPath, uint64_t fileCount,
-		const char** fileItemPaths, bool printProgress = false)
+	static void pack(const filesystem::path& packPath,
+		uint64_t fileCount, const char** fileItemPaths,
+		float zipThreshold = 0.1f, bool printProgress = false)
 	{
-		auto result = packFiles(packPath.c_str(),
-			fileCount, fileItemPaths, printProgress);
+		auto path = packPath.generic_string();
+		auto result = packFiles(path.c_str(), fileCount,
+			fileItemPaths, zipThreshold, printProgress);
 		if (result != SUCCESS_PACK_RESULT)
 			throw runtime_error(packResultToString(result));
 	}
