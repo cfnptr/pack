@@ -7,8 +7,9 @@ For example can be used to read game resources. (images, shaders, models, levels
 
 * Compressed file pack creation
 * Runtime optimized file pack reading
-* Duplicate file data detection
+* Automatic file data deduplication
 * Maximum ZSTD compression level
+* Customisable compression threshold
 * C and C++ implementations
 
 ## Usage example
