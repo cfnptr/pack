@@ -67,7 +67,10 @@ public:
 		auto result = createFilePackReader(path.c_str(),
 			isResourcesDirectory, threadCount, &instance);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result));
+		{
+			throw runtime_error(packResultToString(result) +
+				(", path: " + filePath.generic_string()));
+		}
 	}
 	/*
 	 * Destroys pack reader stream.
@@ -90,7 +93,10 @@ public:
 		auto result = createFilePackReader(path.c_str(),
 			isResourcesDirectory, threadCount, &instance);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result));
+		{
+			throw runtime_error(packResultToString(result) +
+				(", path: " + filePath.generic_string()));
+		}
 	}
 	/*
 	 * Close current pack reader stream.
@@ -193,7 +199,10 @@ public:
 	{
 		auto result = readPackItemData(instance, itemIndex, buffer, threadIndex);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result));
+		{
+			throw runtime_error(packResultToString(result) +
+				(", index: " + to_string(itemIndex)));
+		}
 	}
 	/*
 	 * Read pack item data. (MT-Safe)
@@ -209,7 +218,10 @@ public:
 		buffer.resize(getPackItemDataSize(instance, itemIndex));
 		auto result = readPackItemData(instance, itemIndex, buffer.data(), threadIndex);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result));
+		{
+			throw runtime_error(packResultToString(result) +
+				(", index: " + to_string(itemIndex)));
+		}
 	}
 	/*
 	 * Read pack item data. (MT-Safe)
@@ -227,7 +239,10 @@ public:
 		
 		auto result = readPackItemData(instance, itemIndex, buffer.data(), threadIndex);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result));
+		{
+			throw runtime_error(packResultToString(result) +
+				(", path: " + path.generic_string()));
+		}
 	}
 
 	/*
@@ -242,7 +257,10 @@ public:
 		auto path = filePath.generic_string();
 		auto result = unpackFiles(path.c_str(), printProgress);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result));
+		{
+			throw runtime_error(packResultToString(result) +
+				(", path: " + filePath.generic_string()));
+		}
 	}
 };
 

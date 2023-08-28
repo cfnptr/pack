@@ -1,7 +1,7 @@
 # PACK ![CI](https://github.com/cfnptr/pack/actions/workflows/cmake.yml/badge.svg)
 
 A library providing **packing** of files into runtime reading optimized archives, across different platforms.<br/>
-For example can be used to read game resources. (images, shaders, models, levels, etc...)
+For example can be used to load game resources. (images, shaders, models, levels, etc...)
 
 ## Features
 
@@ -20,7 +20,7 @@ void packReaderExample()
    pack::Reader packReader("resources.pack");
    auto itemIndex = packReader.getItemIndex("textures/sky.png");
    auto dataSize = packReader.getItemDataSize(itemIndex);
-   vector<uint8_t> itemData(dataSize);
+   std::vector<uint8_t> itemData(dataSize);
    packReader.readItemData(itemIndex, itemData.data());
 }
 ```

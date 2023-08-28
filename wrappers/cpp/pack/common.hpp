@@ -59,7 +59,10 @@ public:
 		auto path = filePath.generic_string();
 		auto result = readPackHeader(path.c_str(), &header);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result));
+		{
+			throw runtime_error(packResultToString(result) +
+				(", path: " + filePath.generic_string()));
+		}
 	}
 
 	/*
