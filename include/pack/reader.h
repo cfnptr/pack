@@ -111,6 +111,12 @@ PackResult readPackItemData(PackReader packReader,
 	uint64_t itemIndex, uint8_t* buffer, uint32_t threadIndex);
 
 /*
+ * Returns pack ZSTD contexts. (MT-Safe)
+ * packReader - pack reader instance.
+ */
+void** const getPackZstdContexts(PackReader packReader);
+
+/*
  * Unpack files from the pack. (MT-Safe)
  * Returns operation Pack result.
  *

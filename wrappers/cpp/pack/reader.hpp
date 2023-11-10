@@ -15,6 +15,7 @@
 #pragma once
 #include <string>
 #include <thread>
+#include <utility>
 #include <exception>
 #include <filesystem>
 #include <string_view>
@@ -244,6 +245,12 @@ public:
 				(", path: " + path.generic_string()));
 		}
 	}
+
+	/*
+	 * Returns pack ZSTD contexts. (MT-Safe)
+	 * packReader - pack reader instance.
+	 */
+	void** const getZstdContexts() const { return getPackZstdContexts(instance); }
 
 	/*
 	 * Unpack files from the pack. (MT-Safe)

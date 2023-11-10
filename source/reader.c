@@ -382,6 +382,12 @@ PackResult readPackItemData(PackReader packReader,
 	return SUCCESS_PACK_RESULT;
 }
 
+void** const getPackZstdContexts(PackReader packReader)
+{
+	assert(packReader != NULL);
+	return (void** const)packReader->zstdContexts;
+}
+
 static void removePackItemFiles(uint64_t itemCount, PackItem* packItems)
 {
 	assert(itemCount == 0 || (itemCount > 0 && packItems != NULL));
