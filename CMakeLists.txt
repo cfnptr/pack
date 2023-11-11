@@ -29,8 +29,9 @@ project(pack VERSION 2.0.0 LANGUAGES C
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
-option(PACK_BUILD_SHARED "Build PACK shared library" ON)
-option(PACK_BUILD_UTILITIES "Build PACK utility programs" ON)
+option(PACK_BUILD_SHARED "Build Pack shared library" ON)
+option(PACK_BUILD_UTILITIES "Build Pack utility programs" ON)
+option(PACK_BUILD_TESTS "Build Pack library tests" ON)
 
 set(MPIO_BUILD_SHARED OFF CACHE BOOL "" FORCE)
 add_subdirectory(libraries/mpio)
@@ -97,4 +98,12 @@ if(PACK_BUILD_UTILITIES)
 		add_custom_command(TARGET pack-info POST_BUILD
 			COMMAND strip "$<TARGET_FILE:pack-info>" VERBATIM)
 	endif()
+endif()
+
+if(PACK_BUILD_TESTS)
+	enable_testing()
+
+	add_executable(TestPackPacker tests/test_packer.c)
+	target_link_libraries(TestPackPacker PUBLIC pack-static)
+	add_test(NAME TestPackPacker COMMAND TestPackPacker)
 endif()
