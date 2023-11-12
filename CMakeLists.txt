@@ -22,8 +22,9 @@ if(TARGET pack-static)
 	return()
 endif()
 
-project(pack VERSION 2.0.0 LANGUAGES C
-	DESCRIPTION "Simple data packing library"
+project(pack VERSION 2.0.1 LANGUAGES C
+	DESCRIPTION "Runtime optimized multi-platform data packing \
+ 		library for realtime game resources loading"
 	HOMEPAGE_URL "https://github.com/cfnptr/pack")
 
 set(CMAKE_C_STANDARD 99)
