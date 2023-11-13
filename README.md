@@ -44,6 +44,7 @@ void packReaderExample()
 |----------------------|-----------------------------|---------------|
 | PACK_BUILD_SHARED    | Build Pack shared library   | `ON`          |
 | PACK_BUILD_UTILITIES | Build Pack utility programs | `ON`          |
+| PACK_BUILD_TESTS     | Build Pack library tests    | `ON`          |
 
 ## Cloning
 
