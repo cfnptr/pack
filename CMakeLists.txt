@@ -14,7 +14,7 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-if(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 	message(FATAL_ERROR "Prevented in-tree build")
 endif()
 
@@ -88,9 +88,9 @@ if(PACK_BUILD_UTILITIES)
 	target_include_directories(pack-info PRIVATE
 		${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include)
 		
-	if(${CMAKE_BUILD_TYPE} MATCHES "Release" AND
-		(${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR
-		${CMAKE_SYSTEM_NAME} MATCHES "Darwin"))
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" AND
+		(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR
+		CMAKE_SYSTEM_NAME STREQUAL "Darwin"))
 
 		add_custom_command(TARGET packer POST_BUILD
 			COMMAND strip "$<TARGET_FILE:packer>" VERBATIM)
