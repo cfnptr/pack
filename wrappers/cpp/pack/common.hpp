@@ -72,7 +72,8 @@ public:
 	 * filePath - file path string.
 	 * packHeader - pointer to the pack header.
 	 */
-	static bool tryReadHeader(const filesystem::path& filePath, PackHeader& header)
+	static bool tryReadHeader(const filesystem::path& filePath,
+		PackHeader& header) noexcept
 	{
 		auto path = filePath.generic_string();
 		auto result = readPackHeader(path.c_str(), &header);
