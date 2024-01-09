@@ -100,9 +100,9 @@ inline static bool testPacker()
 		remove(files[0]); remove(files[2]); remove(files[4]);
 		return false;
 	}
-	remove(files[0]); remove(files[2]); remove(files[4]);
-
+	
 	PackResult packResult = packFiles(TEST_FILE_NAME, 3, files, 0.1f, false);
+	remove(files[0]); remove(files[2]); remove(files[4]);
 
 	if (packResult != SUCCESS_PACK_RESULT)
 	{
