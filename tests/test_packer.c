@@ -56,23 +56,10 @@ inline static bool createTestFile(const char* path,
 	closeFile(file);
 	return true;
 }
-inline static bool removeTestFile()
-{
-	int result = remove(TEST_FILE_NAME);
-
-	if (result != 0)
-	{
-		printf("Failed to remove test file.\n");
-		return false;
-	}
-
-	return true;
-}
 
 inline static bool testFailedToOpenFile()
 {
 	PackReader packReader;
-	size_t errorLine;
 
 	PackResult packResult = createFilePackReader(
 		"not_existing_file.pack", false, 1, &packReader);
@@ -110,8 +97,10 @@ inline static bool testPacker()
 		!createTestFile(files[2], floats, sizeof(floats)) ||
 		!createTestFile(files[4], bytes, sizeof(bytes)))
 	{
+		remove(files[0]); remove(files[2]); remove(files[4]);
 		return false;
 	}
+	remove(files[0]); remove(files[2]); remove(files[4]);
 
 	PackResult packResult = packFiles(TEST_FILE_NAME, 3, files, 0.1f, false);
 
@@ -206,5 +195,6 @@ int main()
 {
 	bool result = testFailedToOpenFile();
 	result &= testPacker();
+	remove(TEST_FILE_NAME);
 	return result ? EXIT_SUCCESS : EXIT_FAILURE;
 }

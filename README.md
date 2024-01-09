@@ -27,9 +27,9 @@ void packReaderExample()
 
 ## Supported operating systems
 
-* Ubuntu
-* MacOS
 * Windows
+* macOS
+* Ubuntu (Linux)
 
 ## Build requirements
 
@@ -51,6 +51,11 @@ void packReaderExample()
 ```
 git clone --recursive https://github.com/cfnptr/pack
 ```
+
+## Building
+
+* Windows: ```./scripts/build-release.bat```
+* macOS / Ubuntu: ```./scripts/build-release.sh```
 
 ## Utilities
 

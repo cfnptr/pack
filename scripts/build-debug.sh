@@ -11,7 +11,7 @@ fi
 
 echo "Configuring project..."
 
-cmake -DCMAKE_BUILD_TYPE=Release -S . -B build/
+cmake -DCMAKE_BUILD_TYPE=Debug -S ../ -B ../build-debug/
 status=$?
 
 if [ $status -ne 0 ]; then
@@ -22,12 +22,25 @@ fi
 echo ""
 echo "Building project..."
 
-cmake --build build/ --config Release
+cmake --build ../build-debug/ --config Debug --parallel
 status=$?
 
 if [ $status -ne 0 ]; then
     echo "Failed to build CMake project."
     exit $status
+fi
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo ""
+    echo "Fixing up macOS bundle..."
+
+    cmake --install ../build-debug/ --component FixupBundle
+    status=$?
+
+    if [ $status -ne 0 ]; then
+        echo "Failed to fix up macOS bundle."
+        exit $status
+    fi
 fi
 
 exit 0

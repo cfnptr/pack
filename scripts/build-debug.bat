@@ -1,4 +1,5 @@
 @ECHO OFF
+cd /D "%~dp0"
 
 cmake --version > nul
 
@@ -9,7 +10,7 @@ IF NOT %ERRORLEVEL% == 0 (
 
 ECHO Configuring project...
 
-cmake -DCMAKE_BUILD_TYPE=Release -S . -B build/
+cmake -DCMAKE_BUILD_TYPE=Debug -S ../ -B ../build-debug/
 
 IF NOT %ERRORLEVEL% == 0 (
     ECHO Failed to configure CMake project.
@@ -19,7 +20,7 @@ IF NOT %ERRORLEVEL% == 0 (
 ECHO(
 ECHO Building project...
 
-cmake --build build/ --config Release
+cmake --build ../build-debug/ --config Debug --parallel
 
 IF NOT %ERRORLEVEL% == 0 (
     ECHO Failed to build CMake project.
