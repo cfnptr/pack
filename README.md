@@ -1,7 +1,9 @@
-# PACK ![CI](https://github.com/cfnptr/pack/actions/workflows/cmake.yml/badge.svg)
+# Pack
 
 A library providing **packing** of files into runtime reading optimized archives, across different platforms.<br/>
 For example can be used to load game resources. (images, shaders, models, levels, etc...)
+
+See the [documentation](docs/html/index.html).
 
 ## Features
 
@@ -14,7 +16,7 @@ For example can be used to load game resources. (images, shaders, models, levels
 
 ## Usage example
 
-```c++
+```cpp
 void packReaderExample()
 {
    pack::Reader packReader("resources.pack");
@@ -52,7 +54,7 @@ void packReaderExample()
 git clone --recursive https://github.com/cfnptr/pack
 ```
 
-## Building
+## Building ![CI](https://github.com/cfnptr/pack/actions/workflows/cmake.yml/badge.svg)
 
 * Windows: ```./scripts/build-release.bat```
 * macOS / Ubuntu: ```./scripts/build-release.sh```

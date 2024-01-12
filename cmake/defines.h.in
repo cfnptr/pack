@@ -1,121 +1,43 @@
-// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
-//
+// Copyright 2021-2024 Nikita Fediuchin. All rights reserved.
+// 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-//
+// 
 //     http://www.apache.org/licenses/LICENSE-2.0
-//
+// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/***********************************************************************************************************************
+ * @file
+ * @brief Pack library defines.
+ **********************************************************************************************************************/
+
 #pragma once
 #include <stdint.h>
 
+/**
+ * @brief Project has Pack library included when defined.
+ */
 #define __PACK__
 
+/**
+ * @brief Major pack library version.
+ */
 #define PACK_VERSION_MAJOR @pack_VERSION_MAJOR@
+/**
+ * @brief Minor pack library version.
+ */
 #define PACK_VERSION_MINOR @pack_VERSION_MINOR@
+/**
+ * @brief Patch pack library version.
+ */
 #define PACK_VERSION_PATCH @pack_VERSION_PATCH@
+/**
+ * @brief Compiling for the little endian architecture.
+ */
 #define PACK_LITTLE_ENDIAN @PACK_LITTLE_ENDIAN@
-
-#if PACK_LITTLE_ENDIAN
-/*
- * Pack header magic number.
- */
-#define PACK_HEADER_MAGIC (('K' << 24) | ('C' << 16) | ('A' << 8) | 'P')
-#else
-/*
- * Pack header magic number.
- */
-#define PACK_HEADER_MAGIC (('P' << 24) | ('A' << 16) | ('C' << 8) | 'K')
-#endif
-
-
-/*
- * Pack file header structure.
- */
-typedef struct PackHeader
-{
-	uint32_t magic;
-	uint8_t versionMajor;
-	uint8_t versionMinor;
-	uint8_t versionPatch;
-	uint8_t isBigEndian;
-	uint64_t itemCount;
-} PackHeader;
-
-/*
- * Pack item header structure.
- */
-typedef struct PackItemHeader
-{
-	uint32_t zipSize;
-	uint32_t dataSize;
-	uint8_t pathSize : 8;
-	uint8_t isReference : 1;
-	uint64_t dataOffset : 55;
-} PackItemHeader;
-
-/*
- * PACK results.
- */
-typedef enum PackResult_T
-{
-	SUCCESS_PACK_RESULT = 0,
-	FAILED_TO_ALLOCATE_PACK_RESULT = 1,
-	FAILED_TO_CREATE_ZSTD_PACK_RESULT = 2,
-	FAILED_TO_CREATE_FILE_PACK_RESULT = 3,
-	FAILED_TO_OPEN_FILE_PACK_RESULT = 4,
-	FAILED_TO_WRITE_FILE_PACK_RESULT = 5,
-	FAILED_TO_READ_FILE_PACK_RESULT = 6,
-	FAILED_TO_SEEK_FILE_PACK_RESULT = 7,
-	FAILED_TO_GET_DIRECTORY_PACK_RESULT = 8,
-	FAILED_TO_DECOMPRESS_PACK_RESULT = 9,
-	FAILED_TO_GET_ITEM_PACK_RESULT = 10,
-	BAD_DATA_SIZE_PACK_RESULT = 11,
-	BAD_FILE_TYPE_PACK_RESULT = 12,
-	BAD_FILE_VERSION_PACK_RESULT = 13,
-	BAD_FILE_ENDIANNESS_PACK_RESULT = 14,
-	PACK_RESULT_COUNT = 15,
-} PackResult_T;
-/*
- * PACK result type.
- */
-typedef uint8_t PackResult;
-
-/*
- * PACK result strings.
- */
-static const char* const packResultStrings[PACK_RESULT_COUNT] = {
-	"Success",
-	"Failed to allocate",
-	"Failed to create ZSTD",
-	"Failed to create file",
-	"Failed to open file",
-	"Failed to write file",
-	"Failed to read file",
-	"Failed to seek file",
-	"Failed to get directory",
-	"Failed to decompress",
-	"Failed to get item",
-	"Bad data size",
-	"Bad file type",
-	"Bad file version",
-	"Bad file endianness",
-};
-
-/*
- * Returns PACK result as string.
- * result - PACK result.
- */
-inline static const char* packResultToString(
-	PackResult result)
-{
-	if (result >= PACK_RESULT_COUNT)
-		return "Unknown PACK result";
-	return packResultStrings[result];
-}

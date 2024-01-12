@@ -1,11 +1,11 @@
-// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
-//
+// Copyright 2021-2024 Nikita Fediuchin. All rights reserved.
+// 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-//
+// 
 //     http://www.apache.org/licenses/LICENSE-2.0
-//
+// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,8 @@ typedef struct FileItemPath
 } FileItemPath;
 
 static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
-	const FileItemPath* pathPairs, float zipThreshold, bool printProgress)
+	const FileItemPath* pathPairs, float zipThreshold,
+	bool printProgress, OnPackFile onPackFile, void* argument)
 {
 	assert(packFile != NULL);
 	assert(itemCount > 0);
@@ -70,6 +71,8 @@ static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
 			fflush(stdout);
 		}
 
+		if (onPackFile) onPackFile(i, argument);
+
 		size_t pathSize = strlen(itemPath);
 		if (pathSize > UINT8_MAX)
 		{
@@ -92,89 +95,91 @@ static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
 		}
 
 		uint64_t itemSize = (uint64_t)tellFile(itemFile);
-		if (itemSize == 0 || itemSize > UINT32_MAX)
+		if (itemSize > UINT32_MAX)
 		{
 			closeFile(itemFile);
 			free(itemHeaders); free(zipData); free(itemData);
 			return BAD_DATA_SIZE_PACK_RESULT;
 		}
 
-		if (seekFile(itemFile, 0, SEEK_SET) != 0)
-		{
-			closeFile(itemFile);
-			free(itemHeaders); free(zipData); free(itemData);
-			return FAILED_TO_SEEK_FILE_PACK_RESULT;
-		}
-
-		if (itemSize > bufferSize)
-		{
-			uint8_t* newBuffer = realloc(itemData, itemSize);
-			if (!newBuffer)
-			{
-				closeFile(itemFile);
-				free(itemHeaders); free(zipData); free(itemData);
-				return FAILED_TO_ALLOCATE_PACK_RESULT;
-			}
-
-			itemData = newBuffer;
-			newBuffer = realloc(zipData, itemSize);
-			if (!newBuffer)
-			{
-				closeFile(itemFile);
-				free(itemHeaders); free(zipData); free(itemData);
-				return FAILED_TO_ALLOCATE_PACK_RESULT;
-			}
-
-			zipData = newBuffer;
-		}
-
-		size_t result = fread(itemData, sizeof(uint8_t), itemSize, itemFile);
-		closeFile(itemFile);
-
-		if (result != itemSize)
-		{
-			free(itemHeaders); free(zipData); free(itemData);
-			return FAILED_TO_READ_FILE_PACK_RESULT;
-		}
-
-		size_t zipSize = ZSTD_compress(zipData, itemSize - 1,
-			itemData, itemSize, ZSTD_maxCLevel());
-		uint8_t* zipItemData; size_t zipItemSize;
-
-		if (ZSTD_isError(zipSize) || (zipThreshold +
-			(double)zipSize / (double)itemSize > 1.0))
-		{
-			zipSize = 0;
-			zipItemData = zipData;
-			zipItemSize = itemSize;
-		}
-		else
-		{
-			zipItemData = itemData;
-			zipItemSize = zipSize;
-		}
-
 		uint64_t sameDataOffset = UINT64_MAX;
-		for (size_t j = 0; j < i; j++)
-		{
-			PackItemHeader* header = &itemHeaders[j];
-			if (header->zipSize != zipSize || header->dataSize != itemSize) continue;
+		size_t zipSize = 0, zipItemSize = 0; uint8_t* zipItemData = NULL;
 
-			if (seekFile(packFile, header->dataOffset, SEEK_SET) != 0)
+		if (itemSize > 0)
+		{
+			if (itemSize > bufferSize)
 			{
+				uint8_t* newBuffer = realloc(itemData, itemSize);
+				if (!newBuffer)
+				{
+					closeFile(itemFile);
+					free(itemHeaders); free(zipData); free(itemData);
+					return FAILED_TO_ALLOCATE_PACK_RESULT;
+				}
+
+				itemData = newBuffer;
+				newBuffer = realloc(zipData, itemSize);
+				if (!newBuffer)
+				{
+					closeFile(itemFile);
+					free(itemHeaders); free(zipData); free(itemData);
+					return FAILED_TO_ALLOCATE_PACK_RESULT;
+				}
+
+				zipData = newBuffer;
+			}
+
+			if (seekFile(itemFile, 0, SEEK_SET) != 0)
+			{
+				closeFile(itemFile);
 				free(itemHeaders); free(zipData); free(itemData);
 				return FAILED_TO_SEEK_FILE_PACK_RESULT;
 			}
 
-			if (fread(zipItemData, sizeof(uint8_t), zipItemSize, packFile) != zipItemSize)
+			size_t result = fread(itemData, sizeof(uint8_t), itemSize, itemFile);
+			closeFile(itemFile);
+
+			if (result != itemSize)
 			{
 				free(itemHeaders); free(zipData); free(itemData);
 				return FAILED_TO_READ_FILE_PACK_RESULT;
 			}
-			if (memcmp(itemData, zipData, zipItemSize) == 0)
+
+			zipSize = ZSTD_compress(zipData, itemSize - 1, itemData, itemSize, ZSTD_maxCLevel());
+
+			if (ZSTD_isError(zipSize) || (zipThreshold + (double)zipSize / (double)itemSize > 1.0))
 			{
-				sameDataOffset = header->dataOffset;
-				break;
+				zipSize = 0;
+				zipItemData = zipData;
+				zipItemSize = itemSize;
+			}
+			else
+			{
+				zipItemData = itemData;
+				zipItemSize = zipSize;
+			}
+		
+			for (size_t j = 0; j < i; j++)
+			{
+				PackItemHeader* header = &itemHeaders[j];
+				if (header->zipSize != zipSize || header->dataSize != itemSize) continue;
+
+				if (seekFile(packFile, header->dataOffset, SEEK_SET) != 0)
+				{
+					free(itemHeaders); free(zipData); free(itemData);
+					return FAILED_TO_SEEK_FILE_PACK_RESULT;
+				}
+
+				if (fread(zipItemData, sizeof(uint8_t), zipItemSize, packFile) != zipItemSize)
+				{
+					free(itemHeaders); free(zipData); free(itemData);
+					return FAILED_TO_READ_FILE_PACK_RESULT;
+				}
+				if (memcmp(itemData, zipData, zipItemSize) == 0)
+				{
+					sameDataOffset = header->dataOffset;
+					break;
+				}
 			}
 		}
 
@@ -216,7 +221,7 @@ static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
 
 		fileOffset += sizeof(PackItemHeader) + header.pathSize;
 
-		if (sameDataOffset == UINT64_MAX)
+		if (itemSize > 0 && sameDataOffset == UINT64_MAX)
 		{
 			zipItemData = zipSize > 0 ? zipData : itemData;
 			if (fwrite(zipItemData, sizeof(uint8_t), zipItemSize, packFile) != zipItemSize)
@@ -274,8 +279,11 @@ static int comparePackPathPairs(const void* _a, const void* _b)
 	if (difference != 0) return difference;
 	return memcmp(a->itemPath, b->itemPath, al);
 }
+
+/**********************************************************************************************************************/
 PackResult packFiles(const char* filePath, uint64_t fileCount,
-	const char** fileItemPaths, float zipThreshold, bool printProgress)
+	const char** fileItemPaths, float zipThreshold,
+	bool printProgress, OnPackFile onPackFile, void* argument)
 {
 	assert(filePath != NULL);
 	assert(fileCount > 0);
@@ -329,8 +337,8 @@ PackResult packFiles(const char* filePath, uint64_t fileCount,
 		return FAILED_TO_WRITE_FILE_PACK_RESULT;
 	}
 
-	PackResult packResult = writePackItems(packFile,
-		itemCount, pathPairs, zipThreshold, printProgress);
+	PackResult packResult = writePackItems(packFile, itemCount,
+		pathPairs, zipThreshold, printProgress, onPackFile, argument);
 
 	free(pathPairs);
 	closeFile(packFile);
