@@ -1,11 +1,11 @@
-// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
-//
+// Copyright 2021-2024 Nikita Fediuchin. All rights reserved.
+// 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-//
+// 
 //     http://www.apache.org/licenses/LICENSE-2.0
-//
+// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -57,6 +57,7 @@ inline static bool createTestFile(const char* path,
 	return true;
 }
 
+/**********************************************************************************************************************/
 inline static bool testFailedToOpenFile()
 {
 	PackReader packReader;
@@ -101,7 +102,8 @@ inline static bool testPacker()
 		return false;
 	}
 	
-	PackResult packResult = packFiles(TEST_FILE_NAME, 3, files, 0.1f, false);
+	PackResult packResult = packFiles(
+		TEST_FILE_NAME, 3, files, 0.1f, false, NULL, NULL);
 	remove(files[0]); remove(files[2]); remove(files[4]);
 
 	if (packResult != SUCCESS_PACK_RESULT)

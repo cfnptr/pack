@@ -1,4 +1,4 @@
-// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2024 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,6 +11,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+/***********************************************************************************************************************
+ * @file
+ * @brief Pack file writer.
+ * @details See the @ref writer.h
+ **********************************************************************************************************************/
 
 #pragma once
 #include <string>
@@ -27,29 +33,34 @@ namespace pack
 
 using namespace std;
 
-/*
- * Pack writer functions.
+/**
+ * @brief Pack writer functions.
  */
 class Writer final
 {
 public:
-	/*
-	 * Pack files to the pack file. (MT-Safe)
-	 * Throws runtime exception on failure.
+	/**
+	 * @brief Packs files to the Pack archive.
+	 * @details See the @ref packFiles().
 	 *
-	 * packPath - pack file path string.
-	 * fileCount - to pack file count.
-	 * fileItemPaths - pack file and item path strings.
-	 * zipThreshold - compression threshold. (0.0 - 1.0 range)
-	 * printProgress - printf reading progress.
+	 * @param[out] packPath output Pack file path string
+	 * @param fileCount file count to pack
+	 * @param[out] fileItemPaths pack file and item path string array (file/item, file/item...)
+	 * @param zipThreshold compression threshold (0.0 - 1.0 range)
+	 * @param printProgress output packing progress to the stdout
+	 * @param[out] onPackFile file packing callback, or NULL
+	 * @param[out] argument file packing callback argument, or NULL
+	 * 
+	 * @return The @ref PackResult code.
 	 */
 	static void pack(const filesystem::path& packPath,
 		uint64_t fileCount, const char** fileItemPaths,
-		float zipThreshold = 0.1f, bool printProgress = false)
+		float zipThreshold = 0.1f, bool printProgress = false,
+		OnPackFile onPackFile = nullptr, void* argument = nullptr)
 	{
 		auto path = packPath.generic_string();
-		auto result = packFiles(path.c_str(), fileCount,
-			fileItemPaths, zipThreshold, printProgress);
+		auto result = packFiles(path.c_str(), fileCount, fileItemPaths,
+			zipThreshold, printProgress, onPackFile, argument);
 		if (result != SUCCESS_PACK_RESULT)
 			throw runtime_error(packResultToString(result));
 	}

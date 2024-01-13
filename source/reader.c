@@ -1,11 +1,11 @@
-// Copyright 2021-2023 Nikita Fediuchin. All rights reserved.
-//
+// Copyright 2021-2024 Nikita Fediuchin. All rights reserved.
+// 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-//
+// 
 //     http://www.apache.org/licenses/LICENSE-2.0
-//
+// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -102,6 +102,8 @@ static PackResult createPackItems(FILE* packFile,
 	*_items = items;
 	return SUCCESS_PACK_RESULT;
 }
+
+/**********************************************************************************************************************/
 PackResult createFilePackReader(const char* filePath,
 	bool isResourcesDirectory, uint32_t threadCount, PackReader* packReader)
 {
@@ -270,6 +272,7 @@ void destroyPackReader(PackReader packReader)
 	free(packReader);
 }
 
+/**********************************************************************************************************************/
 uint64_t getPackItemCount(PackReader packReader)
 {
 	assert(packReader != NULL);
@@ -321,27 +324,6 @@ uint32_t getPackItemZipSize(PackReader packReader, uint64_t index)
 	return packReader->items[index].header.zipSize;
 }
 
-uint64_t getPackItemFileOffset(PackReader packReader, uint64_t index)
-{
-	assert(packReader != NULL);
-	assert(index < packReader->itemCount);
-	return packReader->items[index].header.dataOffset;
-}
-
-bool isPackItemReference(PackReader packReader, uint64_t index)
-{
-	assert(packReader != NULL);
-	assert(index < packReader->itemCount);
-	return packReader->items[index].header.isReference;
-}
-
-const char* getPackItemPath(PackReader packReader, uint64_t index)
-{
-	assert(packReader != NULL);
-	assert(index < packReader->itemCount);
-	return packReader->items[index].path;
-}
-
 PackResult readPackItemData(PackReader packReader,
 	uint64_t itemIndex, uint8_t* buffer, uint32_t threadIndex)
 {
@@ -382,12 +364,35 @@ PackResult readPackItemData(PackReader packReader,
 	return SUCCESS_PACK_RESULT;
 }
 
+/**********************************************************************************************************************/
+uint64_t getPackItemFileOffset(PackReader packReader, uint64_t index)
+{
+	assert(packReader != NULL);
+	assert(index < packReader->itemCount);
+	return packReader->items[index].header.dataOffset;
+}
+
+bool isPackItemReference(PackReader packReader, uint64_t index)
+{
+	assert(packReader != NULL);
+	assert(index < packReader->itemCount);
+	return packReader->items[index].header.isReference;
+}
+
+const char* getPackItemPath(PackReader packReader, uint64_t index)
+{
+	assert(packReader != NULL);
+	assert(index < packReader->itemCount);
+	return packReader->items[index].path;
+}
+
 void** const getPackZstdContexts(PackReader packReader)
 {
 	assert(packReader != NULL);
 	return (void** const)packReader->zstdContexts;
 }
 
+/**********************************************************************************************************************/
 static void removePackItemFiles(uint64_t itemCount, PackItem* packItems)
 {
 	assert(itemCount == 0 || (itemCount > 0 && packItems != NULL));
