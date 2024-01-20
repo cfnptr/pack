@@ -17,13 +17,32 @@ See the [documentation](docs/html/index.html).
 ## Usage example
 
 ```cpp
-void packReaderExample()
+void packReaderExampleCPP()
 {
    pack::Reader packReader("resources.pack");
    auto itemIndex = packReader.getItemIndex("textures/sky.png");
-   auto dataSize = packReader.getItemDataSize(itemIndex);
-   std::vector<uint8_t> itemData(dataSize);
-   packReader.readItemData(itemIndex, itemData.data());
+   std::vector<uint8_t> itemData;
+   packReader.readItemData(itemIndex, itemData);
+}
+```
+
+```c
+void packReaderExampleC()
+{
+   PackReader packReader = NULL;
+   PackResult packResult = createFilePackReader("resources.pack", false, 1, &packReader);
+   if (packResult != SUCCESS_PACK_RESULT) abort();
+
+   uint64_t itemIndex = 0;
+   bool result = getPackItemIndex(packReader, "textures/sky.png")
+   if (!result) abort();
+
+   uint32_t dataSize = getPackItemDataSize(packReader, itemIndex);
+   uint8_t* itemData = (uint8_t*)malloc(dataSize);
+   if (!itemData) abort();
+
+   packResult = readPackItemData(packReader, itemIndex, itemData, 0)
+   if (packResult != SUCCESS_PACK_RESULT) { free(data); abort(); }
 }
 ```
 
@@ -48,6 +67,8 @@ void packReaderExample()
 | PACK_BUILD_UTILITIES | Build Pack utility programs | `ON`          |
 | PACK_BUILD_TESTS     | Build Pack library tests    | `ON`          |
 
+Use building [instructions](BUILDING.md) to install all required tools and libraries.
+
 ## Cloning
 
 ```
@@ -63,18 +84,24 @@ git clone --recursive https://github.com/cfnptr/pack
 
 ### packer
 
-* Description: creates compressed data pack from files.
+Creates compressed data pack from files.
+
 * Usage: ```packer <pack-path> <file-path-1> <item-path-1>...```
+* Example: ```packer resources.pack C:/Users/user/Desktop/sky.png images/sky.png```
 
 ### unpacker
 
-* Description: extracts compressed data pack files.
+Extracts compressed data pack files.
+
 * Usage: ```unpacker <pack-path>```
+* Example: ```unpacker resources.pack```
 
 ### pack-info
 
-* Description: shows pack file information.
+Shows pack file information.
+
 * Usage: ```pack-info <pack-path>```
+* Example: ```pack-info resources.pack```
 
 ## Third-party
 

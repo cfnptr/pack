@@ -114,13 +114,13 @@ void getPackLibraryVersion(uint8_t* major, uint8_t* minor, uint8_t* patch);
  * We can retrieve information about the package without creating an instance and loading the paths of all packed files.
  *
  * @param[in] filePath target file path string
- * @param[out] packHeader pointer to the @ref PackHeader structure
+ * @param[out] header pointer to the @ref PackHeader structure
  *
  * @return The @ref PackResult code.
  *
- * @retval SUCCESS_PACK_RESULT - successful operation
- * @retval FAILED_TO_OPEN_FILE_PACK_RESULT - the files doesn't exist
- * @retval BAD_FILE_TYPE_PACK_RESULT - file header has bad magic number
+ * @retval SUCCESS_PACK_RESULT on success
+ * @retval FAILED_TO_OPEN_FILE_PACK_RESULT if file doesn't exist
+ * @retval BAD_FILE_TYPE_PACK_RESULT if file header has bad magic number
  */
 PackResult readPackHeader(const char* filePath, PackHeader* header);
 
@@ -142,7 +142,7 @@ static const char* const packResultStrings[PACK_RESULT_COUNT] = {
 	"Bad data size",
 	"Bad file type",
 	"Bad file version",
-	"Bad file endianness",
+	"Bad file endianness"
 };
 
 /**

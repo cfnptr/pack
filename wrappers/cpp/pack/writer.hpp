@@ -35,6 +35,7 @@ using namespace std;
 
 /**
  * @brief Pack writer functions.
+ * @details See the @ref writer.h
  */
 class Writer final
 {
@@ -43,15 +44,13 @@ public:
 	 * @brief Packs files to the Pack archive.
 	 * @details See the @ref packFiles().
 	 *
-	 * @param[out] packPath output Pack file path string
+	 * @param[in] packPath output Pack file path string
 	 * @param fileCount file count to pack
-	 * @param[out] fileItemPaths pack file and item path string array (file/item, file/item...)
+	 * @param[in] fileItemPaths pack file and item path string array (file/item, file/item...)
 	 * @param zipThreshold compression threshold (0.0 - 1.0 range)
 	 * @param printProgress output packing progress to the stdout
-	 * @param[out] onPackFile file packing callback, or NULL
-	 * @param[out] argument file packing callback argument, or NULL
-	 * 
-	 * @return The @ref PackResult code.
+	 * @param[in] onPackFile file packing callback, or NULL
+	 * @param[in] argument file packing callback argument, or NULL
 	 */
 	static void pack(const filesystem::path& packPath,
 		uint64_t fileCount, const char** fileItemPaths,

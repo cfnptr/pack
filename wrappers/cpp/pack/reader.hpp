@@ -38,6 +38,7 @@ using namespace std;
 
 /**
  * @brief Pack reader instance handle.
+ * @details See the @ref reader.h
  */
 class Reader final
 {
@@ -116,6 +117,7 @@ public:
 
 	/**
 	 * @brief Returns true if Pack reader stream is open.
+	 * @details See the @ref createFilePackReader().
 	 */
 	bool isOpen() const noexcept { return instance; }
 
@@ -146,8 +148,6 @@ public:
 	 * @details See the @ref getPackItemIndex().
 	 *
 	 * @param[in] path item path string used to pack the file
-	 * @param[out] index reference to the uint64_t item index
-	 * 
 	 * @return The item index in the Pack.
 	 * @throw runtime_error with a @ref PackResult string on failure.
 	 */
@@ -188,7 +188,7 @@ public:
 	 * @brief Reads Pack item binary data. (MT-Safe)
 	 * @details See the @ref readPackItemData().
 	 *
-	 * @param index uint64_t item index
+	 * @param itemIndex uint64_t item index
 	 * @param[out] buffer pointer to the buffer where to read item data
 	 * @param threadIndex current thread index or 0
 	 * 
@@ -205,7 +205,7 @@ public:
 	 * @brief Reads Pack item binary data. (MT-Safe)
 	 * @details See the @ref readPackItemData().
 	 *
-	 * @param index uint64_t item index
+	 * @param itemIndex uint64_t item index
 	 * @param[out] buffer reference to the buffer where to read item data
 	 * @param threadIndex current thread index or 0
 	 * 
