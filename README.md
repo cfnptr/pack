@@ -3,7 +3,7 @@
 A library providing **packing** of files into runtime reading optimized archives, across different platforms.<br/>
 For example can be used to load game resources. (images, shaders, models, levels, etc...)
 
-See the [documentation](docs/html/index.html).
+See the [documentation](https://cfnptr.github.io/pack).
 
 ## Features
 

@@ -19,8 +19,8 @@ fi
 
 echo "Cloning repositories..."
 
-if [ ! -d "redoxygen" ]; then
-    git clone https://github.com/cfnptr/redoxygen
+if [ ! -d "../redoxygen" ]; then
+    git clone https://github.com/cfnptr/redoxygen ../redoxygen
     status=$?
 
     if [ $status -ne 0 ]; then
@@ -29,8 +29,8 @@ if [ ! -d "redoxygen" ]; then
     fi
 fi
 
-if [ ! -d "cppreference-doxygen" ]; then
-    git clone https://github.com/cfnptr/cppreference-doxygen
+if [ ! -d "../cppreference-doxygen" ]; then
+    git clone https://github.com/cfnptr/cppreference-doxygen ../cppreference-doxygen
     status=$?
 
     if [ $status -ne 0 ]; then
@@ -41,6 +41,7 @@ fi
 
 echo ""
 echo "Generating documentation..."
+cd "../"
 
 doxygen Doxyfile
 status=$?
