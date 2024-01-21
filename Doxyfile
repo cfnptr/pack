@@ -951,7 +951,8 @@ WARN_LOGFILE           =
 
 INPUT                  = include \
                          README.md \
-                         wrappers/cpp
+                         wrappers/cpp \
+                         BUILDING.md
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -1646,7 +1647,7 @@ TOC_EXPAND             = NO
 # protocol see https://www.sitemaps.org
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-SITEMAP_URL            =
+SITEMAP_URL            = https://cfnptr.github.io/pack
 
 # If the GENERATE_QHP tag is set to YES and both QHP_NAMESPACE and
 # QHP_VIRTUAL_FOLDER are set, an additional index file will be generated that

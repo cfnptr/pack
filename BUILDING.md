@@ -1,4 +1,6 @@
-# Operating Systems
+# Build instructions
+
+## Operating Systems
 
 * [Window (10/11)](BUILDING.md#windows-1011)
 * [Ubuntu (22.04 LTS)](BUILDING.md#ubuntu-2204-lts)

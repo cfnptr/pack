@@ -39,6 +39,30 @@ var NAVTREE =
       [ "pack-info", "index.html#pack-info", null ]
     ] ],
     [ "Third-party", "index.html#third-party", null ],
+    [ "Build instructions", "md__b_u_i_l_d_i_n_g.html", [
+      [ "Operating Systems", "md__b_u_i_l_d_i_n_g.html#operating-systems", null ],
+      [ "Windows (10/11)", "md__b_u_i_l_d_i_n_g.html#windows-1011", [
+        [ "Install Visual Studio Community (Or any other IDE)", "md__b_u_i_l_d_i_n_g.html#autotoc_md1-install-visual-studio-community-or-any-other-ide", null ],
+        [ "Install Git", "md__b_u_i_l_d_i_n_g.html#autotoc_md2-install-git", null ],
+        [ "Install CMake", "md__b_u_i_l_d_i_n_g.html#autotoc_md3-install-cmake", null ],
+        [ "Install Vulkan SDK", "md__b_u_i_l_d_i_n_g.html#autotoc_md4-install-vulkan-sdk", null ],
+        [ "Install OpenSSL", "md__b_u_i_l_d_i_n_g.html#autotoc_md5-install-openssl", null ]
+      ] ],
+      [ "Ubuntu (22.04 LTS)", "md__b_u_i_l_d_i_n_g.html#ubuntu-2204-lts", [
+        [ "Install Visual Studio Code (Or any other IDE)", "md__b_u_i_l_d_i_n_g.html#autotoc_md1-install-visual-studio-code-or-any-other-ide", null ],
+        [ "Install required packages", "md__b_u_i_l_d_i_n_g.html#autotoc_md2-install-required-packages", null ],
+        [ "Install Vulkan SDK", "md__b_u_i_l_d_i_n_g.html#autotoc_md3-install-vulkan-sdk", null ]
+      ] ],
+      [ "macOS (Monterey 12)", "md__b_u_i_l_d_i_n_g.html#macos-monterey-12", [
+        [ "Install Xcode (Or any other IDE)", "md__b_u_i_l_d_i_n_g.html#autotoc_md1-install-xcode-or-any-other-ide", null ],
+        [ "Install required packages", "md__b_u_i_l_d_i_n_g.html#autotoc_md2-install-required-packages-1", null ],
+        [ "Install Vulkan SDK", "md__b_u_i_l_d_i_n_g.html#autotoc_md3-install-vulkan-sdk-1", null ]
+      ] ],
+      [ "Build Project", "md__b_u_i_l_d_i_n_g.html#build-project", [
+        [ "Visual Studio (2022)", "md__b_u_i_l_d_i_n_g.html#visual-studio-2022", null ],
+        [ "Visual Studio Code (VS Code)", "md__b_u_i_l_d_i_n_g.html#visual-studio-code-vs-code", null ]
+      ] ]
+    ] ],
     [ "Data Structures", "annotated.html", [
       [ "Data Structures", "annotated.html", "annotated_dup" ],
       [ "Data Structure Index", "classes.html", null ],
