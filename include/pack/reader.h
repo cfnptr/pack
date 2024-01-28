@@ -38,9 +38,11 @@ typedef PackReader_T* PackReader;
  * @brief Creates a new file pack reader instance.
  * 
  * @details
- * The main function for opening Pack archives. It creates a new Pack reader instance and reads information about the 
- * location of packed files in the file. Subsequently, it organizes this information for quick searching and reading 
- * data from the archive file. You should destroy created Pack instance manually.
+ * The main function for opening Pack archives. It creates a new Pack reader instance and 
+ * reads information about the  location of packed files in the file. Subsequently, 
+ * it organizes this information for quick searching and reading data from the archive file. 
+ * 
+ * @note You should destroy created Pack instance manually.
  *
  * @param[in] filePath target Pack file path string
  * @param isResourcesDirectory read from the resources directory (Android/iOS/macOS only)
@@ -166,7 +168,8 @@ bool isPackItemReference(PackReader packReader, uint64_t index);
 
 /**
  * @brief Returns Pack item path string. (MT-Safe)
- * @details You can get the Pack item path when iterating over all items. You should not free the returned string.
+ * @details You can get the Pack item path when iterating over all items.
+ * @warning You should not free the returned string.
  *
  * @param packReader pack reader instance
  * @param index uint64_t item index

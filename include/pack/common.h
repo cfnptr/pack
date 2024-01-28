@@ -42,12 +42,12 @@
  */
 typedef struct PackHeader
 {
-	uint32_t magic;
-	uint8_t versionMajor;
-	uint8_t versionMinor;
-	uint8_t versionPatch;
-	uint8_t isBigEndian;
-	uint64_t itemCount;
+	uint32_t magic;       /**< Pack file magic number */
+	uint8_t versionMajor; /**< File format major version */
+	uint8_t versionMinor; /**< File format minor version */
+	uint8_t versionPatch; /**< File format patch version */
+	uint8_t isBigEndian;  /**< Is packed data format big endian */
+	uint64_t itemCount;   /**< Total pack itrm count */
 } PackHeader;
 
 /***********************************************************************************************************************
@@ -59,11 +59,11 @@ typedef struct PackHeader
  */
 typedef struct PackItemHeader
 {
-	uint32_t zipSize;
-	uint32_t dataSize;
-	uint8_t pathSize : 8;
-	uint8_t isReference : 1;
-	uint64_t dataOffset : 55;
+	uint32_t zipSize;         /**< Compressed item size in bytes */
+	uint32_t dataSize;        /**< Uncompressed item size in bytes */
+	uint8_t pathSize : 8;     /**< Item path string length */
+	uint8_t isReference : 1;  /**< Is binary data shared between several items */
+	uint64_t dataOffset : 55; /**< Binary data offset in the Pack file */
 } PackItemHeader;
 
 /***********************************************************************************************************************

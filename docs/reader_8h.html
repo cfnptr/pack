@@ -148,7 +148,8 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates a new file pack reader instance. </p>
-<p>The main function for opening Pack archives. It creates a new Pack reader instance and reads information about the location of packed files in the file. Subsequently, it organizes this information for quick searching and reading data from the archive file. You should destroy created Pack instance manually.</p>
+<p>The main function for opening Pack archives. It creates a new Pack reader instance and reads information about the location of packed files in the file. Subsequently, it organizes this information for quick searching and reading data from the archive file.</p>
+<dl class="section note"><dt>Note</dt><dd>You should destroy created Pack instance manually.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">filePath</td><td>target Pack file path string </td></tr>
@@ -496,7 +497,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns Pack item path string. (MT-Safe) </p>
-<p>You can get the Pack item path when iterating over all items. You should not free the returned string.</p>
+<p>You can get the Pack item path when iterating over all items. </p><dl class="section warning"><dt>Warning</dt><dd>You should not free the returned string.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">packReader</td><td>pack reader instance </td></tr>
@@ -572,7 +573,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_da693808afc5959eeee8fd1ea925aa29.html">pack</a></li><li class="navelem"><a class="el" href="reader_8h.html">reader.h</a></li>
-    <li class="footer">Generated on Sun Jan 21 2024 for Pack by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.10.0 </li>
+    <li class="footer">Generated on Sun Jan 28 2024 for Pack by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.10.0 </li>
   </ul>
 </div>
 </body>

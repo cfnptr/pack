@@ -10,9 +10,6 @@ h1 {
 hr {
     border-top: 1px solid #454545;
 }
-td {
-    padding-left: 4px;
-}
 div.header {
     background-image: unset;
     background-color: #181818;
@@ -33,7 +30,7 @@ div.contents {
     width: 960px;
 }
 h2.groupheader {
-    color: #cccccc;
+    color: unset;
     padding-top: 10px;
     padding-bottom: 10px;
     border-bottom: 1px solid #454545;
@@ -45,6 +42,14 @@ tr.heading h2 {
 }
 .title {
     font-size: 200%;
+    margin-left: unset;
+}
+
+td {
+    padding-left: 4px;
+}
+td.memname {
+    padding-left: unset;
 }
 
 @media (max-width:1280px) {
@@ -65,7 +70,7 @@ a {
     color: #4daafc;
 }
 .alphachar a {
-    color: #cccccc;
+    color: unset;
 }
 
 #projectname {
@@ -79,18 +84,21 @@ a {
 #nav-tree {
     background-color: #181818;
 }
+#nav-tree .item {
+    margin-left: 4px;
+}
 #nav-tree .label {
     font-family: Roboto,sans-serif;
 }
 #nav-tree .label a {
-    color: #cccccc;
+    color: unset;
 }
 #nav-tree .selected {
     background-image: unset;
     background-color: #2a2d2e;
 }
 #nav-tree .selected a {
-    color: #cccccc;
+    color: unset;
 }
 .ui-resizable-e {
     background-image: unset;
@@ -104,16 +112,16 @@ a:hover > span.arrow {
     background : #2a2d2e;
 }
 #nav-tree .selected .arrow {
-    color: #cccccc;
+    color: unset;
 }
 
 .mdescLeft, .mdescRight, .memItemLeft, .memItemRight, .memTemplItemLeft, .memTemplItemRight, .memTemplParams {
-    color: #cccccc;
+    color: unset;
     background-color: #1f1f1f;
 }
 
 .paramname em {
-    color: #cccccc;
+    color: unset;
 }
 .memSeparator {
     border-bottom: 1px solid #454545;
@@ -145,9 +153,11 @@ a:hover > span.arrow {
     border-right: 1px solid #454545;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
+    padding-left: 4px;
+    font-weight: bold;
 }
 .memproto {
-    color: #cccccc;
+    color: unset;
     background-color: #202020;
     border-top: 1px solid #454545;
     border-left: 1px solid #454545;
@@ -173,7 +183,7 @@ a:hover > span.arrow {
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
     padding-left: 16px;
-    padding-top: 1px;
+    padding-right: 16px;
     padding-top: 1px;
 }
 .memdoc a.el, .memdoc a.elRef {
@@ -189,7 +199,7 @@ a:hover > span.arrow {
     border-top: 1px solid #454545;
 }
 .navpath li, .navpath li.navelem a {
-    color: #cccccc;
+    color: unset;
 }
 .navpath li.footer, li.footer a {
     color: #8f8f8f;
@@ -217,7 +227,7 @@ table.fieldtable {
     border: 1px solid #454545;
 }
 .fieldtable th {
-    color: #cccccc;
+    color: unset;
     font-weight: bold;
     background-image: unset;
     background-color: #2b2b2b;
@@ -238,7 +248,7 @@ table.fieldtable {
 }
 
 .fragment {
-    color: #cccccc;
+    color: unset;
     background-color: #2b2b2b;
     border: 1px solid #313131;
 }
@@ -261,7 +271,7 @@ code {
 }
 th.markdownTableHeadLeft, th.markdownTableHeadRight, th.markdownTableHeadCenter, th.markdownTableHeadNone {
     background-color: #2b2b2b;
-    color: #cccccc;
+    color: unset;
 }
 table.markdownTable td, table.markdownTable th {
     border: 1px solid #313131;
@@ -275,6 +285,7 @@ span.mlabel {
     background-color: #2b2b2b;
     border: 1px solid #313131;
     font-size: 10px;
+    margin-right: 8px;
 }
 
 #nav-sync {
@@ -306,8 +317,35 @@ div.SRPage {
     color: #4daafc;
 }
 a.SelectItem {
-    color: #cccccc;
+    color: unset;
 }
 a.SelectItem:hover {
     background-color: #2b2b2b;
+}
+
+dl.note, dl.remark {
+    background: #00b0ff33;
+    border-left: 4px solid #00b0ff;
+    color: unset;
+}
+dl.note dt, dl.remark dt {
+    color: unset;
+}
+
+dl.warning, dl.attention {
+    background: #ff910033;
+    border-left: 4px solid #ff9100;
+    color: unset;
+}
+dl.warning dt, dl.attention dt {
+    color: unset;
+}
+
+dl.todo {
+    background: #00bfa533;
+    border-left: 4px solid #00bfa5;
+    color: unset;
+}
+dl.todo dt {
+    color: unset;
 }
