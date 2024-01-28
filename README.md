@@ -59,6 +59,8 @@ void packReaderExampleC()
 * [Git 2.30+](https://git-scm.com/)
 * [CMake 3.16+](https://cmake.org/)
 
+Use building [instructions](BUILDING.md) to install all required tools and libraries.
+
 ### CMake options
 
 | Name                 | Description                 | Default value |
@@ -66,8 +68,6 @@ void packReaderExampleC()
 | PACK_BUILD_SHARED    | Build Pack shared library   | `ON`          |
 | PACK_BUILD_UTILITIES | Build Pack utility programs | `ON`          |
 | PACK_BUILD_TESTS     | Build Pack library tests    | `ON`          |
-
-Use building [instructions](BUILDING.md) to install all required tools and libraries.
 
 ## Cloning
 
