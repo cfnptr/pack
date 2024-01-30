@@ -35,6 +35,7 @@ option(PACK_BUILD_UTILITIES "Build Pack utility programs" ON)
 option(PACK_BUILD_TESTS "Build Pack library tests" ON)
 
 set(MPIO_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(MPIO_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 add_subdirectory(libraries/mpio)
 
 set(ZSTD_MULTITHREAD_SUPPORT OFF CACHE BOOL "" FORCE)

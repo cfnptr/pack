@@ -119,7 +119,7 @@ PackResult createFilePackReader(const char* filePath,
 #if __APPLE__
 	if (isResourcesDirectory)
 	{
-		const char* resourcesDirectory = getResourcesDirectory();
+		char* resourcesDirectory = getResourcesDirectory();
 		if (!resourcesDirectory)
 		{
 			destroyPackReader(packReaderInstance);
@@ -141,6 +141,7 @@ PackResult createFilePackReader(const char* filePath,
 		path[resourcesPathLength] = '/';
 		memcpy(path + resourcesPathLength + 1, filePath, filePathLength);
 		path[resourcesPathLength + filePathLength + 1] = '\0';
+		free(resourcesDirectory);
 	}
 	else
 	{
