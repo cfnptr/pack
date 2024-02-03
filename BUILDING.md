@@ -4,7 +4,7 @@
 
 * [Window (10/11)](BUILDING.md#windows-1011)
 * [Ubuntu (22.04 LTS)](BUILDING.md#ubuntu-2204-lts)
-* [macOS (Ventura 13)](BUILDING.md#macos-monterey-12)
+* [macOS (Ventura 13)](BUILDING.md#macos-ventura-13)
 * [Build Project](BUILDING.md#build-project)
 
 
