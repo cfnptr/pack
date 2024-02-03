@@ -19,30 +19,34 @@ See the [documentation](https://cfnptr.github.io/pack).
 ```cpp
 void packReaderExampleCPP()
 {
-   pack::Reader packReader("resources.pack");
-   auto itemIndex = packReader.getItemIndex("textures/sky.png");
-   std::vector<uint8_t> itemData;
-   packReader.readItemData(itemIndex, itemData);
+    pack::Reader packReader("resources.pack");
+    auto itemIndex = packReader.getItemIndex("textures/sky.png");
+    std::vector<uint8_t> itemData;
+    packReader.readItemData(itemIndex, itemData);
+    // use data...
 }
 ```
 
 ```c
 void packReaderExampleC()
 {
-   PackReader packReader = NULL;
-   PackResult packResult = createFilePackReader("resources.pack", false, 1, &packReader);
-   if (packResult != SUCCESS_PACK_RESULT) abort();
+    PackReader packReader = NULL;
+    PackResult packResult = createFilePackReader("resources.pack", false, 1, &packReader);
+    if (packResult != SUCCESS_PACK_RESULT) abort();
 
-   uint64_t itemIndex = 0;
-   bool result = getPackItemIndex(packReader, "textures/sky.png")
-   if (!result) abort();
+    uint64_t itemIndex = 0;
+    bool result = getPackItemIndex(packReader, "textures/sky.png")
+    if (!result) abort();
 
-   uint32_t dataSize = getPackItemDataSize(packReader, itemIndex);
-   uint8_t* itemData = (uint8_t*)malloc(dataSize);
-   if (!itemData) abort();
+    uint32_t dataSize = getPackItemDataSize(packReader, itemIndex);
+    uint8_t* itemData = (uint8_t*)malloc(dataSize);
+    if (!itemData) abort();
 
-   packResult = readPackItemData(packReader, itemIndex, itemData, 0)
-   if (packResult != SUCCESS_PACK_RESULT) { free(data); abort(); }
+    packResult = readPackItemData(packReader, itemIndex, itemData, 0)
+    if (packResult != SUCCESS_PACK_RESULT) { free(data); abort(); }
+
+    // use data...
+    destroyPackReader(packReader);
 }
 ```
 
