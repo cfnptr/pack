@@ -152,6 +152,7 @@ static const char* const packResultStrings[PACK_RESULT_COUNT] = {
  */
 inline static const char* packResultToString(PackResult result)
 {
-	if (result >= PACK_RESULT_COUNT) return "Unknown PACK result";
+	if (result >= PACK_RESULT_COUNT)
+		return "Unknown PACK result";
 	return packResultStrings[result];
 }

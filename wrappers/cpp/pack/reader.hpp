@@ -156,7 +156,8 @@ public:
 		uint64_t index;
 		auto _path = path.generic_string();
 		auto result = getPackItemIndex(instance, _path.c_str(), &index);
-		if (!result) throw runtime_error("Item is not exist");
+		if (!result)
+			throw runtime_error("Item is not exist");
 		return index;
 	}
 
