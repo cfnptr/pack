@@ -73,6 +73,16 @@ Use building [instructions](BUILDING.md) to install all required tools and libra
 | PACK_BUILD_UTILITIES | Build Pack utility programs | `ON`          |
 | PACK_BUILD_TESTS     | Build Pack library tests    | `ON`          |
 
+### CMake targets
+
+| Name        | Description          | Windows | macOS    | Linux |
+|-------------|----------------------|---------|----------|-------|
+| pack-static | Static Pack library  | `.lib`  | `.a`     | `.a`  |
+| pack-shared | Dynamic Pack library | `.dll`  | `.dylib` | `.so` |
+| packer      | Packer executable    | `.exe`  |          |       |
+| unpacker    | Unpacker executable  | `.exe`  |          |       |
+| pack-info   | Pack info executable | `.exe`  |          |       |
+
 ## Cloning
 
 ```
