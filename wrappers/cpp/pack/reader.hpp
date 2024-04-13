@@ -60,7 +60,7 @@ public:
 		return *this;
 	}
 
-	/***********************************************************************************************************************
+	/*******************************************************************************************************************
 	 * @brief Creates a new file pack reader instance.
 	 * @details See the @ref createFilePackReader().
 	 *
@@ -85,7 +85,7 @@ public:
 	 */
 	~Reader() { destroyPackReader(instance); }
 
-	/***********************************************************************************************************************
+	/*******************************************************************************************************************
 	 * @brief Opens a new Pack reader stream.
 	 * @details See the @ref createFilePackReader().
 	 *
@@ -121,7 +121,7 @@ public:
 	 */
 	bool isOpen() const noexcept { return instance; }
 
-	/***********************************************************************************************************************
+	/*******************************************************************************************************************
 	 * @brief Returns total Pack item count. (MT-Safe)
 	 * @details See the @ref getPackItemCount().
 	 * @return The total number of the items inside Pack file.
@@ -161,7 +161,7 @@ public:
 		return index;
 	}
 
-	/***********************************************************************************************************************
+	/*******************************************************************************************************************
 	 * @brief Returns Pack item uncompressed data size in bytes. (MT-Safe)
 	 * @details See the @ref getPackItemDataSize().
 	 *
@@ -185,7 +185,7 @@ public:
 		return getPackItemZipSize(instance, index);
 	}
 
-	/***********************************************************************************************************************
+	/*******************************************************************************************************************
 	 * @brief Reads Pack item binary data. (MT-Safe)
 	 * @details See the @ref readPackItemData().
 	 *
@@ -239,7 +239,7 @@ public:
 			throw runtime_error(packResultToString(result) + (", path: " + path.generic_string()));
 	}
 
-	/***********************************************************************************************************************
+	/*******************************************************************************************************************
 	 * @brief Returns Pack item data offset in the archive file. (MT-Safe)
 	 * @details See the @ref getPackItemFileOffset().
 	 *
@@ -282,7 +282,7 @@ public:
 	 */
 	void** const getZstdContexts() const { return getPackZstdContexts(instance); }
 
-	/***********************************************************************************************************************
+	/*******************************************************************************************************************
 	 * @brief Unpacks files from the pack. (MT-Safe)
 	 * @details See the @ref unpackFiles().
 	 *

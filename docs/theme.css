@@ -115,11 +115,14 @@ a:hover > span.arrow {
     color: unset;
 }
 
-.mdescLeft, .mdescRight, .memItemLeft, .memItemRight, .memTemplItemLeft, .memTemplItemRight, .memTemplParams {
+.mdescLeft, .mdescRight, .memItemLeft, .memItemRight, .memTemplItemLeft, .memTemplItemRight {
     color: unset;
     background-color: #1f1f1f;
 }
 
+.compoundTemplParams, .memtemplate {
+	color: #8f8f8f;
+}
 .paramname em {
     color: unset;
 }
@@ -134,13 +137,18 @@ a:hover > span.arrow {
     padding-top: 8px;
     font-weight: unset;
 }
+.memTemplParams {
+	color: #8f8f8f;
+	background-color: #1f1f1f;
+	padding-top: 8px;
+}
 .mdescRight {
     color: #8f8f8f;
 }
 .mdescLeft, .mdescRight {
     padding-bottom: 8px;
 }
-.memItemLeft a.el, .memItemLeft a.elRef, .memItemRight a.el, .memItemRight a.elRef {
+.memItemLeft a.el, .memItemLeft a.elRef, .memItemRight a.el, .memItemRight a.elRef, .memTemplItemLeft a.el, .memTemplItemRight a.el {
     color: unset;
     font-weight: unset;
 }
@@ -169,6 +177,9 @@ a:hover > span.arrow {
 }
 .memname {
     margin-left: 16px;
+}
+.memtemplate {
+	margin-left: 18px;
 }
 .memname a.el, .memname a.elRef {
     color: unset;
