@@ -15,7 +15,7 @@ namespace Pack
             if (filePaths.Length == 0)
                 throw new ArgumentNullException(nameof(filePaths));
 
-            var res = packFiles(packPath, (ulong)filePaths.Length / 2, filePaths, zipTreshold, printProgress, callback, ret);
+            var res = packFiles(packPath, (ulong)filePaths.Length / 2, filePaths, zipTreshold, printProgress, callback);
             return res;
         }
     }
