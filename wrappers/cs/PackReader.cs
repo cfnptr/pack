@@ -38,7 +38,7 @@ namespace Pack
             destroyPackReader(Handle);
         }
 
-        public bool GetItemIndex(string path, ref ulong index)
+        public bool GetItemIndex(in string path, ref ulong index)
         {
             if (string.IsNullOrEmpty(path))
                 throw new ArgumentNullException(nameof(path));
@@ -46,13 +46,13 @@ namespace Pack
                 throw new ArgumentOutOfRangeException(nameof(path));
             return getPackItemIndex(Handle, path, ref index);
         }
-        public uint GetItemDataSize(ulong index)
+        public uint GetItemDataSize(in ulong index)
         {
             if (index >= ItemCount)
                 throw new ArgumentOutOfRangeException(nameof(index));
             return getPackItemDataSize(Handle, index);
         }
-        public string GetItemPath(ulong index)
+        public string GetItemPath(in ulong index)
         {
             if (index >= ItemCount)
                 throw new ArgumentOutOfRangeException(nameof(index));
@@ -61,7 +61,7 @@ namespace Pack
             return Marshal.PtrToStringAnsi(path);
         }
 
-        public PackResult ReadItemData(string path, ref byte[] data, uint thread = 0)
+        public PackResult ReadItemData(in string path, ref byte[] data, in uint thread = 0)
         {
             if (string.IsNullOrEmpty(path))
                 throw new ArgumentNullException(nameof(path));
@@ -77,7 +77,7 @@ namespace Pack
 
         }
 
-        public PackResult ReadItemData(ulong index, ref byte[] data, uint thread = 0)
+        public PackResult ReadItemData(in ulong index, ref byte[] data, in uint thread = 0)
         {
             var result = readPackItemData(Handle, index, data, thread);
             if (result != PackResult.Success)
@@ -85,14 +85,14 @@ namespace Pack
             return PackResult.Success;
         }
 
-        public byte[]? ReadItemData(ulong index, uint thread = 0)
+        public byte[]? ReadItemData(in ulong index, in uint thread = 0)
         {
             uint size = getPackItemDataSize(Handle, index);
             byte[] data = new byte[size];
             ReadItemData(index, ref data, thread);
             return data;
         }
-        public byte[]? ReadItemData(string path, uint thread = 0)
+        public byte[]? ReadItemData(in string path, in uint thread = 0)
         {
             ulong index = 0;
             if (getPackItemIndex(Handle, path, ref index))
@@ -105,73 +105,7 @@ namespace Pack
             return null;
 
         }
-        /*
-        public PackResult ReadItemData(string path, ref byte[] data)
-        {
-            var buffer = IntPtr.Zero;
-            uint size = (uint) data.Length;
-
-            var result = ReadItemData(path, ref buffer, ref size);
-
-            if (result != PackResult.Success)
-                return result;
-
-            if (size > int.MaxValue)
-                throw new ApplicationException("Unsupported item data size");
-
-            data = new byte[size];
-            Marshal.Copy(buffer, data, 0, (int)size);
-            return PackResult.Success;
-        }
-
-        public PackResult ReadItemData(ulong index, ref byte[] data)
-        {
-            var buffer = IntPtr.Zero;
-            uint size = (uint)data.Length;
-
-            var result = ReadItemData(index, ref buffer);
-
-            if (result != PackResult.Success)
-                return result;
-
-            if (size > int.MaxValue)
-                throw new ApplicationException("Unsupported item data size");
-
-            data = new byte[size];
-            Marshal.Copy(buffer, data, 0, (int)size);
-            return PackResult.Success;
-        }
-
-        public PackResult ReadItemData(ulong index, ref string data)
-        {
-            byte[] buffer = null;
-            var result = ReadItemData(index, ref buffer);
-
-            if (result != PackResult.Success)
-                return result;
-
-            data = Encoding.UTF8.GetString(buffer);
-            return PackResult.Success;
-        }
-        public PackResult ReadItemData(string path, ref string data)
-        {
-            byte[] buffer = null;
-            var result = ReadItemData(path, ref buffer);
-
-            if (result != PackResult.Success)
-                return result;
-
-            data = Encoding.UTF8.GetString(buffer);
-            return PackResult.Success;
-        }
-        */
-        /*
-        public void FreeBuffers()
-        {
-            freePackReaderBuffers(Handle);
-        }
-        */
-        public static PackResult UnpackFiles(string filePath, bool printProgress)
+        public static PackResult UnpackFiles(in string filePath, in bool printProgress)
         {
             if (string.IsNullOrEmpty(filePath))
                 throw new ArgumentNullException(nameof(filePath));
