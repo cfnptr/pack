@@ -49,7 +49,8 @@ static PackResult createPackItems(FILE* packFile,
 	assert(_items != NULL);
 
 	PackItem* items = malloc(itemCount * sizeof(PackItem));
-	if (!items) return FAILED_TO_ALLOCATE_PACK_RESULT;
+	if (!items)
+		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
 	for (uint64_t i = 0; i < itemCount; i++)
 	{
@@ -112,14 +113,15 @@ PackResult createFilePackReader(const char* filePath,
 	assert(packReader != NULL);
 
 	PackReader packReaderInstance = calloc(1, sizeof(PackReader_T));
-	if (!packReaderInstance) return FAILED_TO_ALLOCATE_PACK_RESULT;
+	if (!packReaderInstance)
+		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
 	char* path;
 
 #if __APPLE__
 	if (isResourcesDirectory)
 	{
-		const char* resourcesDirectory = getResourcesDirectory();
+		char* resourcesDirectory = getResourcesDirectory();
 		if (!resourcesDirectory)
 		{
 			destroyPackReader(packReaderInstance);
@@ -141,6 +143,7 @@ PackResult createFilePackReader(const char* filePath,
 		path[resourcesPathLength] = '/';
 		memcpy(path + resourcesPathLength + 1, filePath, filePathLength);
 		path[resourcesPathLength + filePathLength + 1] = '\0';
+		free(resourcesDirectory);
 	}
 	else
 	{
@@ -154,7 +157,8 @@ PackResult createFilePackReader(const char* filePath,
 	if (!files)
 	{
 #if __APPLE__
-		if (isResourcesDirectory) free(path);
+		if (isResourcesDirectory)
+			free(path);
 #endif
 		destroyPackReader(packReaderInstance);
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
@@ -166,7 +170,8 @@ PackResult createFilePackReader(const char* filePath,
 	if (!zstdContexts)
 	{
 #if __APPLE__
-		if (isResourcesDirectory) free(path);
+		if (isResourcesDirectory)
+			free(path);
 #endif
 		destroyPackReader(packReaderInstance);
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
@@ -180,7 +185,8 @@ PackResult createFilePackReader(const char* filePath,
 		if (!file)
 		{
 #if __APPLE__
-			if (isResourcesDirectory) free(path);
+			if (isResourcesDirectory)
+				free(path);
 #endif
 			destroyPackReader(packReaderInstance);
 			return FAILED_TO_OPEN_FILE_PACK_RESULT;
@@ -199,7 +205,8 @@ PackResult createFilePackReader(const char* filePath,
 	}
 
 #if __APPLE__
-	if (isResourcesDirectory) free(path);
+	if (isResourcesDirectory)
+		free(path);
 #endif
 
 	PackHeader header;
@@ -254,7 +261,9 @@ PackResult createFilePackReader(const char* filePath,
 }
 void destroyPackReader(PackReader packReader)
 {
-	if (!packReader) return;
+	if (!packReader)
+		return;
+
 	destroyPackItems(packReader->itemCount, packReader->items);
 
 	FILE** files = packReader->files;
@@ -264,7 +273,8 @@ void destroyPackReader(PackReader packReader)
 	for (uint32_t i = 0; i < threadCount; i++)
 	{
 		if (ZSTD_freeDCtx(zstdContexts[i]) != 0) abort();
-		if (files[i]) closeFile(files[i]);
+		if (files[i])
+			closeFile(files[i]);
 	}
 	
 	free(packReader->zstdContexts);
@@ -287,7 +297,8 @@ static int comparePackItems(const void* _a, const void* _b)
 	const PackItem* a = _a;
 	const PackItem* b = _b;
 	int difference = (int)a->header.pathSize - (int)b->header.pathSize;
-	if (difference != 0) return difference;
+	if (difference != 0)
+		return difference;
 	return memcmp(a->path, b->path, a->header.pathSize);
 }
 bool getPackItemIndex(PackReader packReader, const char* path, uint64_t* index)
@@ -304,7 +315,8 @@ bool getPackItemIndex(PackReader packReader, const char* path, uint64_t* index)
 	PackItem* item = bsearch(&searchItem,
 		packReader->items, packReader->itemCount,
 		sizeof(PackItem), comparePackItems);
-	if (!item) return false;
+	if (!item)
+		return false;
 
 	*index = item - packReader->items;
 	return true;
@@ -335,12 +347,14 @@ PackResult readPackItemData(PackReader packReader,
 	PackItemHeader header = packReader->items[itemIndex].header;
 	FILE* file = packReader->files[threadIndex];
 	int seekResult = seekFile(file, header.dataOffset, SEEK_SET);
-	if (seekResult != 0) return FAILED_TO_SEEK_FILE_PACK_RESULT;
+	if (seekResult != 0)
+		return FAILED_TO_SEEK_FILE_PACK_RESULT;
 
 	if (header.zipSize > 0)
 	{
 		uint8_t* zipBuffer = malloc(header.zipSize);
-		if (!zipBuffer) return FAILED_TO_ALLOCATE_PACK_RESULT;
+		if (!zipBuffer)
+			return FAILED_TO_ALLOCATE_PACK_RESULT;
 
 		if (fread(zipBuffer, sizeof(uint8_t), header.zipSize, file) != header.zipSize)
 		{
@@ -358,7 +372,8 @@ PackResult readPackItemData(PackReader packReader,
 	else
 	{
 		size_t result = fread(buffer, sizeof(uint8_t), header.dataSize, file);
-		if (result != header.dataSize) return FAILED_TO_READ_FILE_PACK_RESULT;
+		if (result != header.dataSize)
+			return FAILED_TO_READ_FILE_PACK_RESULT;
 	}
 
 	return SUCCESS_PACK_RESULT;
@@ -404,7 +419,8 @@ PackResult unpackFiles(const char* filePath, bool printProgress)
 
 	PackReader packReader; // TODO: do this from multiple threads.
 	PackResult packResult = createFilePackReader(filePath, false, 1, &packReader);
-	if (packResult != SUCCESS_PACK_RESULT) return packResult;
+	if (packResult != SUCCESS_PACK_RESULT)
+		return packResult;
 
 	uint64_t rawFileSize = 0;
 	uint64_t fileOffset = sizeof(PackHeader);
@@ -418,9 +434,12 @@ PackResult unpackFiles(const char* filePath, bool printProgress)
 		{
 			int progress = (int)(((float)(i + 1) / (float)itemCount) * 100.0f);
 			const char* spacing;
-			if (progress < 10) spacing = "  ";
-			else if (progress < 100) spacing = " ";
-			else spacing = "";
+			if (progress < 10)
+				spacing = "  ";
+			else if (progress < 100)
+				spacing = " ";
+			else
+				spacing = "";
 			printf("[%s%d%%] Unpacking file %s ", spacing, progress, item->path);
 			fflush(stdout);
 		}
@@ -450,7 +469,8 @@ PackResult unpackFiles(const char* filePath, bool printProgress)
 
 		for (uint8_t j = 0; j < pathSize; j++)
 		{
-			if (itemPath[j] == '/' || itemPath[j] == '\\') itemPath[j] = '-';
+			if (itemPath[j] == '/' || itemPath[j] == '\\')
+				itemPath[j] = '-';
 		}
 
 		FILE* itemFile = openFile(itemPath, "wb");

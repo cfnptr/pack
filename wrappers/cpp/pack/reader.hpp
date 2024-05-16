@@ -38,6 +38,7 @@ using namespace std;
 
 /**
  * @brief Pack reader instance handle.
+ * @details See the @ref reader.h
  */
 class Reader final
 {
@@ -59,7 +60,7 @@ public:
 		return *this;
 	}
 
-	/***********************************************************************************************************************
+	/*******************************************************************************************************************
 	 * @brief Creates a new file pack reader instance.
 	 * @details See the @ref createFilePackReader().
 	 *
@@ -84,7 +85,7 @@ public:
 	 */
 	~Reader() { destroyPackReader(instance); }
 
-	/***********************************************************************************************************************
+	/*******************************************************************************************************************
 	 * @brief Opens a new Pack reader stream.
 	 * @details See the @ref createFilePackReader().
 	 *
@@ -116,10 +117,11 @@ public:
 
 	/**
 	 * @brief Returns true if Pack reader stream is open.
+	 * @details See the @ref createFilePackReader().
 	 */
 	bool isOpen() const noexcept { return instance; }
 
-	/***********************************************************************************************************************
+	/*******************************************************************************************************************
 	 * @brief Returns total Pack item count. (MT-Safe)
 	 * @details See the @ref getPackItemCount().
 	 * @return The total number of the items inside Pack file.
@@ -146,8 +148,6 @@ public:
 	 * @details See the @ref getPackItemIndex().
 	 *
 	 * @param[in] path item path string used to pack the file
-	 * @param[out] index reference to the uint64_t item index
-	 * 
 	 * @return The item index in the Pack.
 	 * @throw runtime_error with a @ref PackResult string on failure.
 	 */
@@ -156,11 +156,12 @@ public:
 		uint64_t index;
 		auto _path = path.generic_string();
 		auto result = getPackItemIndex(instance, _path.c_str(), &index);
-		if (!result) throw runtime_error("Item is not exist");
+		if (!result)
+			throw runtime_error("Item is not exist");
 		return index;
 	}
 
-	/***********************************************************************************************************************
+	/*******************************************************************************************************************
 	 * @brief Returns Pack item uncompressed data size in bytes. (MT-Safe)
 	 * @details See the @ref getPackItemDataSize().
 	 *
@@ -184,11 +185,11 @@ public:
 		return getPackItemZipSize(instance, index);
 	}
 
-	/***********************************************************************************************************************
+	/*******************************************************************************************************************
 	 * @brief Reads Pack item binary data. (MT-Safe)
 	 * @details See the @ref readPackItemData().
 	 *
-	 * @param index uint64_t item index
+	 * @param itemIndex uint64_t item index
 	 * @param[out] buffer pointer to the buffer where to read item data
 	 * @param threadIndex current thread index or 0
 	 * 
@@ -205,7 +206,7 @@ public:
 	 * @brief Reads Pack item binary data. (MT-Safe)
 	 * @details See the @ref readPackItemData().
 	 *
-	 * @param index uint64_t item index
+	 * @param itemIndex uint64_t item index
 	 * @param[out] buffer reference to the buffer where to read item data
 	 * @param threadIndex current thread index or 0
 	 * 
@@ -238,7 +239,7 @@ public:
 			throw runtime_error(packResultToString(result) + (", path: " + path.generic_string()));
 	}
 
-	/***********************************************************************************************************************
+	/*******************************************************************************************************************
 	 * @brief Returns Pack item data offset in the archive file. (MT-Safe)
 	 * @details See the @ref getPackItemFileOffset().
 	 *
@@ -281,7 +282,7 @@ public:
 	 */
 	void** const getZstdContexts() const { return getPackZstdContexts(instance); }
 
-	/***********************************************************************************************************************
+	/*******************************************************************************************************************
 	 * @brief Unpacks files from the pack. (MT-Safe)
 	 * @details See the @ref unpackFiles().
 	 *

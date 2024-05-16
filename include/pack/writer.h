@@ -42,13 +42,13 @@ typedef void(*OnPackFile)(uint64_t itemIndex, void* argument);
  * after compression, we achieve only 10% compression, then decompression will consume more resources than we 
  * save on file size. The optimal float value for the zipThreshold is 0.1f.
  *
- * @param[out] packPath output Pack file path string
+ * @param[in] packPath output Pack file path string
  * @param fileCount file count to pack
- * @param[out] fileItemPaths pack file and item path string array (file/item, file/item...)
+ * @param[in] fileItemPaths pack file and item path string array (file/item, file/item...)
  * @param zipThreshold compression threshold (0.0 - 1.0 range)
  * @param printProgress output packing progress to the stdout
- * @param[out] onPackFile file packing callback, or NULL
- * @param[out] argument file packing callback argument, or NULL
+ * @param[in] onPackFile file packing callback, or NULL
+ * @param[in] argument file packing callback argument, or NULL
  * 
  * @return The @ref PackResult code.
  */

@@ -33,14 +33,17 @@ PackResult readPackHeader(const char* filePath, PackHeader* _header)
 	assert(_header);
 
 	FILE* file = openFile(filePath, "rb");
-	if (!file) return FAILED_TO_OPEN_FILE_PACK_RESULT;
+	if (!file)
+		return FAILED_TO_OPEN_FILE_PACK_RESULT;
 
 	PackHeader header;
 	size_t result = fread(&header, sizeof(PackHeader), 1, file);
 	closeFile(file);
 
-	if (result != 1) return FAILED_TO_READ_FILE_PACK_RESULT;
-	if (header.magic != PACK_HEADER_MAGIC) return BAD_FILE_TYPE_PACK_RESULT;
+	if (result != 1)
+		return FAILED_TO_READ_FILE_PACK_RESULT;
+	if (header.magic != PACK_HEADER_MAGIC)
+		return BAD_FILE_TYPE_PACK_RESULT;
 
 	*_header = header;
 	return SUCCESS_PACK_RESULT;

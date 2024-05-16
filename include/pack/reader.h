@@ -38,9 +38,11 @@ typedef PackReader_T* PackReader;
  * @brief Creates a new file pack reader instance.
  * 
  * @details
- * The main function for opening Pack archives. It creates a new Pack reader instance and reads information about the 
- * location of packed files in the file. Subsequently, it organizes this information for quick searching and reading 
- * data from the archive file. You should destroy created Pack instance manually.
+ * The main function for opening Pack archives. It creates a new Pack reader instance and 
+ * reads information about the  location of packed files in the file. Subsequently, 
+ * it organizes this information for quick searching and reading data from the archive file. 
+ * 
+ * @note You should destroy created Pack instance manually.
  *
  * @param[in] filePath target Pack file path string
  * @param isResourcesDirectory read from the resources directory (Android/iOS/macOS only)
@@ -49,17 +51,17 @@ typedef PackReader_T* PackReader;
  * 
  * @return The @ref PackResult code and writes reader instance on success.
  * 
- * @retval SUCCESS_PACK_RESULT - successful operation
- * @retval FAILED_TO_ALLOCATE_PACK_RESULT - out of memory
- * @retval FAILED_TO_GET_DIRECTORY_PACK_RESULT - failed to get resources directory path
- * @retval FAILED_TO_OPEN_FILE_PACK_RESULT - file doesn't exist
- * @retval FAILED_TO_CREATE_ZSTD_PACK_RESULT - failed to create ZSTD contexts
- * @retval FAILED_TO_READ_FILE_PACK_RESULT - failed to read Pack file data
- * @retval FAILED_TO_SEEK_FILE_PACK_RESULT - failed to seek Pack file data
- * @retval BAD_FILE_TYPE_PACK_RESULT - file is not a Pack archive
- * @retval BAD_FILE_VERSION_PACK_RESULT - different Pack file version
- * @retval BAD_FILE_ENDIANNESS_PACK_RESULT - different Pack file data endianness
- * @retval BAD_DATA_SIZE_PACK_RESULT - bad Pack file data size
+ * @retval SUCCESS_PACK_RESULT on success
+ * @retval FAILED_TO_ALLOCATE_PACK_RESULT if out of memory
+ * @retval FAILED_TO_GET_DIRECTORY_PACK_RESULT if failed to get resources directory path
+ * @retval FAILED_TO_OPEN_FILE_PACK_RESULT if file doesn't exist
+ * @retval FAILED_TO_CREATE_ZSTD_PACK_RESULT if failed to create ZSTD contexts
+ * @retval FAILED_TO_READ_FILE_PACK_RESULT if failed to read Pack file data
+ * @retval FAILED_TO_SEEK_FILE_PACK_RESULT if failed to seek Pack file data
+ * @retval BAD_FILE_TYPE_PACK_RESULT if file is not a Pack archive
+ * @retval BAD_FILE_VERSION_PACK_RESULT if different Pack file version
+ * @retval BAD_FILE_ENDIANNESS_PACK_RESULT if different Pack file data endianness
+ * @retval BAD_DATA_SIZE_PACK_RESULT if bad Pack file data size
  */
 PackResult createFilePackReader(const char* filePath,
 	bool isResourcesDirectory, uint32_t threadCount, PackReader* packReader);
@@ -128,7 +130,7 @@ uint32_t getPackItemZipSize(PackReader packReader, uint64_t index);
  * we can pass the index of the current thread and load the data asynchronously.
  *
  * @param packReader pack reader instance
- * @param index uint64_t item index
+ * @param itemIndex uint64_t item index
  * @param[out] buffer target buffer where to read the item data
  * @param threadIndex current thread index or 0
  * 
@@ -166,7 +168,8 @@ bool isPackItemReference(PackReader packReader, uint64_t index);
 
 /**
  * @brief Returns Pack item path string. (MT-Safe)
- * @details You can get the Pack item path when iterating over all items. You should not free the returned string.
+ * @details You can get the Pack item path when iterating over all items.
+ * @warning You should not free the returned string.
  *
  * @param packReader pack reader instance
  * @param index uint64_t item index

@@ -38,7 +38,8 @@ static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
 
 	uint32_t bufferSize = 1;
 	uint8_t* itemData = malloc(sizeof(uint8_t));
-	if (!itemData) return FAILED_TO_ALLOCATE_PACK_RESULT;
+	if (!itemData)
+		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
 	uint8_t* zipData = malloc(sizeof(uint8_t));
 	if (!zipData)
@@ -64,14 +65,18 @@ static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
 		{
 			int progress = (int)(((float)(i + 1) / (float)itemCount) * 100.0f);
 			const char* spacing;
-			if (progress < 10) spacing = "  ";
-			else if (progress < 100) spacing = " ";
-			else spacing = "";
+			if (progress < 10)
+				spacing = "  ";
+			else if (progress < 100)
+				spacing = " ";
+			else
+				spacing = "";
 			printf("[%s%d%%] Packing file %s ", spacing, progress, itemPath);
 			fflush(stdout);
 		}
 
-		if (onPackFile) onPackFile(i, argument);
+		if (onPackFile)
+			onPackFile(i, argument);
 
 		size_t pathSize = strlen(itemPath);
 		if (pathSize > UINT8_MAX)
@@ -162,7 +167,8 @@ static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
 			for (size_t j = 0; j < i; j++)
 			{
 				PackItemHeader* header = &itemHeaders[j];
-				if (header->zipSize != zipSize || header->dataSize != itemSize) continue;
+				if (header->zipSize != zipSize || header->dataSize != itemSize)
+					continue;
 
 				if (seekFile(packFile, header->dataOffset, SEEK_SET) != 0)
 				{
@@ -276,7 +282,8 @@ static int comparePackPathPairs(const void* _a, const void* _b)
 	uint8_t al = (uint8_t)strlen(a->itemPath);
 	uint8_t bl = (uint8_t)strlen(b->itemPath);
 	int difference = al - bl;
-	if (difference != 0) return difference;
+	if (difference != 0)
+		return difference;
 	return memcmp(a->itemPath, b->itemPath, al);
 }
 
@@ -290,7 +297,8 @@ PackResult packFiles(const char* filePath, uint64_t fileCount,
 	assert(fileItemPaths != NULL);
 
 	FileItemPath* pathPairs = malloc(fileCount * sizeof(FileItemPath));
-	if (!pathPairs) return FAILED_TO_ALLOCATE_PACK_RESULT;
+	if (!pathPairs)
+		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
 	uint64_t itemCount = 0;
 	for (uint64_t i = 0; i < fileCount; i++)

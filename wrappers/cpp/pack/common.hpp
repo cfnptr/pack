@@ -35,8 +35,9 @@ using namespace std;
 
 /**
  * @brief Common Pack functions.
+ * @details See the @ref common.h
  */
-class Pack final
+class Common final
 {
 public:
 	/**
@@ -58,7 +59,7 @@ public:
 	 * @details See the @ref readPackHeader().
 	 *
 	 * @param[in] filePath target file path string
-	 * @param[out] packHeader reference to the @ref PackHeader structure
+	 * @param[out] header reference to the @ref PackHeader structure
 	 *
 	 * @throw runtime_error with a @ref PackResult string on failure.
 	 */
@@ -75,7 +76,7 @@ public:
 	 * @details See the @ref readPackHeader().
 	 *
 	 * @param[in] filePath target file path string
-	 * @param[out] packHeader reference to the @ref PackHeader structure
+	 * @param[out] header reference to the @ref PackHeader structure
 	 *
 	 * @return True on success and writes header data, otherwise false.
 	 */
