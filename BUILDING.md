@@ -3,8 +3,8 @@
 ## Operating Systems
 
 * [Window (10/11)](BUILDING.md#windows-1011)
-* [Ubuntu (22.04 LTS)](BUILDING.md#ubuntu-2204-lts)
-* [macOS (Ventura 13)](BUILDING.md#macos-ventura-13)
+* [Ubuntu (22.04/24.04)](BUILDING.md#ubuntu-22042404)
+* [macOS (13/14)](BUILDING.md#macos-1314)
 * [Build Project](BUILDING.md#build-project)
 
 
@@ -28,7 +28,7 @@ You may use default Git install options or chose any other default Git editor in
 1. Download latest release version of installer from [cmake.org](https://cmake.org/download)
 2. Select "Add CMake to the system PATH for the current user" during installation
 
-# Ubuntu (22.04 LTS)
+# Ubuntu (22.04/24.04)
 
 ## 1. Install Visual Studio Code (Or any other IDE)
 
@@ -41,7 +41,7 @@ You may use default Git install options or chose any other default Git editor in
 2. And ```sudo apt-get install git gcc g++ cmake```
 
 
-# macOS (Ventura 13)
+# macOS (13/14)
 
 ## 1. Install Xcode (Or any other IDE)
 
