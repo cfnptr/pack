@@ -22,7 +22,7 @@ if(TARGET pack-static)
 	return()
 endif()
 
-project(pack VERSION 2.0.3 LANGUAGES C
+project(pack VERSION 2.0.4 LANGUAGES C
 	DESCRIPTION "Runtime optimized multi-platform data packing \
  		library for realtime game resources loading"
 	HOMEPAGE_URL "https://github.com/cfnptr/pack")
