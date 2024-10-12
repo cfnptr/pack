@@ -17,14 +17,20 @@ if [ $status -ne 0 ]; then
     exit $status
 fi
 
-echo "Cloning repositories..."
-
 if [ ! -d "../redoxygen" ]; then
     git clone https://github.com/cfnptr/redoxygen ../redoxygen
     status=$?
 
     if [ $status -ne 0 ]; then
         echo "Failed to clone redoxygen repository."
+        exit $status
+    fi
+else
+    git -C ../redoxygen pull
+    status=$?
+
+    if [ $status -ne 0 ]; then
+        echo "Failed to pull redoxygen repository changes."
         exit $status
     fi
 fi
@@ -37,10 +43,16 @@ if [ ! -d "../cppreference-doxygen" ]; then
         echo "Failed to clone cppreference-doxygen repository."
         exit $status
     fi
+else
+    git -C ../cppreference-doxygen pull
+    status=$?
+
+    if [ $status -ne 0 ]; then
+        echo "Failed to pull cppreference-doxygen repository changes."
+        exit $status
+    fi
 fi
 
-echo ""
-echo "Generating documentation..."
 cd "../"
 
 doxygen Doxyfile
