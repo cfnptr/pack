@@ -39,7 +39,7 @@ You may use default Git install options or chose any other default Git editor in
 ## 2. Install required packages
 
 1. Run ```sudo apt-get update``` command using **Terminal** app
-2. And ```sudo apt-get install git gcc g++ cmake```
+2. And ```sudo apt-get install git cmake gcc g++```
 
 
 # macOS (14/15)
