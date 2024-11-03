@@ -19,8 +19,7 @@
  **********************************************************************************************************************/
 
 #pragma once
-#include <string>
-#include <exception>
+#include "pack/error.hpp"
 #include <filesystem>
 
 extern "C"
@@ -30,8 +29,6 @@ extern "C"
 
 namespace pack
 {
-
-using namespace std;
 
 /**
  * @brief Pack writer functions.
@@ -51,6 +48,8 @@ public:
 	 * @param printProgress output packing progress to the stdout
 	 * @param[in] onPackFile file packing callback, or NULL
 	 * @param[in] argument file packing callback argument, or NULL
+	 * 
+	 * @throw Error with a @ref PackResult string on failure.
 	 */
 	static void pack(const filesystem::path& packPath,
 		uint64_t fileCount, const char** fileItemPaths,
@@ -61,7 +60,7 @@ public:
 		auto result = packFiles(path.c_str(), fileCount, fileItemPaths,
 			zipThreshold, printProgress, onPackFile, argument);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result));
+			throw Error(packResultToString(result));
 	}
 };
 

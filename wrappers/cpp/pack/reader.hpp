@@ -19,10 +19,10 @@
  **********************************************************************************************************************/
 
 #pragma once
-#include <string>
+#include "pack/error.hpp"
+
 #include <thread>
 #include <utility>
-#include <exception>
 #include <filesystem>
 #include <string_view>
 
@@ -33,8 +33,6 @@ extern "C"
 
 namespace pack
 {
-
-using namespace std;
 
 /**
  * @brief Pack reader instance handle.
@@ -68,7 +66,7 @@ public:
 	 * @param isResourcesDirectory read from the resources directory (Android/iOS/macOS only)
 	 * @param threadCount max concurrent read thread count
 	 * 
-	 * @throw runtime_error with a @ref PackResult string on failure.
+	 * @throw Error with a @ref PackResult string on failure.
 	 */
 	Reader(const filesystem::path& filePath, bool isResourcesDirectory = true,
 		uint32_t threadCount = thread::hardware_concurrency())
@@ -76,7 +74,7 @@ public:
 		auto path = filePath.generic_string();
 		auto result = createFilePackReader(path.c_str(), isResourcesDirectory, threadCount, &instance);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result) + (", path: " + filePath.generic_string()));
+			throw Error(packResultToString(result));
 	}
 
 	/**
@@ -93,7 +91,7 @@ public:
 	 * @param isResourcesDirectory read from the resources directory (Android/iOS/macOS only)
 	 * @param threadCount max concurrent read thread count
 	 * 
-	 * @throw runtime_error with a @ref PackResult string on failure.
+	 * @throw Error with a @ref PackResult string on failure.
 	 */
 	void open(const filesystem::path& filePath, bool isResourcesDirectory = true,
 		uint32_t threadCount = thread::hardware_concurrency())
@@ -102,7 +100,7 @@ public:
 		auto path = filePath.generic_string();
 		auto result = createFilePackReader(path.c_str(), isResourcesDirectory, threadCount, &instance);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result) + (", path: " + filePath.generic_string()));
+			throw Error(packResultToString(result));
 	}
 
 	/**
@@ -149,7 +147,7 @@ public:
 	 *
 	 * @param[in] path item path string used to pack the file
 	 * @return The item index in the Pack.
-	 * @throw runtime_error with a @ref PackResult string on failure.
+	 * @throw Error if item does not exist.
 	 */
 	uint64_t getItemIndex(const filesystem::path& path) const
 	{
@@ -157,7 +155,7 @@ public:
 		auto _path = path.generic_string();
 		auto result = getPackItemIndex(instance, _path.c_str(), &index);
 		if (!result)
-			throw runtime_error("Item is not exist");
+			throw Error("Item does not exist");
 		return index;
 	}
 
@@ -193,13 +191,13 @@ public:
 	 * @param[out] buffer pointer to the buffer where to read item data
 	 * @param threadIndex current thread index or 0
 	 * 
-	 * @throw runtime_error with a @ref PackResult string on failure.
+	 * @throw Error with a @ref PackResult string on failure.
 	 */
 	void readItemData(uint64_t itemIndex, uint8_t* buffer, uint32_t threadIndex = 0) const
 	{
 		auto result = readPackItemData(instance, itemIndex, buffer, threadIndex);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result) + (", index: " + to_string(itemIndex)));
+			throw Error(packResultToString(result));
 	}
 
 	/**
@@ -210,14 +208,14 @@ public:
 	 * @param[out] buffer reference to the buffer where to read item data
 	 * @param threadIndex current thread index or 0
 	 * 
-	 * @throw runtime_error with a @ref PackResult string on failure.
+	 * @throw Error with a @ref PackResult string on failure.
 	 */
 	void readItemData(uint64_t itemIndex, vector<uint8_t>& buffer, uint32_t threadIndex = 0) const
 	{
 		buffer.resize(getPackItemDataSize(instance, itemIndex));
 		auto result = readPackItemData(instance, itemIndex, buffer.data(), threadIndex);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result) + (", index: " + to_string(itemIndex)));
+			throw Error(packResultToString(result));
 	}
 
 	/**
@@ -228,7 +226,7 @@ public:
 	 * @param[out] buffer reference to the buffer where to read item data
 	 * @param threadIndex current thread index or 0
 	 * 
-	 * @throw runtime_error with a @ref PackResult string on failure.
+	 * @throw Error with a @ref PackResult string on failure.
 	 */
 	void readItemData(const filesystem::path& path, vector<uint8_t>& buffer, uint32_t threadIndex = 0) const
 	{
@@ -236,7 +234,7 @@ public:
 		buffer.resize(getPackItemDataSize(instance, itemIndex));
 		auto result = readPackItemData(instance, itemIndex, buffer.data(), threadIndex);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result) + (", path: " + path.generic_string()));
+			throw Error(packResultToString(result));
 	}
 
 	/*******************************************************************************************************************
@@ -289,14 +287,14 @@ public:
 	 * @param[in] filePath target Pack file path string
 	 * @param printProgress output unpacking progress to the stdout
 	 * 
-	 * @throw runtime_error with a @ref PackResult string on failure.
+	 * @throw Error with a @ref PackResult string on failure.
 	 */
 	static void unpack(const filesystem::path& filePath, bool printProgress = false)
 	{
 		auto path = filePath.generic_string();
 		auto result = unpackFiles(path.c_str(), printProgress);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result) + (", path: " + filePath.generic_string()));
+			throw Error(packResultToString(result));
 	}
 };
 

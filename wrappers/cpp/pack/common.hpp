@@ -19,8 +19,7 @@
  **********************************************************************************************************************/
 
 #pragma once
-#include <string>
-#include <exception>
+#include "pack/error.hpp"
 #include <filesystem>
 
 extern "C"
@@ -30,8 +29,6 @@ extern "C"
 
 namespace pack
 {
-
-using namespace std;
 
 /**
  * @brief Common Pack functions.
@@ -61,14 +58,14 @@ public:
 	 * @param[in] filePath target file path string
 	 * @param[out] header reference to the @ref PackHeader structure
 	 *
-	 * @throw runtime_error with a @ref PackResult string on failure.
+	 * @throw Error with a @ref PackResult string on failure.
 	 */
 	static void readHeader(const filesystem::path& filePath, PackHeader& header)
 	{
 		auto path = filePath.generic_string();
 		auto result = readPackHeader(path.c_str(), &header);
 		if (result != SUCCESS_PACK_RESULT)
-			throw runtime_error(packResultToString(result) + (", path: " + filePath.generic_string()));
+			throw Error(packResultToString(result) + (", path: " + filePath.generic_string()));
 	}
 
 	/**
