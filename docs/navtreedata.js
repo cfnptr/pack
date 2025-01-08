@@ -51,7 +51,7 @@ var NAVTREE =
         [ "Install Visual Studio Code (Or any other IDE)", "md__b_u_i_l_d_i_n_g.html#autotoc_md1-install-visual-studio-code-or-any-other-ide", null ],
         [ "Install required packages", "md__b_u_i_l_d_i_n_g.html#autotoc_md2-install-required-packages", null ]
       ] ],
-      [ "macOS (13/14)", "md__b_u_i_l_d_i_n_g.html#macos-1314", [
+      [ "macOS (14/15)", "md__b_u_i_l_d_i_n_g.html#macos-1415", [
         [ "Install Xcode (Or any other IDE)", "md__b_u_i_l_d_i_n_g.html#autotoc_md1-install-xcode-or-any-other-ide", null ],
         [ "Install required packages", "md__b_u_i_l_d_i_n_g.html#autotoc_md2-install-required-packages-1", null ]
       ] ],
@@ -63,6 +63,7 @@ var NAVTREE =
     [ "Data Structures", "annotated.html", [
       [ "Data Structures", "annotated.html", "annotated_dup" ],
       [ "Data Structure Index", "classes.html", null ],
+      [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Data Fields", "functions.html", [
         [ "All", "functions.html", null ],
         [ "Functions", "functions_func.html", null ],
@@ -75,7 +76,6 @@ var NAVTREE =
         [ "All", "globals.html", null ],
         [ "Functions", "globals_func.html", null ],
         [ "Typedefs", "globals_type.html", null ],
-        [ "Enumerations", "globals_enum.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]

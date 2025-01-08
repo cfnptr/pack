@@ -17,24 +17,6 @@ var common_8h =
     ] ],
     [ "PACK_HEADER_MAGIC", "common_8h.html#a31167b3e857e6b4d92737715179eb799", null ],
     [ "PackResult", "common_8h.html#a0d32300bf8cf2d158503f717426f801a", null ],
-    [ "PackResult_T", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9", [
-      [ "SUCCESS_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9ae41ec6cdf93eccecdcba7f1bdf23550a", null ],
-      [ "FAILED_TO_ALLOCATE_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9a7d0fed46ab79f7ef5d26284d85c741ea", null ],
-      [ "FAILED_TO_CREATE_ZSTD_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9a5e268f3c77ca3db7bbb903703091e9f9", null ],
-      [ "FAILED_TO_CREATE_FILE_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9a7099a3978dd093c9a98860bc0fe3e278", null ],
-      [ "FAILED_TO_OPEN_FILE_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9acc753b986f53a0bd14bd0b1b34e84e2f", null ],
-      [ "FAILED_TO_WRITE_FILE_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9ae5d86c1266459767be76f7e580cf960a", null ],
-      [ "FAILED_TO_READ_FILE_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9ab686ee676c4fe64425e8567e15038935", null ],
-      [ "FAILED_TO_SEEK_FILE_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9a72eefe330b76c1e3eb57dd0f6dc5b7e1", null ],
-      [ "FAILED_TO_GET_DIRECTORY_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9a4dd2513dd089e021913a4fab5f1f52c6", null ],
-      [ "FAILED_TO_DECOMPRESS_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9aeaa75a640a011e2193a8e53bd32d9b0d", null ],
-      [ "FAILED_TO_GET_ITEM_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9a38bafc45fbb46eb5cacb8e02c48ddfaf", null ],
-      [ "BAD_DATA_SIZE_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9ae40d678d25d0217bc708c463ce836b7a", null ],
-      [ "BAD_FILE_TYPE_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9ab47fa650c7531f208fe869ffe56f2ef6", null ],
-      [ "BAD_FILE_VERSION_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9a6d4aaa19263f31e18171a40c12cb563c", null ],
-      [ "BAD_FILE_ENDIANNESS_PACK_RESULT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9a4116d163723a428e7ed0492abb2fb77b", null ],
-      [ "PACK_RESULT_COUNT", "common_8h.html#a879791abc79b4a9655f4d6cf7a36cda9ae417f3057e1d425dae43e8eadcf0a560", null ]
-    ] ],
     [ "getPackLibraryVersion", "common_8h.html#ae48107775eaae834d65348bd8a7b3684", null ],
     [ "readPackHeader", "common_8h.html#ad3b87839cf3d57486d354040547c335b", null ]
 ];
