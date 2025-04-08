@@ -22,6 +22,7 @@
 #include "pack/error.hpp"
 
 #include <thread>
+#include <vector>
 #include <utility>
 #include <filesystem>
 #include <string_view>
