@@ -1,11 +1,11 @@
 var annotated_dup =
 [
     [ "pack", null, [
-      [ "Common", "classpack_1_1_common.html", null ],
-      [ "Error", "classpack_1_1_error.html", "classpack_1_1_error" ],
-      [ "Reader", "classpack_1_1_reader.html", "classpack_1_1_reader" ],
-      [ "Writer", "classpack_1_1_writer.html", null ]
+      [ "Common", "classpack_1_1Common.html", null ],
+      [ "Error", "classpack_1_1Error.html", "classpack_1_1Error" ],
+      [ "Reader", "classpack_1_1Reader.html", "classpack_1_1Reader" ],
+      [ "Writer", "classpack_1_1Writer.html", null ]
     ] ],
-    [ "PackHeader", "common_8h.html#struct_pack_header", "common_8h_struct_pack_header" ],
-    [ "PackItemHeader", "common_8h.html#struct_pack_item_header", "common_8h_struct_pack_item_header" ]
+    [ "PackHeader", "common_8h.html#structPackHeader", "common_8h_structPackHeader" ],
+    [ "PackItemHeader", "common_8h.html#structPackItemHeader", "common_8h_structPackItemHeader" ]
 ];

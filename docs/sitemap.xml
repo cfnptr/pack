@@ -8,9 +8,6 @@
     <loc>https://cfnptr.github.io/pack/common_8h.html</loc>
   </url>
   <url>
-    <loc>https://cfnptr.github.io/pack/reader_8h.html</loc>
-  </url>
-  <url>
     <loc>https://cfnptr.github.io/pack/writer_8h.html</loc>
   </url>
   <url>
@@ -20,25 +17,28 @@
     <loc>https://cfnptr.github.io/pack/error_8hpp.html</loc>
   </url>
   <url>
+    <loc>https://cfnptr.github.io/pack/reader_8h.html</loc>
+  </url>
+  <url>
     <loc>https://cfnptr.github.io/pack/reader_8hpp.html</loc>
   </url>
   <url>
     <loc>https://cfnptr.github.io/pack/writer_8hpp.html</loc>
   </url>
   <url>
-    <loc>https://cfnptr.github.io/pack/md__b_u_i_l_d_i_n_g.html</loc>
+    <loc>https://cfnptr.github.io/pack/md_BUILDING.html</loc>
   </url>
   <url>
-    <loc>https://cfnptr.github.io/pack/classpack_1_1_error.html</loc>
+    <loc>https://cfnptr.github.io/pack/classpack_1_1Common.html</loc>
   </url>
   <url>
-    <loc>https://cfnptr.github.io/pack/classpack_1_1_common.html</loc>
+    <loc>https://cfnptr.github.io/pack/classpack_1_1Error.html</loc>
   </url>
   <url>
-    <loc>https://cfnptr.github.io/pack/classpack_1_1_reader.html</loc>
+    <loc>https://cfnptr.github.io/pack/classpack_1_1Reader.html</loc>
   </url>
   <url>
-    <loc>https://cfnptr.github.io/pack/classpack_1_1_writer.html</loc>
+    <loc>https://cfnptr.github.io/pack/classpack_1_1Writer.html</loc>
   </url>
   <url>
     <loc>https://cfnptr.github.io/pack/dir_0af74dce6ed792f14cfe74ff7f287b3e.html</loc>
@@ -222,6 +222,9 @@
   </url>
   <url>
     <loc>https://cfnptr.github.io/pack/globals_type.html</loc>
+  </url>
+  <url>
+    <loc>https://cfnptr.github.io/pack/globals_enum.html</loc>
   </url>
   <url>
     <loc>https://cfnptr.github.io/pack/globals_defs.html</loc>

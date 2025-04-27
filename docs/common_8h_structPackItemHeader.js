@@ -1,4 +1,4 @@
-var common_8h_struct_pack_item_header =
+var common_8h_structPackItemHeader =
 [
     [ "zipSize", "common_8h.html#abc9a46b073661e9af4a59c2044a00667", null ],
     [ "dataSize", "common_8h.html#ae3c68f6750377179ad148e76693cc7d1", null ],
