@@ -22,7 +22,7 @@ if(TARGET pack-static)
 	return()
 endif()
 
-project(pack VERSION 2.0.4 LANGUAGES C
+project(pack VERSION 2.1.0 LANGUAGES C
 	DESCRIPTION "Runtime optimized multi-platform data packing \
  		library for realtime game resources loading"
 	HOMEPAGE_URL "https://github.com/cfnptr/pack")
@@ -38,6 +38,7 @@ set(MPIO_BUILD_SHARED OFF CACHE BOOL "" FORCE)
 set(MPIO_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 add_subdirectory(libraries/mpio)
 
+set(ZSTD_LEGACY_SUPPORT OFF CACHE BOOL "" FORCE)
 set(ZSTD_MULTITHREAD_SUPPORT OFF CACHE BOOL "" FORCE)
 set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
 set(ZSTD_BUILD_TESTS OFF CACHE BOOL "" FORCE)
