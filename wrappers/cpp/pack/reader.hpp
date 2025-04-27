@@ -64,16 +64,17 @@ public:
 	 * @details See the @ref createFilePackReader().
 	 *
 	 * @param[in] filePath target Pack file path string
+	 * @param dataVersion target packed file data version (0 = ignore data version)
 	 * @param isResourcesDirectory read from the resources directory (Android/iOS/macOS only)
 	 * @param threadCount max concurrent read thread count
 	 * 
 	 * @throw Error with a @ref PackResult string on failure.
 	 */
-	Reader(const filesystem::path& filePath, bool isResourcesDirectory = true,
+	Reader(const filesystem::path& filePath, uint32_t dataVersion = 0, bool isResourcesDirectory = true,
 		uint32_t threadCount = thread::hardware_concurrency())
 	{
 		auto path = filePath.generic_string();
-		auto result = createFilePackReader(path.c_str(), isResourcesDirectory, threadCount, &instance);
+		auto result = createFilePackReader(path.c_str(), dataVersion, isResourcesDirectory, threadCount, &instance);
 		if (result != SUCCESS_PACK_RESULT)
 			throw Error(packResultToString(result));
 	}
@@ -89,17 +90,18 @@ public:
 	 * @details See the @ref createFilePackReader().
 	 *
 	 * @param[in] filePath target Pack file path string
+	 * @param dataVersion target packed file data version (0 = ignore data version)
 	 * @param isResourcesDirectory read from the resources directory (Android/iOS/macOS only)
 	 * @param threadCount max concurrent read thread count
 	 * 
 	 * @throw Error with a @ref PackResult string on failure.
 	 */
-	void open(const filesystem::path& filePath, bool isResourcesDirectory = true,
+	void open(const filesystem::path& filePath, uint32_t dataVersion = 0, bool isResourcesDirectory = true,
 		uint32_t threadCount = thread::hardware_concurrency())
 	{
 		destroyPackReader(instance);
 		auto path = filePath.generic_string();
-		auto result = createFilePackReader(path.c_str(), isResourcesDirectory, threadCount, &instance);
+		auto result = createFilePackReader("/home/cfnptr/Desktop/voxfield/build-release-clang/resources.pack", dataVersion, isResourcesDirectory, threadCount, &instance);
 		if (result != SUCCESS_PACK_RESULT)
 			throw Error(packResultToString(result));
 	}

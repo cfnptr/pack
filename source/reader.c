@@ -105,7 +105,7 @@ static PackResult createPackItems(FILE* packFile,
 }
 
 /**********************************************************************************************************************/
-PackResult createFilePackReader(const char* filePath,
+PackResult createFilePackReader(const char* filePath, uint32_t dataVersion,
 	bool isResourcesDirectory, uint32_t threadCount, PackReader* packReader)
 {
 	assert(filePath != NULL);
@@ -237,11 +237,10 @@ PackResult createFilePackReader(const char* filePath,
 		destroyPackReader(packReaderInstance);
 		return BAD_FILE_ENDIANNESS_PACK_RESULT;
 	}
-
-	if (header.itemCount == 0)
+	if (dataVersion != 0 && header.dataVersion != dataVersion)
 	{
 		destroyPackReader(packReaderInstance);
-		return BAD_DATA_SIZE_PACK_RESULT;
+		return BAD_FILE_DATA_VERSION_PACK_RESULT;
 	}
 
 	PackItem* items;
@@ -418,7 +417,7 @@ PackResult unpackFiles(const char* filePath, bool printProgress)
 	assert(filePath != NULL);
 
 	PackReader packReader; // TODO: do this from multiple threads.
-	PackResult packResult = createFilePackReader(filePath, false, 1, &packReader);
+	PackResult packResult = createFilePackReader(filePath, 0, false, 1, &packReader);
 	if (packResult != SUCCESS_PACK_RESULT)
 		return packResult;
 

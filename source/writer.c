@@ -289,7 +289,7 @@ static int comparePackPathPairs(const void* _a, const void* _b)
 
 /**********************************************************************************************************************/
 PackResult packFiles(const char* filePath, uint64_t fileCount,
-	const char** fileItemPaths, float zipThreshold,
+	const char** fileItemPaths, uint32_t dataVersion, float zipThreshold, 
 	bool printProgress, OnPackFile onPackFile, void* argument)
 {
 	assert(filePath != NULL);
@@ -335,6 +335,7 @@ PackResult packFiles(const char* filePath, uint64_t fileCount,
 	header.versionPatch = PACK_VERSION_PATCH;
 	header.isBigEndian = !PACK_LITTLE_ENDIAN;
 	header.itemCount = itemCount;
+	header.dataVersion = dataVersion;
 
 	size_t writeResult = fwrite(&header, sizeof(PackHeader), 1, packFile);
 	if (writeResult != 1)

@@ -34,7 +34,7 @@ typedef struct PackReader_T PackReader_T;
  */
 typedef PackReader_T* PackReader;
 
-/***********************************************************************************************************************
+/**
  * @brief Creates a new file pack reader instance.
  * 
  * @details
@@ -45,6 +45,7 @@ typedef PackReader_T* PackReader;
  * @note You should destroy created Pack instance manually.
  *
  * @param[in] filePath target Pack file path string
+ * @param dataVersion target packed file data version (0 = ignore data version)
  * @param isResourcesDirectory read from the resources directory (Android/iOS/macOS only)
  * @param threadCount max concurrent read thread count
  * @param[out] packReader pointer to the Pack reader instance
@@ -62,8 +63,9 @@ typedef PackReader_T* PackReader;
  * @retval BAD_FILE_VERSION_PACK_RESULT if different Pack file version
  * @retval BAD_FILE_ENDIANNESS_PACK_RESULT if different Pack file data endianness
  * @retval BAD_DATA_SIZE_PACK_RESULT if bad Pack file data size
+ * @retval BAD_FILE_DATA_VERSION_PACK_RESULT if bad packed file data version
  */
-PackResult createFilePackReader(const char* filePath,
+PackResult createFilePackReader(const char* filePath, uint32_t dataVersion,
 	bool isResourcesDirectory, uint32_t threadCount, PackReader* packReader);
 
 /**
@@ -72,7 +74,7 @@ PackResult createFilePackReader(const char* filePath,
  */
 void destroyPackReader(PackReader packReader);
 
-/***********************************************************************************************************************
+/**
  * @brief Returns total Pack item count. (MT-Safe)
  * @details You can use the returned value to iterate over all Pack archive files.
  * 
@@ -193,6 +195,19 @@ void** const getPackZstdContexts(PackReader packReader);
  * @param[in] filePath target Pack file path string
  * @param printProgress output unpacking progress to the stdout
  * 
- * @return The @ref PackResult code.
+ * @return The @ref PackResult code and unpacks files on success.
+ *
+ * @retval SUCCESS_PACK_RESULT on success
+ * @retval FAILED_TO_ALLOCATE_PACK_RESULT if out of memory
+ * @retval FAILED_TO_GET_DIRECTORY_PACK_RESULT if failed to get resources directory path
+ * @retval FAILED_TO_OPEN_FILE_PACK_RESULT if file doesn't exist
+ * @retval FAILED_TO_CREATE_ZSTD_PACK_RESULT if failed to create ZSTD contexts
+ * @retval FAILED_TO_READ_FILE_PACK_RESULT if failed to read Pack file data
+ * @retval FAILED_TO_SEEK_FILE_PACK_RESULT if failed to seek Pack file data
+ * @retval BAD_FILE_TYPE_PACK_RESULT if file is not a Pack archive
+ * @retval BAD_FILE_VERSION_PACK_RESULT if different Pack file version
+ * @retval BAD_FILE_ENDIANNESS_PACK_RESULT if different Pack file data endianness
+ * @retval BAD_DATA_SIZE_PACK_RESULT if bad Pack file data size
+ * @retval BAD_FILE_DATA_VERSION_PACK_RESULT if bad packed file data version
  */
 PackResult unpackFiles(const char* filePath, bool printProgress);

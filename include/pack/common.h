@@ -33,7 +33,7 @@
 #define PACK_HEADER_MAGIC (('P' << 24) | ('A' << 16) | ('C' << 8) | 'K')
 #endif
 
-/***********************************************************************************************************************
+/**
  * @brief Pack file header structure.
  *
  * @details
@@ -47,10 +47,11 @@ typedef struct PackHeader
 	uint8_t versionMinor; /**< File format minor version */
 	uint8_t versionPatch; /**< File format patch version */
 	uint8_t isBigEndian;  /**< Is packed data format big endian */
-	uint64_t itemCount;   /**< Total pack itrm count */
+	uint64_t itemCount;   /**< Total pack item count */
+	uint32_t dataVersion; /**< Packed file data version */
 } PackHeader;
 
-/***********************************************************************************************************************
+/**
  * @brief Pack item header structure.
  *
  * @details
@@ -87,14 +88,15 @@ typedef enum PackResult_T
 	BAD_FILE_TYPE_PACK_RESULT = 12,
 	BAD_FILE_VERSION_PACK_RESULT = 13,
 	BAD_FILE_ENDIANNESS_PACK_RESULT = 14,
-	PACK_RESULT_COUNT = 15
+	BAD_FILE_DATA_VERSION_PACK_RESULT = 15,
+	PACK_RESULT_COUNT = 16
 } PackResult_T;
 /**
  * @brief Pack result code type.
  */
 typedef uint8_t PackResult;
 
-/***********************************************************************************************************************
+/**
  * @brief Returns Pack library hardcoded version. (MT-Safe)
  *
  * @details
@@ -107,7 +109,7 @@ typedef uint8_t PackResult;
  */
 void getPackLibraryVersion(uint8_t* major, uint8_t* minor, uint8_t* patch);
 
-/***********************************************************************************************************************
+/**
  * @brief Reads Pack header from the file. (MT-Safe)
  *
  * @details
@@ -142,7 +144,8 @@ static const char* const packResultStrings[PACK_RESULT_COUNT] = {
 	"Bad data size",
 	"Bad file type",
 	"Bad file version",
-	"Bad file endianness"
+	"Bad file endianness",
+	"Bad file data version"
 };
 
 /**

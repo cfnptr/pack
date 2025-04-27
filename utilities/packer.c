@@ -16,19 +16,63 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main(int argc, char *argv[])
 {
-	if (argc <= 2 || (argc - 2) % 2 != 0)
+	if (argc <= 2)
 	{
-		printf("Usage: packer <pack-path> <file-path-1> <item-path-1>...\n");
+		printf("Usage: packer [-z, -v] <pack-path> <file-path-1> <item-path-1>...\n");
 		return EXIT_FAILURE;
 	}
 
-	// TODO: add zip threshold option to the command line arguments.
+	float zipThreshold = 0.1f;
+	uint32_t dataVersion = 0;
+	int argOffset = 1;
+	
+	while (true)
+	{
+		char* arg = argv[argOffset];
+		if (strcmp(arg, "-z") == 0)
+		{
+			int zipPercents = atoi(argv[argOffset + 1]);
+			if (zipPercents < 0 || zipPercents > 100)
+			{
+				printf("Bad zip threshold value, should be in range 0 - 100 percents.\n");
+				return EXIT_FAILURE;
+			}
 
-	PackResult result = packFiles(argv[1], (argc - 2) / 2,
-		(const char**)argv + 2, 0.1f, true, NULL, NULL);
+			zipThreshold = (float)zipPercents * 0.01f;
+			argOffset += 2;
+			continue;
+		}
+		else if (strcmp(arg, "-v") == 0)
+		{
+			long long version = atoll(argv[argOffset + 1]);
+			if (version < 0 && version > UINT32_MAX)
+			{
+				printf("Bad data version value, should be in range 0 - UINT32_MAX.\n");
+				return EXIT_FAILURE;
+			}
+
+			dataVersion = (uint32_t)version;
+			argOffset += 2;
+			continue;
+		}
+
+		break;
+	}
+
+	char* packPath = argv[argOffset++];
+
+	if ((argc - argOffset) % 2 != 0)
+	{
+		printf("Bad pack file and item count, missing some of the items.\n");
+		return EXIT_FAILURE;
+	}
+
+	PackResult result = packFiles(packPath, (argc - argOffset) / 2,
+		(const char**)argv + argOffset, dataVersion, zipThreshold, true, NULL, NULL);
 
 	if (result != SUCCESS_PACK_RESULT)
 	{

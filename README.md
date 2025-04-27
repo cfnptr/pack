@@ -31,7 +31,7 @@ void packReaderExampleCPP()
 void packReaderExampleC()
 {
     PackReader packReader = NULL;
-    PackResult packResult = createFilePackReader("resources.pack", false, 1, &packReader);
+    PackResult packResult = createFilePackReader("resources.pack", 0, false, 1, &packReader);
     if (packResult != SUCCESS_PACK_RESULT) abort();
 
     uint64_t itemIndex = 0;
@@ -103,8 +103,9 @@ git clone --recursive https://github.com/cfnptr/pack
 
 Creates compressed data pack from files.
 
-* Usage: ```packer <pack-path> <file-path-1> <item-path-1>...```
+* Usage: ```packer [-z, -v] <pack-path> <file-path-1> <item-path-1>...```
 * Example: ```packer resources.pack C:/Users/user/Desktop/sky.png images/sky.png```
+* Arguments: [-z zipThreshold, -v dataVersion]
 
 ### unpacker
 

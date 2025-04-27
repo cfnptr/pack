@@ -63,7 +63,7 @@ inline static bool testFailedToOpenFile()
 	PackReader packReader;
 
 	PackResult packResult = createFilePackReader(
-		"not_existing_file.pack", false, 1, &packReader);
+		"not_existing_file.pack", 0, false, 1, &packReader);
 
 	if (packResult != FAILED_TO_OPEN_FILE_PACK_RESULT)
 	{
@@ -103,7 +103,7 @@ inline static bool testPacker()
 	}
 	
 	PackResult packResult = packFiles(
-		TEST_FILE_NAME, 3, files, 0.1f, false, NULL, NULL);
+		TEST_FILE_NAME, 3, files, 123, 0.1f, false, NULL, NULL);
 	remove(files[0]); remove(files[2]); remove(files[4]);
 
 	if (packResult != SUCCESS_PACK_RESULT)
@@ -114,7 +114,7 @@ inline static bool testPacker()
 	}
 
 	PackReader packReader;
-	packResult = createFilePackReader(TEST_FILE_NAME, false, 1, &packReader);
+	packResult = createFilePackReader(TEST_FILE_NAME, 123, false, 1, &packReader);
 
 	if (packResult != SUCCESS_PACK_RESULT)
 	{

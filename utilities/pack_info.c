@@ -36,16 +36,17 @@ int main(int argc, char *argv[])
 
 	printf("Pack [v%d.%d.%d]\n\n"
 		"Pack information:\n"
-		"    Version: %d.%d.%d\n"
+		"    File version: %d.%d.%d\n"
+		"    Data version: %u\n"
 		"    Big endian: %s\n"
 		"    Item count: %llu\n\n",
 		PACK_VERSION_MAJOR, PACK_VERSION_MINOR, PACK_VERSION_PATCH,
 		header.versionMajor, header.versionMinor, header.versionPatch,
-		header.isBigEndian ? "true" : "false",
+		header.dataVersion, header.isBigEndian ? "true" : "false",
 		(long long unsigned int)header.itemCount);
 
 	PackReader packReader;
-	result = createFilePackReader(argv[1], 0, false, &packReader);
+	result = createFilePackReader(argv[1], 0, false, header.dataVersion, &packReader);
 	if (result != SUCCESS_PACK_RESULT)
 	{
 		printf("\nError: %s.\n", packResultToString(result));

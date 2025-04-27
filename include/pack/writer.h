@@ -45,6 +45,7 @@ typedef void(*OnPackFile)(uint64_t itemIndex, void* argument);
  * @param[in] packPath output Pack file path string
  * @param fileCount file count to pack
  * @param[in] fileItemPaths pack file and item path string array (file/item, file/item...)
+ * @param dataVersion packed file data version
  * @param zipThreshold compression threshold (0.0 - 1.0 range)
  * @param printProgress output packing progress to the stdout
  * @param[in] onPackFile file packing callback, or NULL
@@ -53,4 +54,4 @@ typedef void(*OnPackFile)(uint64_t itemIndex, void* argument);
  * @return The @ref PackResult code.
  */
 PackResult packFiles(const char* packPath, uint64_t fileCount, const char** fileItemPaths,
-	float zipThreshold, bool printProgress, OnPackFile onPackFile, void* argument);
+	uint32_t dataVersion, float zipThreshold, bool printProgress, OnPackFile onPackFile, void* argument);
