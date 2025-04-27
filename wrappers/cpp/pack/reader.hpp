@@ -101,7 +101,7 @@ public:
 	{
 		destroyPackReader(instance);
 		auto path = filePath.generic_string();
-		auto result = createFilePackReader("/home/cfnptr/Desktop/voxfield/build-release-clang/resources.pack", dataVersion, isResourcesDirectory, threadCount, &instance);
+		auto result = createFilePackReader(path.c_str(), dataVersion, isResourcesDirectory, threadCount, &instance);
 		if (result != SUCCESS_PACK_RESULT)
 			throw Error(packResultToString(result));
 	}
