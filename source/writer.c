@@ -16,6 +16,7 @@
 #include "mpio/file.h"
 
 #include "zstd.h"
+#include "lz4hc.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,30 +29,68 @@ typedef struct FileItemPath
 	const char* itemPath;
 } FileItemPath;
 
+typedef struct CompressorData
+{
+	uint8_t* itemData;
+	uint8_t* zipData;
+	PackItemHeader* itemHeaders;
+	void* zipContext;
+	FILE* itemFile;
+	bool preferSpeed;
+} CompressorData;
+
+static void destroyCompressorData(CompressorData* compressor)
+{
+	if (compressor->itemFile)
+		closeFile(compressor->itemFile);
+	if (compressor->preferSpeed)
+		free(compressor->zipContext);
+	else ZSTD_freeCCtx(compressor->zipContext);
+
+	free(compressor->itemHeaders);
+	free(compressor->zipData);
+	free(compressor->itemData);
+}
+
+/**********************************************************************************************************************/
 static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
-	const FileItemPath* pathPairs, float zipThreshold,
+	const FileItemPath* pathPairs, float zipThreshold, bool preferSpeed,
 	bool printProgress, OnPackFile onPackFile, void* argument)
 {
 	assert(packFile != NULL);
 	assert(itemCount > 0);
 	assert(pathPairs != NULL);
 
+	CompressorData compressor;
+	memset(&compressor, 0, sizeof(CompressorData));
+	compressor.preferSpeed = preferSpeed;
+
 	uint32_t bufferSize = 1;
-	uint8_t* itemData = malloc(sizeof(uint8_t));
-	if (!itemData)
+	compressor.itemData = malloc(sizeof(uint8_t));
+	if (!compressor.itemData)
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
-	uint8_t* zipData = malloc(sizeof(uint8_t));
-	if (!zipData)
+	compressor.zipData = malloc(sizeof(uint8_t));
+	if (!compressor.zipData)
 	{
-		free(itemData);
+		destroyCompressorData(&compressor);
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 	}
 
-	PackItemHeader* itemHeaders = malloc(itemCount * sizeof(PackItemHeader));
-	if (!itemHeaders)
+	compressor.itemHeaders = malloc(itemCount * sizeof(PackItemHeader));
+	if (!compressor.itemHeaders)
 	{
-		free(zipData); free(itemData);
+		destroyCompressorData(&compressor);
+		return FAILED_TO_ALLOCATE_PACK_RESULT;
+	}
+
+	if (preferSpeed)
+		compressor.zipContext = malloc(LZ4_sizeofStateHC());
+	else compressor.zipContext = ZSTD_createCCtx();
+
+	if (!compressor.zipContext)
+	{
+		destroyCompressorData(&compressor);
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 	}
 
@@ -81,109 +120,121 @@ static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
 		size_t pathSize = strlen(itemPath);
 		if (pathSize > UINT8_MAX)
 		{
-			free(itemHeaders); free(zipData); free(itemData);
+			destroyCompressorData(&compressor);
 			return BAD_DATA_SIZE_PACK_RESULT;
 		}
 
-		FILE* itemFile = openFile(pathPairs[i].filePath, "rb");
-		if (!itemFile)
+		compressor.itemFile = openFile(pathPairs[i].filePath, "rb");
+		if (!compressor.itemFile)
 		{
-			free(itemHeaders); free(zipData); free(itemData);
+			destroyCompressorData(&compressor);
 			return FAILED_TO_OPEN_FILE_PACK_RESULT;
 		}
 
-		if (seekFile(itemFile, 0, SEEK_END) != 0)
+		if (seekFile(compressor.itemFile, 0, SEEK_END) != 0)
 		{
-			closeFile(itemFile);
-			free(itemHeaders); free(zipData); free(itemData);
+			destroyCompressorData(&compressor);
 			return FAILED_TO_SEEK_FILE_PACK_RESULT;
 		}
 
-		uint64_t itemSize = (uint64_t)tellFile(itemFile);
-		if (itemSize > UINT32_MAX)
+		uint64_t fileSize = (uint64_t)tellFile(compressor.itemFile);
+		if (fileSize > UINT32_MAX)
 		{
-			closeFile(itemFile);
-			free(itemHeaders); free(zipData); free(itemData);
+			destroyCompressorData(&compressor);
 			return BAD_DATA_SIZE_PACK_RESULT;
 		}
 
 		uint64_t sameDataOffset = UINT64_MAX;
-		size_t zipSize = 0, zipItemSize = 0; uint8_t* zipItemData = NULL;
+		uint8_t* zipItemData = NULL; uint32_t zipItemSize = 0;
 
-		if (itemSize > 0)
+		PackItemHeader header;
+		header.dataSize = (uint32_t)fileSize;
+		header.pathSize = (uint8_t)pathSize;
+
+		if (header.dataSize > 0)
 		{
-			if (itemSize > bufferSize)
+			if (header.dataSize > bufferSize)
 			{
-				uint8_t* newBuffer = realloc(itemData, itemSize);
+				uint8_t* newBuffer = realloc(compressor.itemData, header.dataSize);
 				if (!newBuffer)
 				{
-					closeFile(itemFile);
-					free(itemHeaders); free(zipData); free(itemData);
+					destroyCompressorData(&compressor);
 					return FAILED_TO_ALLOCATE_PACK_RESULT;
 				}
+				compressor.itemData = newBuffer;
 
-				itemData = newBuffer;
-				newBuffer = realloc(zipData, itemSize);
+				newBuffer = realloc(compressor.zipData, header.dataSize);
 				if (!newBuffer)
 				{
-					closeFile(itemFile);
-					free(itemHeaders); free(zipData); free(itemData);
+					destroyCompressorData(&compressor);
 					return FAILED_TO_ALLOCATE_PACK_RESULT;
 				}
-
-				zipData = newBuffer;
+				compressor.zipData = newBuffer;
 			}
 
-			if (seekFile(itemFile, 0, SEEK_SET) != 0)
+			if (seekFile(compressor.itemFile, 0, SEEK_SET) != 0)
 			{
-				closeFile(itemFile);
-				free(itemHeaders); free(zipData); free(itemData);
+				destroyCompressorData(&compressor);
 				return FAILED_TO_SEEK_FILE_PACK_RESULT;
 			}
 
-			size_t result = fread(itemData, sizeof(uint8_t), itemSize, itemFile);
-			closeFile(itemFile);
+			size_t result = fread(compressor.itemData, sizeof(uint8_t), header.dataSize, compressor.itemFile);
+			closeFile(compressor.itemFile); compressor.itemFile = NULL;
 
-			if (result != itemSize)
+			if (result != header.dataSize)
 			{
-				free(itemHeaders); free(zipData); free(itemData);
+				destroyCompressorData(&compressor);
 				return FAILED_TO_READ_FILE_PACK_RESULT;
 			}
 
-			zipSize = ZSTD_compress(zipData, itemSize - 1, itemData, itemSize, ZSTD_maxCLevel());
-
-			if (ZSTD_isError(zipSize) || (zipThreshold + (double)zipSize / (double)itemSize > 1.0))
+			uint32_t isError;
+			if (preferSpeed)
 			{
-				zipSize = 0;
-				zipItemData = zipData;
-				zipItemSize = itemSize;
+				header.zipSize = (uint32_t)LZ4_compress_HC_extStateHC(
+					compressor.zipContext, (const char*)compressor.itemData, (char*)compressor.zipData, 
+					header.dataSize, header.dataSize - 1, LZ4HC_CLEVEL_MAX);
+				isError = header.zipSize == 0;
 			}
 			else
 			{
-				zipItemData = itemData;
-				zipItemSize = zipSize;
+				result = ZSTD_compressCCtx((ZSTD_CCtx*)compressor.zipContext, compressor.zipData, 
+					header.dataSize - 1, compressor.itemData, header.dataSize, ZSTD_maxCLevel());
+				header.zipSize = (uint32_t)result;
+				isError = ZSTD_isError(result);
+			}
+
+			if (isError || (zipThreshold + (double)header.zipSize / (double)header.dataSize > 1.0))
+			{
+				header.zipSize = 0;
+				zipItemData = compressor.zipData;
+				zipItemSize = header.dataSize;
+			}
+			else
+			{
+				zipItemData = compressor.itemData;
+				zipItemSize = header.zipSize;
 			}
 		
 			for (size_t j = 0; j < i; j++)
 			{
-				PackItemHeader* header = &itemHeaders[j];
-				if (header->zipSize != zipSize || header->dataSize != itemSize)
+				PackItemHeader* otherHeader = &compressor.itemHeaders[j];
+				if (otherHeader->zipSize != header.zipSize || otherHeader->dataSize != header.dataSize)
 					continue;
 
-				if (seekFile(packFile, header->dataOffset, SEEK_SET) != 0)
+				if (seekFile(packFile, otherHeader->dataOffset, SEEK_SET) != 0)
 				{
-					free(itemHeaders); free(zipData); free(itemData);
+					destroyCompressorData(&compressor);
 					return FAILED_TO_SEEK_FILE_PACK_RESULT;
 				}
 
 				if (fread(zipItemData, sizeof(uint8_t), zipItemSize, packFile) != zipItemSize)
 				{
-					free(itemHeaders); free(zipData); free(itemData);
+					destroyCompressorData(&compressor);
 					return FAILED_TO_READ_FILE_PACK_RESULT;
 				}
-				if (memcmp(itemData, zipData, zipItemSize) == 0)
+				if (memcmp(compressor.itemData, compressor.zipData, zipItemSize) == 0)
 				{
-					sameDataOffset = header->dataOffset;
+					sameDataOffset = otherHeader->dataOffset;
 					break;
 				}
 			}
@@ -191,14 +242,9 @@ static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
 
 		if (seekFile(packFile, fileOffset, SEEK_SET) != 0)
 		{
-			free(itemHeaders); free(zipData); free(itemData);
+			destroyCompressorData(&compressor);
 			return FAILED_TO_SEEK_FILE_PACK_RESULT;
 		}
-
-		PackItemHeader header;
-		header.zipSize = (uint32_t)zipSize;
-		header.dataSize = (uint32_t)itemSize;
-		header.pathSize = (uint32_t)pathSize;
 		
 		if (sameDataOffset == UINT64_MAX)
 		{
@@ -212,27 +258,27 @@ static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
 			header.isReference = 1;
 		}
 
-		itemHeaders[i] = header;
+		compressor.itemHeaders[i] = header;
 		if (fwrite(&header, sizeof(PackItemHeader), 1, packFile) != 1)
 		{
-			free(itemHeaders); free(zipData); free(itemData);
+			destroyCompressorData(&compressor);
 			return FAILED_TO_WRITE_FILE_PACK_RESULT;
 		}
 
 		if (fwrite(itemPath, sizeof(char), header.pathSize, packFile) != header.pathSize)
 		{
-			free(itemHeaders); free(zipData); free(itemData);
+			destroyCompressorData(&compressor);
 			return FAILED_TO_WRITE_FILE_PACK_RESULT;
 		}
 
 		fileOffset += sizeof(PackItemHeader) + header.pathSize;
 
-		if (itemSize > 0 && sameDataOffset == UINT64_MAX)
+		if (header.dataSize > 0 && sameDataOffset == UINT64_MAX)
 		{
-			zipItemData = zipSize > 0 ? zipData : itemData;
+			zipItemData = header.zipSize > 0 ? compressor.zipData : compressor.itemData;
 			if (fwrite(zipItemData, sizeof(uint8_t), zipItemSize, packFile) != zipItemSize)
 			{
-				free(itemHeaders); free(zipData); free(itemData);
+				destroyCompressorData(&compressor);
 				return FAILED_TO_WRITE_FILE_PACK_RESULT;
 			}
 
@@ -240,8 +286,8 @@ static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
 
 			if (printProgress)
 			{
-				rawFileSize += itemSize;
-				printf("(%u/%u bytes)\n", (uint32_t)zipItemSize, (uint32_t)itemSize);
+				rawFileSize += header.dataSize;
+				printf("(%u/%u bytes)\n", zipItemSize, header.dataSize);
 				fflush(stdout);
 			}
 		}
@@ -249,16 +295,14 @@ static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
 		{
 			if (printProgress)
 			{
-				rawFileSize += itemSize;
-				printf("(0/%u bytes)\n", (uint32_t)itemSize);
+				rawFileSize += header.dataSize;
+				printf("(0/%u bytes)\n", header.dataSize);
 				fflush(stdout);
 			}
 		}
 	}
 
-	free(itemHeaders);
-	free(zipData);
-	free(itemData);
+	destroyCompressorData(&compressor);
 
 	if (printProgress)
 	{
@@ -288,9 +332,8 @@ static int comparePackPathPairs(const void* _a, const void* _b)
 }
 
 /**********************************************************************************************************************/
-PackResult packFiles(const char* filePath, uint64_t fileCount,
-	const char** fileItemPaths, uint32_t dataVersion, float zipThreshold, 
-	bool printProgress, OnPackFile onPackFile, void* argument)
+PackResult packFiles(const char* filePath, uint64_t fileCount, const char** fileItemPaths, uint32_t dataVersion, 
+	float zipThreshold, bool preferSpeed, bool printProgress, OnPackFile onPackFile, void* argument)
 {
 	assert(filePath != NULL);
 	assert(fileCount > 0);
@@ -336,18 +379,18 @@ PackResult packFiles(const char* filePath, uint64_t fileCount,
 	header.isBigEndian = !PACK_LITTLE_ENDIAN;
 	header.itemCount = itemCount;
 	header.dataVersion = dataVersion;
+	header.preferSpeed = preferSpeed ? 1 : 0;
+	header._reserved = 0;
 
 	size_t writeResult = fwrite(&header, sizeof(PackHeader), 1, packFile);
 	if (writeResult != 1)
 	{
-		free(pathPairs);
-		closeFile(packFile);
-		remove(filePath);
+		free(pathPairs); closeFile(packFile); remove(filePath);
 		return FAILED_TO_WRITE_FILE_PACK_RESULT;
 	}
 
-	PackResult packResult = writePackItems(packFile, itemCount,
-		pathPairs, zipThreshold, printProgress, onPackFile, argument);
+	PackResult packResult = writePackItems(packFile, itemCount, pathPairs, 
+		zipThreshold, preferSpeed, printProgress, onPackFile, argument);
 
 	free(pathPairs);
 	closeFile(packFile);

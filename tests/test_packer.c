@@ -75,7 +75,7 @@ inline static bool testFailedToOpenFile()
 	return true;
 }
 
-inline static bool testPacker()
+inline static bool testPacker(bool preferSpeed)
 {
 	const char* files[6] =
 	{
@@ -102,8 +102,8 @@ inline static bool testPacker()
 		return false;
 	}
 	
-	PackResult packResult = packFiles(
-		TEST_FILE_NAME, 3, files, 123, 0.1f, false, NULL, NULL);
+	PackResult packResult = packFiles(TEST_FILE_NAME, 3, 
+		files, 123, 0.1f, preferSpeed, false, NULL, NULL);
 	remove(files[0]); remove(files[2]); remove(files[4]);
 
 	if (packResult != SUCCESS_PACK_RESULT)
@@ -196,7 +196,8 @@ inline static bool testPacker()
 int main()
 {
 	bool result = testFailedToOpenFile();
-	result &= testPacker();
+	result &= testPacker(false);
+	result &= testPacker(true);
 	remove(TEST_FILE_NAME);
 	return result ? EXIT_SUCCESS : EXIT_FAILURE;
 }

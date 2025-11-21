@@ -277,11 +277,25 @@ public:
 	}
 
 	/**
+	 * @brief Returns true if data was compressed with fast-read algorithm. (MT-Safe)
+	 */
+	bool isPreferSpeed() const noexcept { return isPackPreferSpeed(instance); }
+
+	/**
 	 * @brief Returns Pack ZSTD context array. (MT-Safe)
 	 * @details See the @ref getPackZstdContexts().
 	 * @return Array of the ZSTD_DCtx* contexts.
 	 */
-	void** const getZstdContexts() const { return getPackZstdContexts(instance); }
+	void** const getZstdContexts() const noexcept { return getPackZstdContexts(instance); }
+	/**
+	 * @brief Returns Pack concurrent read thread count. (MT-Safe)
+	 */
+	uint32_t getThreadCount() const noexcept { return getPackThreadCount(instance); }
+
+	/**
+	 * @brief Reduces internal Pack reader memory consumption.
+	 */
+	void shrink() noexcept { shrinkPack(instance); }
 
 	/*******************************************************************************************************************
 	 * @brief Unpacks files from the pack. (MT-Safe)

@@ -22,7 +22,7 @@ if(TARGET pack-static)
 	return()
 endif()
 
-project(pack VERSION 2.1.0 LANGUAGES C
+project(pack VERSION 2.2.0 LANGUAGES C
 	DESCRIPTION "Runtime optimized multi-platform data packing \
  		library for realtime game resources loading"
 	HOMEPAGE_URL "https://github.com/cfnptr/pack")
@@ -45,6 +45,9 @@ set(ZSTD_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ZSTD_BUILD_SHARED OFF CACHE BOOL "" FORCE)
 add_subdirectory(libraries/zstd/build/cmake)
 
+set(LZ4_BUILD_CLI OFF CACHE BOOL "" FORCE)
+add_subdirectory(libraries/lz4/build/cmake)
+
 include(TestBigEndian)
 TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
 
@@ -57,10 +60,9 @@ endif()
 configure_file(cmake/defines.h.in include/pack/defines.h)
 set(PACK_SOURCES source/common.c source/reader.c source/writer.c)
 	
-set(PACK_LINK_LIBRARIES mpio-static libzstd_static)
-set(PACK_INCLUDE_DIRECTORIES
-	${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include
-	${PROJECT_SOURCE_DIR}/wrappers/cpp ${PROJECT_SOURCE_DIR}/libraries/zstd/lib)
+set(PACK_LINK_LIBRARIES mpio-static libzstd_static lz4_static)
+set(PACK_INCLUDE_DIRECTORIES ${PROJECT_BINARY_DIR}/include 
+	${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/wrappers/cpp)
 
 add_library(pack-static STATIC ${PACK_SOURCES})
 target_link_libraries(pack-static PUBLIC ${PACK_LINK_LIBRARIES})

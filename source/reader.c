@@ -14,8 +14,9 @@
 
 #include "pack/reader.h"
 #include "mpio/file.h"
-#include "mpio/directory.h"
+
 #include "zstd.h"
+#include "lz4.h"
 
 #include <stdlib.h>
 #include <assert.h>
@@ -28,11 +29,14 @@ typedef struct PackItem
 } PackItem;
 struct PackReader_T
 {
-	ZSTD_DCtx** zstdContexts;
+	uint8_t** zipBuffers;
+	size_t* zipBufferSizes;
+	void** zipContexts;
 	FILE** files;
 	uint64_t itemCount;
 	PackItem* items;
 	uint32_t threadCount;
+	bool preferSpeed;
 };
 
 static void destroyPackItems(uint64_t itemCount, PackItem* items)
@@ -116,9 +120,11 @@ PackResult createFilePackReader(const char* filePath, uint32_t dataVersion,
 	if (!packReaderInstance)
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 
+	packReaderInstance->threadCount = threadCount;
+
 	char* path;
 
-#if __APPLE__
+	#if __APPLE__
 	if (isResourcesDirectory)
 	{
 		char* resourcesDirectory = getResourcesDirectory();
@@ -149,65 +155,42 @@ PackResult createFilePackReader(const char* filePath, uint32_t dataVersion,
 	{
 		path = (char*)filePath;
 	}
-#else
+	#else
 	path = (char*)filePath;
-#endif
+	#endif
 
 	FILE** files = calloc(threadCount, sizeof(FILE*));
 	if (!files)
 	{
-#if __APPLE__
+		#if __APPLE__
 		if (isResourcesDirectory)
 			free(path);
-#endif
+		#endif
 		destroyPackReader(packReaderInstance);
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 	}
-
 	packReaderInstance->files = files;
-
-	ZSTD_DCtx** zstdContexts = calloc(threadCount, sizeof(ZSTD_DCtx*));
-	if (!zstdContexts)
-	{
-#if __APPLE__
-		if (isResourcesDirectory)
-			free(path);
-#endif
-		destroyPackReader(packReaderInstance);
-		return FAILED_TO_ALLOCATE_PACK_RESULT;
-	}
-
-	packReaderInstance->zstdContexts = zstdContexts;
 
 	for (uint32_t i = 0; i < threadCount; i++)
 	{
 		FILE* file = openFile(path, "rb");
 		if (!file)
 		{
-#if __APPLE__
+			#if __APPLE__
 			if (isResourcesDirectory)
 				free(path);
-#endif
+			#endif
 			destroyPackReader(packReaderInstance);
 			return FAILED_TO_OPEN_FILE_PACK_RESULT;
 		}
 
 		files[i] = file;
-
-		ZSTD_DCtx* zstdContext = ZSTD_createDCtx();
-		if (!zstdContext)
-		{
-			destroyPackReader(packReaderInstance);
-			return FAILED_TO_CREATE_ZSTD_PACK_RESULT;
-		}
-
-		zstdContexts[i] = zstdContext;
 	}
 
-#if __APPLE__
+	#if __APPLE__
 	if (isResourcesDirectory)
 		free(path);
-#endif
+	#endif
 
 	PackHeader header;
 	FILE* file = files[0];
@@ -229,7 +212,6 @@ PackResult createFilePackReader(const char* filePath, uint32_t dataVersion,
 		destroyPackReader(packReaderInstance);
 		return BAD_FILE_VERSION_PACK_RESULT;
 	}
-
 	// Skipping PATCH version check
 
 	if (header.isBigEndian != !PACK_LITTLE_ENDIAN)
@@ -243,6 +225,59 @@ PackResult createFilePackReader(const char* filePath, uint32_t dataVersion,
 		return BAD_FILE_DATA_VERSION_PACK_RESULT;
 	}
 
+	packReaderInstance->preferSpeed = header.preferSpeed ? true : false;
+
+	if (!header.preferSpeed)
+	{
+		void** zipContexts = calloc(threadCount, sizeof(void*));
+		if (!zipContexts)
+		{
+			destroyPackReader(packReaderInstance);
+			return FAILED_TO_ALLOCATE_PACK_RESULT;
+		}
+		packReaderInstance->zipContexts = zipContexts;
+
+		for (uint32_t i = 0; i < threadCount; i++)
+		{
+			ZSTD_DCtx* zstdContext = ZSTD_createDCtx();
+			if (!zstdContext)
+			{
+				destroyPackReader(packReaderInstance);
+				return FAILED_TO_CREATE_ZSTD_PACK_RESULT;
+			}
+			zipContexts[i] = zstdContext;
+		}
+	}
+
+	uint8_t** zipBuffers = calloc(threadCount, sizeof(uint8_t*));
+	if (!zipBuffers)
+	{
+		destroyPackReader(packReaderInstance);
+		return FAILED_TO_ALLOCATE_PACK_RESULT;
+	}
+	packReaderInstance->zipBuffers = zipBuffers;
+
+	size_t* zipBufferSizes = malloc(threadCount * sizeof(size_t));
+	if (!zipBufferSizes)
+	{
+		destroyPackReader(packReaderInstance);
+		return FAILED_TO_ALLOCATE_PACK_RESULT;
+	}
+	packReaderInstance->zipBufferSizes = zipBufferSizes;
+
+	for (uint32_t i = 0; i < threadCount; i++)
+	{
+		uint8_t* zipBuffer = malloc(16);
+		if (!zipBuffer)
+		{
+			destroyPackReader(packReaderInstance);
+			return FAILED_TO_ALLOCATE_PACK_RESULT;
+		}
+
+		zipBuffers[i] = zipBuffer;
+		zipBufferSizes[i] = 16;
+	}
+
 	PackItem* items;
 	PackResult packResult = createPackItems(file, header.itemCount, &items);
 	if (packResult != SUCCESS_PACK_RESULT)
@@ -253,7 +288,6 @@ PackResult createFilePackReader(const char* filePath, uint32_t dataVersion,
 
 	packReaderInstance->itemCount = header.itemCount;
 	packReaderInstance->items = items;
-	packReaderInstance->threadCount = threadCount;
 
 	*packReader = packReaderInstance;
 	return SUCCESS_PACK_RESULT;
@@ -265,19 +299,31 @@ void destroyPackReader(PackReader packReader)
 
 	destroyPackItems(packReader->itemCount, packReader->items);
 
-	FILE** files = packReader->files;
-	ZSTD_DCtx** zstdContexts = packReader->zstdContexts;
 	uint32_t threadCount = packReader->threadCount;
-
-	for (uint32_t i = 0; i < threadCount; i++)
+	if (packReader->files)
 	{
-		if (ZSTD_freeDCtx(zstdContexts[i]) != 0) abort();
-		if (files[i])
-			closeFile(files[i]);
+		FILE** files = packReader->files;
+		for (uint32_t i = 0; i < threadCount; i++)
+		{
+			if (files[i])
+				closeFile(files[i]);
+		}
+		free(files);
 	}
-	
-	free(packReader->zstdContexts);
-	free(packReader->files);
+	if (packReader->zipContexts && !packReader->preferSpeed)
+	{
+		ZSTD_DCtx** zipContexts = (ZSTD_DCtx**)packReader->zipContexts;
+		for (uint32_t i = 0; i < threadCount; i++)
+			if (ZSTD_freeDCtx(zipContexts[i]) != 0) abort();
+		free(zipContexts);
+	}
+	if (packReader->zipBuffers)
+	{
+		uint8_t** zipBuffers = packReader->zipBuffers;
+		for (uint32_t i = 0; i < threadCount; i++)
+			free(zipBuffers[i]);
+		free(zipBuffers);
+	}
 	free(packReader);
 }
 
@@ -351,22 +397,33 @@ PackResult readPackItemData(PackReader packReader,
 
 	if (header.zipSize > 0)
 	{
-		uint8_t* zipBuffer = malloc(header.zipSize);
-		if (!zipBuffer)
-			return FAILED_TO_ALLOCATE_PACK_RESULT;
-
-		if (fread(zipBuffer, sizeof(uint8_t), header.zipSize, file) != header.zipSize)
+		uint8_t* zipBuffer = packReader->zipBuffers[threadIndex];
+		if (header.zipSize > packReader->zipBufferSizes[threadIndex])
 		{
-			free(zipBuffer);
-			return FAILED_TO_READ_FILE_PACK_RESULT;
+			zipBuffer = realloc(zipBuffer, header.zipSize);
+			if (!zipBuffer)
+				return FAILED_TO_ALLOCATE_PACK_RESULT;
+
+			packReader->zipBuffers[threadIndex] = zipBuffer;
+			packReader->zipBufferSizes[threadIndex] = header.zipSize;
 		}
 
-		size_t result = ZSTD_decompressDCtx(packReader->zstdContexts[threadIndex],
-			buffer, header.dataSize, zipBuffer, header.zipSize);
-		free(zipBuffer);
+		if (fread(zipBuffer, sizeof(uint8_t), header.zipSize, file) != header.zipSize)
+			return FAILED_TO_READ_FILE_PACK_RESULT;
 
-		if (ZSTD_isError(result) || result != header.dataSize)
-			return FAILED_TO_DECOMPRESS_PACK_RESULT;
+		if (packReader->preferSpeed)
+		{
+			int result = LZ4_decompress_safe((const char*)zipBuffer, (char*)buffer, header.zipSize, header.dataSize);
+			if (result != header.dataSize)
+				return FAILED_TO_DECOMPRESS_PACK_RESULT;
+		}
+		else
+		{
+			ZSTD_DCtx* zipContext = (ZSTD_DCtx*)packReader->zipContexts[threadIndex];
+			size_t result = ZSTD_decompressDCtx(zipContext, buffer, header.dataSize, zipBuffer, header.zipSize);
+			if (result != header.dataSize)
+				return FAILED_TO_DECOMPRESS_PACK_RESULT;
+		}
 	}
 	else
 	{
@@ -400,10 +457,41 @@ const char* getPackItemPath(PackReader packReader, uint64_t index)
 	return packReader->items[index].path;
 }
 
+bool isPackPreferSpeed(PackReader packReader)
+{
+	assert(packReader != NULL);
+	return packReader->preferSpeed;
+}
+
 void** const getPackZstdContexts(PackReader packReader)
 {
 	assert(packReader != NULL);
-	return (void** const)packReader->zstdContexts;
+	if (packReader->preferSpeed) abort();
+	return (void** const)packReader->zipContexts;
+}
+uint32_t getPackThreadCount(PackReader packReader)
+{
+	assert(packReader != NULL);
+	return packReader->threadCount;
+}
+
+void shrinkPack(PackReader packReader)
+{
+	assert(packReader != NULL);
+
+	uint8_t** zipBuffers = packReader->zipBuffers;
+	size_t* zipBufferSizes = packReader->zipBufferSizes;
+	uint32_t threadCount = packReader->threadCount;
+
+	for (uint32_t i = 0; i < threadCount; i++)
+	{
+		uint8_t* zipBuffer = realloc(zipBuffers[i], 16);
+		if (!zipBuffer)
+			return;
+
+		zipBuffers[i] = zipBuffer;
+		zipBufferSizes[i] = 16;
+	}
 }
 
 /**********************************************************************************************************************/

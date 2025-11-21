@@ -22,13 +22,14 @@ int main(int argc, char *argv[])
 {
 	if (argc <= 2)
 	{
-		printf("Usage: packer [-z, -v] <pack-path> <file-path-1> <item-path-1>...\n");
+		printf("Usage: packer [-z, -v, -s] <pack-path> <file-path-1> <item-path-1>...\n");
 		return EXIT_FAILURE;
 	}
 
 	float zipThreshold = 0.1f;
 	uint32_t dataVersion = 0;
 	int argOffset = 1;
+	bool preferSpeed = false;
 	
 	while (true)
 	{
@@ -59,7 +60,12 @@ int main(int argc, char *argv[])
 			argOffset += 2;
 			continue;
 		}
-
+		else if (strcmp(arg, "-s") == 0)
+		{
+			preferSpeed = true;
+			argOffset += 1;
+			continue;
+		}
 		break;
 	}
 
@@ -71,8 +77,8 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	PackResult result = packFiles(packPath, (argc - argOffset) / 2,
-		(const char**)argv + argOffset, dataVersion, zipThreshold, true, NULL, NULL);
+	PackResult result = packFiles(packPath, (argc - argOffset) / 2, (const char**)argv + argOffset, 
+		dataVersion, zipThreshold, preferSpeed, true, NULL, NULL);
 
 	if (result != SUCCESS_PACK_RESULT)
 	{

@@ -39,10 +39,11 @@ int main(int argc, char *argv[])
 		"    File version: %d.%d.%d\n"
 		"    Data version: %u\n"
 		"    Big endian: %s\n"
+		"    Prefer speed: %s\n"
 		"    Item count: %llu\n\n",
 		PACK_VERSION_MAJOR, PACK_VERSION_MINOR, PACK_VERSION_PATCH,
-		header.versionMajor, header.versionMinor, header.versionPatch,
-		header.dataVersion, header.isBigEndian ? "true" : "false",
+		header.versionMajor, header.versionMinor, header.versionPatch, header.dataVersion, 
+		header.isBigEndian ? "true" : "false", header.preferSpeed ? "true" : "false", 
 		(long long unsigned int)header.itemCount);
 
 	PackReader packReader;

@@ -181,12 +181,28 @@ bool isPackItemReference(PackReader packReader, uint64_t index);
 const char* getPackItemPath(PackReader packReader, uint64_t index);
 
 /**
+ * @brief Returns true if data was compressed with fast-read algorithm. (MT-Safe)
+ * @param packReader pack reader instance
+ */
+bool isPackPreferSpeed(PackReader packReader);
+
+/**
  * @brief Returns Pack ZSTD context array. (MT-Safe)
  * @details Can be used to share the ZSTD contexts in the program.
  * @param packReader pack reader instance
  * @return Array of the ZSTD_DCtx* contexts.
  */
 void** const getPackZstdContexts(PackReader packReader);
+/**
+ * @brief Returns Pack concurrent read thread count. (MT-Safe)
+ * @param packReader pack reader instance
+ */
+uint32_t getPackThreadCount(PackReader packReader);
+
+/**
+ * @brief Reduces internal Pack reader memory consumption.
+ */
+void shrinkPack(PackReader packReader);
 
 /***********************************************************************************************************************
  * @brief Unpacks files from the pack. (MT-Safe)

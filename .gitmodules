@@ -4,3 +4,6 @@
 [submodule "libraries/mpio"]
 	path = libraries/mpio
 	url = https://github.com/cfnptr/mpio
+[submodule "libraries/lz4"]
+	path = libraries/lz4
+	url = https://github.com/lz4/lz4

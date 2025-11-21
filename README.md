@@ -11,6 +11,7 @@ See the [documentation](https://cfnptr.github.io/pack).
 * Runtime optimized file pack reading
 * Automatic file data deduplication
 * Maximum ZSTD compression level
+* Optional faster data reading (LZ4)
 * Customisable compression threshold
 * C and C++ implementations
 
@@ -103,9 +104,9 @@ git clone --recursive https://github.com/cfnptr/pack
 
 Creates compressed data pack from files.
 
-* Usage: ```packer [-z, -v] <pack-path> <file-path-1> <item-path-1>...```
+* Usage: ```packer [-z, -v, -s] <pack-path> <file-path-1> <item-path-1>...```
 * Example: ```packer resources.pack C:/Users/user/Desktop/sky.png images/sky.png```
-* Arguments: [-z zipThreshold, -v dataVersion]
+* Arguments: [-z zipThreshold, -v dataVersion, -s preferSpeed]
 
 ### unpacker
 
@@ -123,5 +124,6 @@ Shows pack file information.
 
 ## Third-party
 
+* [lz4](https://github.com/lz4/lz4) (BSD 2-Clause license)
 * [mpio](https://github.com/cfnptr/mpio/) (Apache-2.0 License)
 * [zstd](https://github.com/facebook/zstd/) (BSD License)

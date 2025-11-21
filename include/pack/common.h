@@ -42,13 +42,15 @@
  */
 typedef struct PackHeader
 {
-	uint32_t magic;       /**< Pack file magic number */
-	uint8_t versionMajor; /**< File format major version */
-	uint8_t versionMinor; /**< File format minor version */
-	uint8_t versionPatch; /**< File format patch version */
-	uint8_t isBigEndian;  /**< Is packed data format big endian */
-	uint64_t itemCount;   /**< Total pack item count */
-	uint32_t dataVersion; /**< Packed file data version */
+	uint32_t magic;          /**< Pack file magic number */
+	uint8_t versionMajor;    /**< File format major version */
+	uint8_t versionMinor;    /**< File format minor version */
+	uint8_t versionPatch;    /**< File format patch version */
+	uint8_t isBigEndian;     /**< Is packed data format big endian */
+	uint64_t itemCount;      /**< Total pack item count */
+	uint32_t dataVersion;    /**< Packed file data version */
+	uint8_t preferSpeed : 1; /**< Is data compressed with fast-read algorithm */
+	uint32_t _reserved : 31; /**< Reserved for future use */
 } PackHeader;
 
 /**
