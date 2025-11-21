@@ -15,6 +15,10 @@
 #include "pack/reader.h"
 #include "mpio/file.h"
 
+#if __APPLE__
+#include "mpio/directory.h"
+#endif
+
 #include "zstd.h"
 #include "lz4.h"
 
