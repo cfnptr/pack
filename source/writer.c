@@ -94,8 +94,8 @@ static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
 	}
 
-	uint64_t rawFileSize = 0;
-	uint64_t fileOffset = sizeof(PackHeader);
+	uint32_t maxFileSize = preferSpeed ? LZ4_MAX_INPUT_SIZE : UINT32_MAX;
+	uint64_t rawFileSize = 0; uint64_t fileOffset = sizeof(PackHeader);
 
 	for (uint64_t i = 0; i < itemCount; i++)
 	{
@@ -138,7 +138,7 @@ static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
 		}
 
 		uint64_t fileSize = (uint64_t)tellFile(compressor.itemFile);
-		if (fileSize > UINT32_MAX)
+		if (fileSize > maxFileSize)
 		{
 			destroyCompressorData(&compressor);
 			return BAD_DATA_SIZE_PACK_RESULT;
@@ -187,23 +187,24 @@ static PackResult writePackItems(FILE* packFile, uint64_t itemCount,
 				return FAILED_TO_READ_FILE_PACK_RESULT;
 			}
 
+			uint32_t maxZipSize = header.dataSize - (uint32_t)((double)header.dataSize * zipThreshold);
+
 			uint32_t isError;
 			if (preferSpeed)
 			{
-				header.zipSize = (uint32_t)LZ4_compress_HC_extStateHC(
-					compressor.zipContext, (const char*)compressor.itemData, (char*)compressor.zipData, 
-					header.dataSize, header.dataSize - 1, LZ4HC_CLEVEL_MAX);
+				header.zipSize = (uint32_t)LZ4_compress_HC_extStateHC(compressor.zipContext, 
+					(const char*)compressor.itemData, (char*)compressor.zipData, 
+					(int)header.dataSize, (int)maxZipSize, LZ4HC_CLEVEL_MAX);
 				isError = header.zipSize == 0;
 			}
 			else
 			{
 				result = ZSTD_compressCCtx((ZSTD_CCtx*)compressor.zipContext, compressor.zipData, 
-					header.dataSize - 1, compressor.itemData, header.dataSize, ZSTD_maxCLevel());
-				header.zipSize = (uint32_t)result;
-				isError = ZSTD_isError(result);
+					maxZipSize, compressor.itemData, header.dataSize, ZSTD_maxCLevel());
+				header.zipSize = (uint32_t)result; isError = ZSTD_isError(result);
 			}
 
-			if (isError || (zipThreshold + (double)header.zipSize / (double)header.dataSize > 1.0))
+			if (isError)
 			{
 				header.zipSize = 0;
 				zipItemData = compressor.zipData;

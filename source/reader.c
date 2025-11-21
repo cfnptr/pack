@@ -417,7 +417,8 @@ PackResult readPackItemData(PackReader packReader,
 
 		if (packReader->preferSpeed)
 		{
-			int result = LZ4_decompress_safe((const char*)zipBuffer, (char*)buffer, header.zipSize, header.dataSize);
+			int result = LZ4_decompress_safe((const char*)zipBuffer, 
+				(char*)buffer, (int)header.zipSize, (int)header.dataSize);
 			if (result != header.dataSize)
 				return FAILED_TO_DECOMPRESS_PACK_RESULT;
 		}
