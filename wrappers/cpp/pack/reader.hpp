@@ -23,6 +23,7 @@
 
 #include <thread>
 #include <vector>
+#include <cassert>
 #include <utility>
 #include <filesystem>
 #include <string_view>
@@ -187,42 +188,48 @@ public:
 	}
 
 	/*******************************************************************************************************************
-	 * @brief Reads Pack item binary data. (MT-Safe)
+	 * @brief Reads Pack item data. (MT-Safe)
 	 * @details See the @ref readPackItemData().
 	 *
+	 * @tparam T type of the buffer data
 	 * @param itemIndex uint64_t item index
 	 * @param[out] buffer pointer to the buffer where to read item data
 	 * @param threadIndex current thread index or 0
 	 * 
 	 * @throw Error with a @ref PackResult string on failure.
 	 */
-	void readItemData(uint64_t itemIndex, uint8_t* buffer, uint32_t threadIndex = 0) const
+	template<class T = uint8_t>
+	void readItemData(uint64_t itemIndex, T* buffer, uint32_t threadIndex = 0) const
 	{
-		auto result = readPackItemData(instance, itemIndex, buffer, threadIndex);
+		auto result = readPackItemData(instance, itemIndex, (uint8_t*)buffer, threadIndex);
 		if (result != SUCCESS_PACK_RESULT)
 			throw Error(packResultToString(result));
 	}
 
 	/**
-	 * @brief Reads Pack item binary data. (MT-Safe)
+	 * @brief Reads Pack item data. (MT-Safe)
 	 * @details See the @ref readPackItemData().
 	 *
+	 * @tparam T type of the buffer data
 	 * @param itemIndex uint64_t item index
 	 * @param[out] buffer reference to the buffer where to read item data
 	 * @param threadIndex current thread index or 0
 	 * 
 	 * @throw Error with a @ref PackResult string on failure.
 	 */
-	void readItemData(uint64_t itemIndex, vector<uint8_t>& buffer, uint32_t threadIndex = 0) const
+	template<class T = uint8_t>
+	void readItemData(uint64_t itemIndex, vector<T>& buffer, uint32_t threadIndex = 0) const
 	{
-		buffer.resize(getPackItemDataSize(instance, itemIndex));
-		auto result = readPackItemData(instance, itemIndex, buffer.data(), threadIndex);
+		assert(getPackItemDataSize(instance, itemIndex) % sizeof(T) == 0);
+		buffer.resize(getPackItemDataSize(instance, itemIndex) / sizeof(T));
+
+		auto result = readPackItemData(instance, itemIndex, (uint8_t*)buffer.data(), threadIndex);
 		if (result != SUCCESS_PACK_RESULT)
 			throw Error(packResultToString(result));
 	}
 
 	/**
-	 * @brief Reads Pack item binary data. (MT-Safe)
+	 * @brief Reads Pack item data. (MT-Safe)
 	 * @details See the @ref readPackItemData().
 	 *
 	 * @param[in] path item path string used to pack the file
@@ -231,11 +238,14 @@ public:
 	 * 
 	 * @throw Error with a @ref PackResult string on failure.
 	 */
-	void readItemData(const filesystem::path& path, vector<uint8_t>& buffer, uint32_t threadIndex = 0) const
+	template<class T = uint8_t>
+	void readItemData(const filesystem::path& path, vector<T>& buffer, uint32_t threadIndex = 0) const
 	{
 		auto itemIndex = getItemIndex(path);
-		buffer.resize(getPackItemDataSize(instance, itemIndex));
-		auto result = readPackItemData(instance, itemIndex, buffer.data(), threadIndex);
+		assert(getPackItemDataSize(instance, itemIndex) % sizeof(T) == 0);
+		buffer.resize(getPackItemDataSize(instance, itemIndex) / sizeof(T));
+	
+		auto result = readPackItemData(instance, itemIndex, (uint8_t*)buffer.data(), threadIndex);
 		if (result != SUCCESS_PACK_RESULT)
 			throw Error(packResultToString(result));
 	}
