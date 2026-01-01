@@ -1,4 +1,4 @@
-// Copyright 2021-2025 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2026 Nikita Fediuchin. All rights reserved.
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
  * Used to pack files into a Pack archives. During packing, files are compressed with maximum ZSTD compression, or 
  * written as they are if they are already compressed. Additionally, each file is checked for data duplication, 
  * and in cases where two files are identical, a reference to the data of the already packed file is written.
- **********************************************************************************************************************/
+ */
 
 #pragma once
 #include "pack/common.h"

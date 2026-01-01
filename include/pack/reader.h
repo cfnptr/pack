@@ -1,4 +1,4 @@
-// Copyright 2021-2025 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2026 Nikita Fediuchin. All rights reserved.
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
  * Used to read Pack archives at runtime. When opening a file, only information about file names and their locations 
  * in the archive is loaded to save RAM and CPU time. After that, it's possible to selectively extract only the 
  * necessary files from the archive. Loading data from files can be done concurrently from multiple threads.
- **********************************************************************************************************************/
+ */
 
 #pragma once
 #include "pack/common.h"
@@ -201,6 +201,7 @@ uint32_t getPackThreadCount(PackReader packReader);
 
 /**
  * @brief Reduces internal Pack reader memory consumption.
+ * @param packReader pack reader instance
  */
 void shrinkPack(PackReader packReader);
 

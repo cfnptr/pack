@@ -6,5 +6,7 @@ var common_8h_structPackHeader =
     [ "versionPatch", "common_8h.html#aa492192162e88c30ffb70a9b05c533a9", null ],
     [ "isBigEndian", "common_8h.html#ae34821109f6fd040178db4a359b4e8fd", null ],
     [ "itemCount", "common_8h.html#a03531205dbb8decac895316c08273aab", null ],
-    [ "dataVersion", "common_8h.html#ae373a929ded6f7de014ffa8b91316cc2", null ]
+    [ "dataVersion", "common_8h.html#ae373a929ded6f7de014ffa8b91316cc2", null ],
+    [ "preferSpeed", "common_8h.html#aaac0024f95bb75f9db1460462ebdb0f6", null ],
+    [ "_reserved", "common_8h.html#a4523b51b01a54091bb154aa09b5bccbc", null ]
 ];

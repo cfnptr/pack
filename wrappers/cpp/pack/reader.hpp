@@ -1,4 +1,4 @@
-// Copyright 2021-2025 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2026 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  * @file
  * @brief Pack file reader.
  * @details See the @ref reader.h
- **********************************************************************************************************************/
+ */
 
 #pragma once
 #include "pack/error.hpp"
@@ -325,4 +325,4 @@ public:
 	}
 };
 
-} // pack
+} // namespace pack

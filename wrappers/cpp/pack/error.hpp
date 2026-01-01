@@ -1,4 +1,4 @@
-// Copyright 2021-2025 Nikita Fediuchin. All rights reserved.
+// Copyright 2021-2026 Nikita Fediuchin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 /***********************************************************************************************************************
  * @file
  * @brief Common Pack error (exception) functions.
- **********************************************************************************************************************/
+ */
 
 #pragma once
 #include <string>
@@ -45,4 +45,4 @@ public:
 	const char* what() const noexcept override { return message.c_str(); }
 };
 
-} // mpio
+} // namespace pack

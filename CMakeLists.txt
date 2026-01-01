@@ -1,4 +1,4 @@
-# Copyright 2021-2025 Nikita Fediuchin. All rights reserved.
+# Copyright 2021-2026 Nikita Fediuchin. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ if(TARGET pack-static)
 	return()
 endif()
 
-project(pack VERSION 2.2.0 LANGUAGES C
+project(pack VERSION 2.2.1 LANGUAGES C
 	DESCRIPTION "Runtime optimized multi-platform data packing \
  		library for realtime game resources loading"
 	HOMEPAGE_URL "https://github.com/cfnptr/pack")

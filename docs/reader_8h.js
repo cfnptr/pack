@@ -12,6 +12,9 @@ var reader_8h =
     [ "getPackItemFileOffset", "reader_8h.html#a88a38159cf59e38d617102c42b1ca4be", null ],
     [ "isPackItemReference", "reader_8h.html#aafbf85c92ddb32638b942d45d8620ebf", null ],
     [ "getPackItemPath", "reader_8h.html#a51b5dd884d780f333b0806fb345f09e8", null ],
+    [ "isPackPreferSpeed", "reader_8h.html#a54abfc4b7ffeb31728189b70b051fa63", null ],
     [ "getPackZstdContexts", "reader_8h.html#a38d81963d8af62ff2f51f55f875210da", null ],
+    [ "getPackThreadCount", "reader_8h.html#a791384c8d44f25b2fccb8ac17813088d", null ],
+    [ "shrinkPack", "reader_8h.html#af76bc75bef747e16b570f0ecb430d8e2", null ],
     [ "unpackFiles", "reader_8h.html#a617e2e930f889a1e9a4f616db6f139b3", null ]
 ];
