@@ -12,7 +12,7 @@ See the [documentation](https://cfnptr.github.io/pack).
 * Automatic file data deduplication
 * Maximum ZSTD compression level
 * Optional faster data reading (LZ4)
-* Customisable compression threshold
+* Customizable compression threshold
 * C and C++ implementations
 
 ## Usage example
