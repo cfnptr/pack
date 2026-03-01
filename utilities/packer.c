@@ -18,11 +18,29 @@
 #include <stdlib.h>
 #include <string.h>
 
+static void printPackerHelp()
+{
+	/////////////////////////////////////////////////////////////////////////////////////
+	printf("Usage: packer [-z, -v, -s] <pack-path> <file-path-1> <item-path-1>...\n"
+		"\n"
+		"Note that file path and item path may differ!\n"
+		"\n"
+		"Options:\n"
+		"  -z <zipThreshold> Specifies file compression threshold when we just pack file \n"
+		"                    without compressing it. It's used for already compressed \n"
+		"                    resources like images. Default value is 10. (0% - 100% range)\n"
+		"  -v <dataVersion>  Specifies pack file version. It's used to check if we are \n"
+		"                    loading correct resources pack for a current game or \n"
+		"                    application version. Default value is 0.\n"
+		" -s Use faster decompression algorithm sacrificing resources pack file size.\n"
+	);
+}
+
 int main(int argc, char *argv[])
 {
 	if (argc <= 2)
 	{
-		printf("Usage: packer [-z, -v, -s] <pack-path> <file-path-1> <item-path-1>...\n");
+		printPackerHelp();
 		return EXIT_FAILURE;
 	}
 
@@ -66,19 +84,25 @@ int main(int argc, char *argv[])
 			argOffset += 1;
 			continue;
 		}
+		else if (strcmp(arg, "-h") == 0 || strcmp(arg, "--help") == 0)
+		{
+			printPackerHelp();
+			return EXIT_SUCCESS;
+		}
 		break;
 	}
 
 	char* packPath = argv[argOffset++];
+	int itemCount = argc - argOffset;
 
-	if ((argc - argOffset) % 2 != 0)
+	if (itemCount <= 0 || itemCount % 2 != 0)
 	{
 		printf("Bad pack file and item count, missing some of the items.\n");
 		return EXIT_FAILURE;
 	}
 
-	PackResult result = packFiles(packPath, (argc - argOffset) / 2, (const char**)argv + argOffset, 
-		dataVersion, zipThreshold, preferSpeed, true, NULL, NULL);
+	PackResult result = packFiles(packPath, itemCount / 2, (const char**)argv + 
+		argOffset, dataVersion, zipThreshold, preferSpeed, true, NULL, NULL);
 
 	if (result != SUCCESS_PACK_RESULT)
 	{

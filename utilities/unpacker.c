@@ -17,11 +17,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static void printUnpackerHelp()
+{
+	printf("Usage: unpacker <pack-path>\n");
+}
+
 int main(int argc, char *argv[])
 {
 	if (argc != 2)
 	{
-		printf("Usage: unpacker <pack-path>\n");
+		printUnpackerHelp();
 		return EXIT_FAILURE;
 	}
 

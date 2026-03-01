@@ -17,11 +17,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static void printPackInfoHelp()
+{
+	printf("Usage: pack-info <pack-path>\n");
+}
+
 int main(int argc, char *argv[])
 {
 	if (argc != 2)
 	{
-		printf("Usage: pack-info <pack-path>\n");
+		printPackInfoHelp();
 		return EXIT_FAILURE;
 	}
 
@@ -34,8 +39,8 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	printf("Pack [v%d.%d.%d]\n\n"
-		"Pack information:\n"
+	printf("pack-info [v%d.%d.%d]\n\n"
+		"Pack header:\n"
 		"    File version: %d.%d.%d\n"
 		"    Data version: %u\n"
 		"    Big endian: %s\n"
@@ -47,7 +52,7 @@ int main(int argc, char *argv[])
 		(long long unsigned int)header.itemCount);
 
 	PackReader packReader;
-	result = createFilePackReader(argv[1], 0, false, header.dataVersion, &packReader);
+	result = createFilePackReader(argv[1], header.dataVersion, false, 1, &packReader);
 	if (result != SUCCESS_PACK_RESULT)
 	{
 		printf("\nError: %s.\n", packResultToString(result));
@@ -55,22 +60,27 @@ int main(int argc, char *argv[])
 	}
 
 	uint64_t itemCount = getPackItemCount(packReader);
+	uint64_t totalDataSize = 0, totalZipSize = 0;
+
 	for (uint64_t i = 0; i < itemCount; ++i)
 	{
+		uint32_t dataSize = getPackItemDataSize(packReader, i);
+		uint32_t zipSize = getPackItemZipSize(packReader, i);
+		totalDataSize += dataSize; totalZipSize += zipSize;
+
 		printf("Item %llu:\n"
 			"    Path: %s\n"
-			"    Data size: %u\n"
-			"    Zip size: %u\n"
-			"    File offset: %llu\n"
-			"    Reference: %s\n",
-			(long long unsigned int)i,
-			getPackItemPath(packReader, i),
-			getPackItemDataSize(packReader, i),
-			getPackItemZipSize(packReader, i),
-			(long long unsigned int)getPackItemFileOffset(packReader, i),
+			"    Data size: %u bytes\n"
+			"    Zip size: %u bytes\n"
+			"    File offset: %llu bytes\n"
+			"    Is reference: %s\n",
+			(long long unsigned int)i, getPackItemPath(packReader, i), dataSize, 
+			zipSize, (long long unsigned int)getPackItemFileOffset(packReader, i),
 			isPackItemReference(packReader, i) ? "true" : "false");
 		fflush(stdout);
 	}
 
+	printf("\nTotal zip/data size: %llu/%llu bytes.\n",
+		(long long unsigned int)totalZipSize, (long long unsigned int)totalDataSize);
 	return EXIT_SUCCESS;
 }

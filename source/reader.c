@@ -123,7 +123,6 @@ PackResult createFilePackReader(const char* filePath, uint32_t dataVersion,
 	PackReader packReaderInstance = calloc(1, sizeof(PackReader_T));
 	if (!packReaderInstance)
 		return FAILED_TO_ALLOCATE_PACK_RESULT;
-
 	packReaderInstance->threadCount = threadCount;
 
 	char* path;

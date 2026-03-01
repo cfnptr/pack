@@ -106,7 +106,14 @@ Creates compressed data pack from files.
 
 * Usage: ```packer [-z, -v, -s] <pack-path> <file-path-1> <item-path-1>...```
 * Example: ```packer resources.pack C:/Users/user/Desktop/sky.png images/sky.png```
-* Arguments: [-z zipThreshold, -v dataVersion, -s preferSpeed]
+
+#### Arguments:
+
+* ```-z <zipThreshold>```: Specifies file compression threshold when we just pack file without compressing it. 
+It's used for already compressed resources like images. Default value is 10. (0% - 100% range)
+* ```-v <dataVersion>```: Specifies ```resources.pack``` file version. It's used to check if we are 
+loading correct resources pack for a current game or application version. Default value is 0.
+* ```-s```: Use faster decompression algorithm sacrificing resources pack file size.
 
 ### unpacker
 
