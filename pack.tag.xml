@@ -1,0 +1,552 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<tagfile doxygen_version="1.14.0">
+  <compound kind="file">
+    <name>common.h</name>
+    <path>include/pack/</path>
+    <filename>common_8h.html</filename>
+    <class kind="struct">PackHeader</class>
+    <class kind="struct">PackItemHeader</class>
+    <member kind="define">
+      <type>#define</type>
+      <name>PACK_HEADER_MAGIC</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>a31167b3e857e6b4d92737715179eb799</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="typedef">
+      <type>uint8_t</type>
+      <name>PackResult</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>a0d32300bf8cf2d158503f717426f801a</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="enumeration">
+      <type></type>
+      <name>PackResult_T</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>a879791abc79b4a9655f4d6cf7a36cda9</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>getPackLibraryVersion</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>ae48107775eaae834d65348bd8a7b3684</anchor>
+      <arglist>(uint8_t *major, uint8_t *minor, uint8_t *patch)</arglist>
+    </member>
+    <member kind="function">
+      <type>PackResult</type>
+      <name>readPackHeader</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>ad3b87839cf3d57486d354040547c335b</anchor>
+      <arglist>(const char *filePath, PackHeader *header)</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>reader.h</name>
+    <path>include/pack/</path>
+    <filename>reader_8h.html</filename>
+    <includes id="common_8h" name="common.h" local="yes" import="no" module="no" objc="no">pack/common.h</includes>
+    <member kind="typedef">
+      <type>struct PackReader_T</type>
+      <name>PackReader_T</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>ab94cef8a2ec765ce2bf549a9d08c8d88</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="typedef">
+      <type>PackReader_T *</type>
+      <name>PackReader</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>a753b3443bdd346e89a78c7ef8c881e7c</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="function">
+      <type>PackResult</type>
+      <name>createFilePackReader</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>a595d8db158d12d9b7e3bcc4a51ba65cc</anchor>
+      <arglist>(const char *filePath, uint32_t dataVersion, bool isResourcesDirectory, uint32_t threadCount, PackReader *packReader)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>destroyPackReader</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>a2588104968fd4901039bea3c8a3c2c4a</anchor>
+      <arglist>(PackReader packReader)</arglist>
+    </member>
+    <member kind="function">
+      <type>uint64_t</type>
+      <name>getPackItemCount</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>a08e4c1e05444aa01cfd70e38f44a19c3</anchor>
+      <arglist>(PackReader packReader)</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>getPackItemIndex</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>ac42a354e3e4cd083ac94798a70d9f1fb</anchor>
+      <arglist>(PackReader packReader, const char *path, uint64_t *index)</arglist>
+    </member>
+    <member kind="function">
+      <type>uint32_t</type>
+      <name>getPackItemDataSize</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>a3c4bb5d71bac2f2ea11b442ec81f26c0</anchor>
+      <arglist>(PackReader packReader, uint64_t index)</arglist>
+    </member>
+    <member kind="function">
+      <type>uint32_t</type>
+      <name>getPackItemZipSize</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>ad4886aa6408edd5b398f556915084012</anchor>
+      <arglist>(PackReader packReader, uint64_t index)</arglist>
+    </member>
+    <member kind="function">
+      <type>PackResult</type>
+      <name>readPackItemData</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>a8f47e224cd50d9c473667310300c169f</anchor>
+      <arglist>(PackReader packReader, uint64_t itemIndex, uint8_t *buffer, uint32_t threadIndex)</arglist>
+    </member>
+    <member kind="function">
+      <type>uint64_t</type>
+      <name>getPackItemFileOffset</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>a88a38159cf59e38d617102c42b1ca4be</anchor>
+      <arglist>(PackReader packReader, uint64_t index)</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>isPackItemReference</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>aafbf85c92ddb32638b942d45d8620ebf</anchor>
+      <arglist>(PackReader packReader, uint64_t index)</arglist>
+    </member>
+    <member kind="function">
+      <type>const char *</type>
+      <name>getPackItemPath</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>a51b5dd884d780f333b0806fb345f09e8</anchor>
+      <arglist>(PackReader packReader, uint64_t index)</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>isPackPreferSpeed</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>a54abfc4b7ffeb31728189b70b051fa63</anchor>
+      <arglist>(PackReader packReader)</arglist>
+    </member>
+    <member kind="function">
+      <type>void **const</type>
+      <name>getPackZstdContexts</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>a38d81963d8af62ff2f51f55f875210da</anchor>
+      <arglist>(PackReader packReader)</arglist>
+    </member>
+    <member kind="function">
+      <type>uint32_t</type>
+      <name>getPackThreadCount</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>a791384c8d44f25b2fccb8ac17813088d</anchor>
+      <arglist>(PackReader packReader)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>shrinkPack</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>af76bc75bef747e16b570f0ecb430d8e2</anchor>
+      <arglist>(PackReader packReader)</arglist>
+    </member>
+    <member kind="function">
+      <type>PackResult</type>
+      <name>unpackFiles</name>
+      <anchorfile>reader_8h.html</anchorfile>
+      <anchor>a617e2e930f889a1e9a4f616db6f139b3</anchor>
+      <arglist>(const char *filePath, bool printProgress)</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>writer.h</name>
+    <path>include/pack/</path>
+    <filename>writer_8h.html</filename>
+    <includes id="common_8h" name="common.h" local="yes" import="no" module="no" objc="no">pack/common.h</includes>
+    <member kind="typedef">
+      <type>void(*</type>
+      <name>OnPackFile</name>
+      <anchorfile>writer_8h.html</anchorfile>
+      <anchor>af3c662448208e05e8e4db313b9a666e7</anchor>
+      <arglist>)(uint64_t itemIndex, void *argument)</arglist>
+    </member>
+    <member kind="function">
+      <type>PackResult</type>
+      <name>packFiles</name>
+      <anchorfile>writer_8h.html</anchorfile>
+      <anchor>a927b52a2a9c6d3f2579b7768afd13fb6</anchor>
+      <arglist>(const char *packPath, uint64_t fileCount, const char **fileItemPaths, uint32_t dataVersion, float zipThreshold, bool preferSpeed, bool printProgress, OnPackFile onPackFile, void *argument)</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>common.hpp</name>
+    <path>wrappers/cpp/pack/</path>
+    <filename>common_8hpp.html</filename>
+    <includes id="error_8hpp" name="error.hpp" local="yes" import="no" module="no" objc="no">pack/error.hpp</includes>
+    <includes id="common_8h" name="common.h" local="yes" import="no" module="no" objc="no">pack/common.h</includes>
+    <class kind="class">pack::Common</class>
+  </compound>
+  <compound kind="file">
+    <name>error.hpp</name>
+    <path>wrappers/cpp/pack/</path>
+    <filename>error_8hpp.html</filename>
+    <class kind="class">pack::Error</class>
+  </compound>
+  <compound kind="file">
+    <name>reader.hpp</name>
+    <path>wrappers/cpp/pack/</path>
+    <filename>reader_8hpp.html</filename>
+    <includes id="error_8hpp" name="error.hpp" local="yes" import="no" module="no" objc="no">pack/error.hpp</includes>
+    <includes id="reader_8h" name="reader.h" local="yes" import="no" module="no" objc="no">pack/reader.h</includes>
+    <class kind="class">pack::Reader</class>
+  </compound>
+  <compound kind="file">
+    <name>writer.hpp</name>
+    <path>wrappers/cpp/pack/</path>
+    <filename>writer_8hpp.html</filename>
+    <includes id="error_8hpp" name="error.hpp" local="yes" import="no" module="no" objc="no">pack/error.hpp</includes>
+    <includes id="writer_8h" name="writer.h" local="yes" import="no" module="no" objc="no">pack/writer.h</includes>
+    <class kind="class">pack::Writer</class>
+  </compound>
+  <compound kind="class">
+    <name>pack::Common</name>
+    <filename>classpack_1_1Common.html</filename>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>getLibraryVersion</name>
+      <anchorfile>classpack_1_1Common.html</anchorfile>
+      <anchor>a2e74ed29f07503a79ae92d6d6342f030</anchor>
+      <arglist>(uint8_t &amp;major, uint8_t &amp;minor, uint8_t &amp;patch) noexcept</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>readHeader</name>
+      <anchorfile>classpack_1_1Common.html</anchorfile>
+      <anchor>a15ebea7ce404af78f0d829a64b814552</anchor>
+      <arglist>(const filesystem::path &amp;filePath, PackHeader &amp;header)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static bool</type>
+      <name>tryReadHeader</name>
+      <anchorfile>classpack_1_1Common.html</anchorfile>
+      <anchor>a5f803b3183e90a84a794072e4deda744</anchor>
+      <arglist>(const filesystem::path &amp;filePath, PackHeader &amp;header) noexcept</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>pack::Error</name>
+    <filename>classpack_1_1Error.html</filename>
+    <base>exception</base>
+    <member kind="function">
+      <type></type>
+      <name>Error</name>
+      <anchorfile>classpack_1_1Error.html</anchorfile>
+      <anchor>a54e9c0c1191abf63a1b63a2ae0b9fa4c</anchor>
+      <arglist>(const string &amp;message)</arglist>
+    </member>
+    <member kind="function">
+      <type>const char *</type>
+      <name>what</name>
+      <anchorfile>classpack_1_1Error.html</anchorfile>
+      <anchor>abf843cbb29dec939d0731e491bab6f70</anchor>
+      <arglist>() const noexcept override</arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>PackHeader</name>
+    <filename>common_8h.html</filename>
+    <anchor>structPackHeader</anchor>
+    <member kind="variable">
+      <type>uint32_t</type>
+      <name>magic</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>a57f54349f4fd1cbbb52058812e146af2</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>uint8_t</type>
+      <name>versionMajor</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>a0eaad29a67c89bdd2ca4ca45d716f6a4</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>uint8_t</type>
+      <name>versionMinor</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>aa71535da9dba395ea5095204f1271e77</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>uint8_t</type>
+      <name>versionPatch</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>aa492192162e88c30ffb70a9b05c533a9</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>uint8_t</type>
+      <name>isBigEndian</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>ae34821109f6fd040178db4a359b4e8fd</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>uint64_t</type>
+      <name>itemCount</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>a03531205dbb8decac895316c08273aab</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>uint32_t</type>
+      <name>dataVersion</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>ae373a929ded6f7de014ffa8b91316cc2</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>uint8_t</type>
+      <name>preferSpeed</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>aaac0024f95bb75f9db1460462ebdb0f6</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>uint32_t</type>
+      <name>_reserved</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>a4523b51b01a54091bb154aa09b5bccbc</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>PackItemHeader</name>
+    <filename>common_8h.html</filename>
+    <anchor>structPackItemHeader</anchor>
+    <member kind="variable">
+      <type>uint32_t</type>
+      <name>zipSize</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>abc9a46b073661e9af4a59c2044a00667</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>uint32_t</type>
+      <name>dataSize</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>ae3c68f6750377179ad148e76693cc7d1</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>uint8_t</type>
+      <name>pathSize</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>aeda68a665c2f6d59498b28533618d93f</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>uint8_t</type>
+      <name>isReference</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>a6646e2c22056376d27b66c888b0e2cea</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>uint64_t</type>
+      <name>dataOffset</name>
+      <anchorfile>common_8h.html</anchorfile>
+      <anchor>a3740df413de90e9ed6e5fa6e3e1d3f36</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>pack::Reader</name>
+    <filename>classpack_1_1Reader.html</filename>
+    <member kind="function">
+      <type></type>
+      <name>Reader</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>a1f57b6c5d36605dd1b4afecd51208d06</anchor>
+      <arglist>()=default</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>Reader</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>ac6bd1001ddeb16d3009fea29a3524be5</anchor>
+      <arglist>(const filesystem::path &amp;filePath, uint32_t dataVersion=0, bool isResourcesDirectory=true, uint32_t threadCount=thread::hardware_concurrency())</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>~Reader</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>a504a9695aa4e21c0abb7415e4199fac9</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>open</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>aac76ddb499099014b4c66c1f362862a1</anchor>
+      <arglist>(const filesystem::path &amp;filePath, uint32_t dataVersion=0, bool isResourcesDirectory=true, uint32_t threadCount=thread::hardware_concurrency())</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>close</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>a2ead8fad3dd09d3a8b03e6c948f14e46</anchor>
+      <arglist>() noexcept</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>isOpen</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>a96abf7edb0d2aadf1f49db0c873861bb</anchor>
+      <arglist>() const noexcept</arglist>
+    </member>
+    <member kind="function">
+      <type>uint64_t</type>
+      <name>getItemCount</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>a5441f848527191ee2a531e2c44d498c7</anchor>
+      <arglist>() const noexcept</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>getItemIndex</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>ada8ecf2a81b782a74c08069987aa6012</anchor>
+      <arglist>(const filesystem::path &amp;path, uint64_t &amp;index) const noexcept</arglist>
+    </member>
+    <member kind="function">
+      <type>uint64_t</type>
+      <name>getItemIndex</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>a6266b5a1e1a8b083490feb1a0d50dd16</anchor>
+      <arglist>(const filesystem::path &amp;path) const</arglist>
+    </member>
+    <member kind="function">
+      <type>uint32_t</type>
+      <name>getItemDataSize</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>af1b0a71aeb729480a41b7130ca9ef161</anchor>
+      <arglist>(uint64_t index) const noexcept</arglist>
+    </member>
+    <member kind="function">
+      <type>uint32_t</type>
+      <name>getItemZipSize</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>a8d73a27ad22ea1d9fb261318f7e4c0b8</anchor>
+      <arglist>(uint64_t index) const noexcept</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>readItemData</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>a0391f22def05e4b2a1a041c87223f998</anchor>
+      <arglist>(uint64_t itemIndex, T *buffer, uint32_t threadIndex=0) const</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>readItemData</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>a4776547d78f0d4f41813ca09e536df96</anchor>
+      <arglist>(uint64_t itemIndex, vector&lt; T &gt; &amp;buffer, uint32_t threadIndex=0) const</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>readItemData</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>ac8c76d7bfe274f3f7b32e7f3cebbf0bf</anchor>
+      <arglist>(const filesystem::path &amp;path, vector&lt; T &gt; &amp;buffer, uint32_t threadIndex=0) const</arglist>
+    </member>
+    <member kind="function">
+      <type>uint64_t</type>
+      <name>getItemFileOffset</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>a3af555d133210416efe330d02ec2d97f</anchor>
+      <arglist>(uint64_t index) const noexcept</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>isItemReference</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>aa33c9b8de4f2b975cc1485827de2a7cc</anchor>
+      <arglist>(uint64_t index) const noexcept</arglist>
+    </member>
+    <member kind="function">
+      <type>string_view</type>
+      <name>getItemPath</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>a06c87aebc3171c48b97e11bc19ab31e6</anchor>
+      <arglist>(uint64_t index) const noexcept</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>isPreferSpeed</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>ac2864e941d44a9c1820caf603b76fac4</anchor>
+      <arglist>() const noexcept</arglist>
+    </member>
+    <member kind="function">
+      <type>void **const</type>
+      <name>getZstdContexts</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>af4cfb16c128b86cd47e3c08d1bd9f9d6</anchor>
+      <arglist>() const noexcept</arglist>
+    </member>
+    <member kind="function">
+      <type>uint32_t</type>
+      <name>getThreadCount</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>adc7f49989b0b422f9523a643915a8808</anchor>
+      <arglist>() const noexcept</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>shrink</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>ab93b8694aa7b85435e2dc3346e9aeea0</anchor>
+      <arglist>() noexcept</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>unpack</name>
+      <anchorfile>classpack_1_1Reader.html</anchorfile>
+      <anchor>a6e88e19bb9debf714e374e3075a075a4</anchor>
+      <arglist>(const filesystem::path &amp;filePath, bool printProgress=false)</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>pack::Writer</name>
+    <filename>classpack_1_1Writer.html</filename>
+    <member kind="function" static="yes">
+      <type>static void</type>
+      <name>pack</name>
+      <anchorfile>classpack_1_1Writer.html</anchorfile>
+      <anchor>aa09150b32534910b000f7306b5abb806</anchor>
+      <arglist>(const filesystem::path &amp;packPath, uint64_t fileCount, const char **fileItemPaths, uint32_t dataVersion=0, float zipThreshold=0.1f, bool preferSpeed=false, bool printProgress=false, OnPackFile onPackFile=nullptr, void *argument=nullptr)</arglist>
+    </member>
+  </compound>
+  <compound kind="page">
+    <name>md_BUILDING</name>
+    <title>Build instructions</title>
+    <filename>md_BUILDING.html</filename>
+  </compound>
+  <compound kind="page">
+    <name>index</name>
+    <title>Pack</title>
+    <filename>index.html</filename>
+    <docanchor file="index.html" title="Pack">md_README</docanchor>
+  </compound>
+</tagfile>

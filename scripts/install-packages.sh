@@ -11,6 +11,8 @@ elif command -v zypper &> /dev/null; then
     sudo zypper install -y git cmake -t pattern devel_basis
 elif command -v apk &> /dev/null; then
     apk add --no-cache git cmake build-base
+elif command -v brew &> /dev/null; then
+    brew update && brew install git cmake
 else
     echo "No supported package manager found."
     exit 1

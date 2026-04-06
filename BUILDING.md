@@ -9,7 +9,7 @@
 
 # Windows
 
-## 1. Install Visual Studio Community
+### 1. Install Visual Studio Community
 
 1. Download latest version from [visualstudio.microsoft.com](https://visualstudio.microsoft.com/downloads)
 2. Launch downloaded Visual Studio installer
@@ -18,13 +18,13 @@
 
 Alternatively you can install and use [CLion](https://www.jetbrains.com/clion/), [VSCode](https://code.visualstudio.com/) or any other IDE.
 
-## 2. Install Git
+### 2. Install Git
 
 * Download and install latest version from [git-cms.com](https://git-scm.com/install/windows)
 
 You may use default Git install options or chose any other default Git editor instead of **Vim**.
 
-## 3. Install CMake
+### 3. Install CMake
 
 1. Download latest release version of installer from [cmake.org](https://cmake.org/download)
 2. Select "Add CMake to the system PATH for the current user" during installation
@@ -32,14 +32,14 @@ You may use default Git install options or chose any other default Git editor in
 
 # macOS
 
-## 1. Install Xcode IDE and tools
+### 1. Install Xcode IDE and tools
 
 1. Download and install latest version from the built-in [App Store](https://apps.apple.com/app/xcode/id497799835)
 2. Run ```xcode-select --install``` command using **Terminal** app to install Xcode tools
 
 Alternatively you can install and use [CLion](https://www.jetbrains.com/clion/), [VSCode](https://code.visualstudio.com/) or any other IDE.
 
-## 2. Install required packages
+### 2. Install required packages
 
 1. Install **Homebrew** package manager from [brew.sh](https://brew.sh)
 2. Run ```brew update``` command using **Terminal** app to update package list
@@ -48,14 +48,14 @@ Alternatively you can install and use [CLion](https://www.jetbrains.com/clion/),
 
 # Linux
 
-## 1. Install Visual Studio Code IDE
+### 1. Install Visual Studio Code IDE
 
-1. Download and install latest version from [code.visualstudio.com](https://code.visualstudio.com/download)
+1. Download and install latest version from [code.visualstudio.com](https://code.visualstudio.com/download) or from built-in store
 2. Install "[C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)" and "[CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)" extensions inside the **VS Code**
 
 Alternatively you can install and use [CLion](https://www.jetbrains.com/clion/), [VSCodium](https://vscodium.com/) or any other IDE.
 
-## 2. Install required packages
+### 2. Install required packages
 
 * Execute [scripts/install-packages.sh](scripts/install-packages.sh) script or
 

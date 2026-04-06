@@ -1,4 +1,4 @@
-/* The standard CSS for doxygen 1.15.0*/
+/* The standard CSS for doxygen 1.14.0*/
 
 html {
 /* page base colors */
@@ -154,7 +154,6 @@ html {
 --fragment-lineno-link-hover-fg-color: #8E96A1;
 --fragment-lineno-link-hover-bg-color: #505050;
 --fragment-copy-ok-color: #0EA80E;
---fragment-highlight-filter: 5;
 --tooltip-foreground-color: #C9D1D9;
 --tooltip-background-color: #202020;
 --tooltip-arrow-background-color: #202020;
@@ -361,7 +360,6 @@ html {
 --fragment-lineno-link-hover-fg-color: #4665A2;
 --fragment-lineno-link-hover-bg-color: #C8C8C8;
 --fragment-copy-ok-color: #2EC82E;
---fragment-highlight-filter: -3;
 --tooltip-foreground-color: black;
 --tooltip-background-color: rgba(255,255,255,0.8);
 --tooltip-arrow-background-color: white;
@@ -746,7 +744,6 @@ pre.fragment {
 span.tt {
         white-space: pre;
 	font-family: var(--font-family-monospace);
-	background-color: var(--fragment-background-color);
 }
 
 .clipboard {
@@ -1917,10 +1914,6 @@ dl.warning dt, dl.attention dt, dl.important dt {
 	color: var(--warning-color-hl);
 }
 
-dl.warning .tt, dl.attention .tt, dl.important .tt {
-	background-color: hsl(from var(--warning-color-bg) h s calc(l + var(--fragment-highlight-filter)));
-}
-
 dl.note, dl.remark {
 	background: var(--note-color-bg);
 	border-left: 8px solid var(--note-color-hl);
@@ -1929,10 +1922,6 @@ dl.note, dl.remark {
 
 dl.note dt, dl.remark dt {
 	color: var(--note-color-hl);
-}
-
-dl.note .tt, dl.remark .tt {
-	background-color: hsl(from var(--note-color-bg) h s calc(l + var(--fragment-highlight-filter)));
 }
 
 dl.todo {
@@ -1945,10 +1934,6 @@ dl.todo dt {
 	color: var(--todo-color-hl);
 }
 
-dl.todo .tt {
-	background-color: hsl(from var(--todo-color-bg) h s calc(l + var(--fragment-highlight-filter)));
-}
-
 dl.test {
 	background: var(--test-color-bg);
 	border-left: 8px solid var(--test-color-hl);
@@ -1957,10 +1942,6 @@ dl.test {
 
 dl.test dt {
 	color: var(--test-color-hl);
-}
-
-dl.test .tt {
-	background-color: hsl(from var(--test-color-bg) h s calc(l + var(--fragment-highlight-filter)));
 }
 
 dl.bug dt a {
@@ -1977,10 +1958,6 @@ dl.bug dt a {
 	color: var(--bug-color-hl) !important;
 }
 
-dl.bug .tt {
-	background-color: hsl(from var(--bug-color-bg) h s calc(l + var(--fragment-highlight-filter)));
-}
-
 dl.deprecated {
 	background: var(--deprecated-color-bg);
 	border-left: 8px solid var(--deprecated-color-hl);
@@ -1991,10 +1968,11 @@ dl.deprecated dt a {
 	color: var(--deprecated-color-hl) !important;
 }
 
-dl.deprecated .tt {
-	background-color: hsl(from var(--deprecated-color-bg) h s calc(l + var(--fragment-highlight-filter)));
+dl.note dd, dl.warning dd, dl.pre dd, dl.post dd,
+dl.remark dd, dl.attention dd, dl.important dd, dl.invariant dd,
+dl.bug dd, dl.deprecated dd, dl.todo dd, dl.test dd {
+	margin-inline-start: 0px;
 }
-
 
 dl.invariant, dl.pre, dl.post {
 	background: var(--invariant-color-bg);
@@ -2004,16 +1982,6 @@ dl.invariant, dl.pre, dl.post {
 
 dl.invariant dt, dl.pre dt, dl.post dt {
 	color: var(--invariant-color-hl);
-}
-
-dl.invariant .tt, dl.pre .tt, dl.post .tt {
-	background-color: hsl(from var(--invariant-color-bg) h s calc(l + var(--fragment-highlight-filter)));
-}
-
-dl.note dd, dl.warning dd, dl.pre dd, dl.post dd,
-dl.remark dd, dl.attention dd, dl.important dd, dl.invariant dd,
-dl.bug dd, dl.deprecated dd, dl.todo dd, dl.test dd {
-	margin-inline-start: 0px;
 }
 
 
@@ -2480,7 +2448,7 @@ details[open]>summary::before {
 }
 
 html {
---timestamp: 'Thu Jan 1 2026';
+--timestamp: 'Mon Apr 6 2026'
 }
 span.timestamp { content: ' '; }
 span.timestamp:before { content: var(--timestamp); }
