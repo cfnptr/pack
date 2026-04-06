@@ -28,7 +28,7 @@ static void printPackerHelp()
 		"Options:\n"
 		"  -z <zipThreshold> Specifies file compression threshold when we just pack file \n"
 		"                    without compressing it. It's used for already compressed \n"
-		"                    resources like images. Default value is 10. (0% - 100% range)\n"
+		"                    resources like images. Default value is 10. (0%% - 100%% range)\n"
 		"  -v <dataVersion>  Specifies pack file version. It's used to check if we are \n"
 		"                    loading correct resources pack for a current game or \n"
 		"                    application version. Default value is 0.\n"
