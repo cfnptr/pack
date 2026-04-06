@@ -32,7 +32,7 @@ static void printPackerHelp()
 		"  -v <dataVersion>  Specifies pack file version. It's used to check if we are \n"
 		"                    loading correct resources pack for a current game or \n"
 		"                    application version. Default value is 0.\n"
-		" -s Use faster decompression algorithm sacrificing resources pack file size.\n"
+		"  -s Use faster decompression algorithm sacrificing resources pack file size.\n"
 	);
 }
 
