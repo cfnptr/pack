@@ -1,12 +1,9 @@
 #!/bin/bash
 cd "$(dirname "$BASH_SOURCE")"
 
-cmake --version > /dev/null
-status=$?
-
-if [ $status -ne 0 ]; then
+if ! cmake --version &> /dev/null; then
     echo "Failed to get CMake version, please check if it's installed."
-    exit $status
+    exit 1
 fi
 
 echo "Configuring project..."
@@ -28,19 +25,6 @@ status=$?
 if [ $status -ne 0 ]; then
     echo "Failed to build CMake project."
     exit $status
-fi
-
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    echo ""
-    echo "Fixing up macOS bundle..."
-
-    cmake --install ../build-release/ --component FixupBundle
-    status=$?
-
-    if [ $status -ne 0 ]; then
-        echo "Failed to fix up macOS bundle."
-        exit $status
-    fi
 fi
 
 exit 0

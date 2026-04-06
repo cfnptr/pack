@@ -2,20 +2,21 @@
 
 ## Operating Systems
 
-* [Window (10/11)](BUILDING.md#windows-1011)
-* [Ubuntu (22.04/24.04)](BUILDING.md#ubuntu-22042404)
-* [macOS (15/26)](BUILDING.md#macos-1526)
-* [Build Project](BUILDING.md#build-project)
+* [Window](BUILDING.md#windows)
+* [macOS](BUILDING.md#macos)
+* [Linux](BUILDING.md#linux)
 
 
-# Windows (10/11)
+# Windows
 
-## 1. Install Visual Studio Community (Or any other IDE)
+## 1. Install Visual Studio Community
 
 1. Download latest version from [visualstudio.microsoft.com](https://visualstudio.microsoft.com/downloads)
 2. Launch downloaded Visual Studio installer
 3. Select "Desktop development with C++" before installation
 4. Then click **Install** button to begin installation
+
+Alternatively you can install and use [CLion](https://www.jetbrains.com/clion/), [VSCode](https://code.visualstudio.com/) or any other IDE.
 
 ## 2. Install Git
 
@@ -29,49 +30,57 @@ You may use default Git install options or chose any other default Git editor in
 2. Select "Add CMake to the system PATH for the current user" during installation
 
 
-# Ubuntu (22.04/24.04)
+# macOS
 
-## 1. Install Visual Studio Code (Or any other IDE)
+## 1. Install Xcode IDE and tools
 
-1. Download and install latest version from [code.visualstudio.com](https://code.visualstudio.com/download)
-2. Install "C/C++" And "CMake Tools" extensions inside **Visual Studio Code**
-
-## 2. Install required packages
-
-1. Run ```sudo apt-get update``` command using **Terminal** app
-2. And ```sudo apt-get install git cmake gcc g++```
-
-
-# macOS (15/26)
-
-## 1. Install Xcode (Or any other IDE)
-
-1. Download and install latest version from **App Store** app
+1. Download and install latest version from the built-in [App Store](https://apps.apple.com/app/xcode/id497799835)
 2. Run ```xcode-select --install``` command using **Terminal** app to install Xcode tools
+
+Alternatively you can install and use [CLion](https://www.jetbrains.com/clion/), [VSCode](https://code.visualstudio.com/) or any other IDE.
 
 ## 2. Install required packages
 
 1. Install **Homebrew** package manager from [brew.sh](https://brew.sh)
-2. Run ```brew update``` command using **Terminal** app
-3. And ```brew install git cmake```
+2. Run ```brew update``` command using **Terminal** app to update package list
+3. And run ```brew install git cmake``` command to install packages
 
 
-# Build Project
+# Linux
 
+## 1. Install Visual Studio Code IDE
+
+1. Download and install latest version from [code.visualstudio.com](https://code.visualstudio.com/download)
+2. Install "[C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)" and "[CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)" extensions inside the **VS Code**
+
+Alternatively you can install and use [CLion](https://www.jetbrains.com/clion/), [VSCodium](https://vscodium.com/) or any other IDE.
+
+## 2. Install required packages
+
+* Execute [scripts/install-packages.sh](scripts/install-packages.sh) script or
+
+### For Ubuntu/Debian
+
+1. Run ```sudo apt-get update``` command using **Terminal** app
+2. And ```sudo apt-get install git cmake build-essential```
+
+
+# Build project (Compile)
+
+Before building the project you should clone it: ```git clone --recursive -j8 <project-url>```<br>
 To build the project run one of the [scripts](scripts/) using **Terminal**, **Git Bash** or build it using **IDE**.
 
-## Visual Studio
+### Visual Studio
 
 1. Open **Visual Studio** IDE application
-2. Click "Open a project or solution" and open the repository **CMakeLists.txt**
+2. Click "Open a project or solution" and open the project **CMakeLists.txt**
 3. Wait for project CMake generation to finish
 4. Click **Build -> Build All** to build the project
 
-## Visual Studio Code (VS Code)
+### Visual Studio Code (VS Code and VSCodium)
 
 1. Open **Visual Studio Code** IDE application
-2. Install "C/C++" And "CMake Tools" extensions
-3. Click **File -> Open Folder...** and open the repository folder
-4. Select one of the compiler **Kits** in the opened window
-5. Wait for project CMake generation to finish
+3. Click **File -> Open Folder...** and open the project folder
+4. Select one of the compiler **Kits** in the opened window (Clang or GCC)
+5. Wait for project CMake generation to finish (may take some time)
 6. Click **Build** button at the bottom bar to build the project
