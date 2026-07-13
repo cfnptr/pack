@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['std_0',['std',['https://en.cppreference.com/w/namespacestd.html',1,'']]],
+  ['std_3a_3achrono_1',['chrono',['https://en.cppreference.com/w/namespacestd_1_1chrono.html',1,'std']]],
+  ['std_3a_3aexecution_2',['execution',['https://en.cppreference.com/w/namespacestd_1_1execution.html',1,'std']]],
+  ['std_3a_3aexperimental_3',['experimental',['https://en.cppreference.com/w/namespacestd_1_1experimental.html',1,'std']]],
+  ['std_3a_3aexperimental_3a_3afilesystem_4',['filesystem',['https://en.cppreference.com/w/namespacestd_1_1experimental_1_1filesystem.html',1,'std::experimental']]],
+  ['std_3a_3aexperimental_3a_3aparallel_5',['parallel',['https://en.cppreference.com/w/namespacestd_1_1experimental_1_1parallel.html',1,'std::experimental']]],
+  ['std_3a_3aexperimental_3a_3apmr_6',['pmr',['https://en.cppreference.com/w/namespacestd_1_1experimental_1_1pmr.html',1,'std::experimental']]],
+  ['std_3a_3afilesystem_7',['filesystem',['https://en.cppreference.com/w/namespacestd_1_1filesystem.html',1,'std']]],
+  ['std_3a_3aliterals_8',['literals',['https://en.cppreference.com/w/namespacestd_1_1literals.html',1,'std']]],
+  ['std_3a_3aliterals_3a_3achrono_5fliterals_9',['chrono_literals',['https://en.cppreference.com/w/namespacestd_1_1literals_1_1chrono__literals.html',1,'std::literals']]],
+  ['std_3a_3aliterals_3a_3acomplex_5fliterals_10',['complex_literals',['https://en.cppreference.com/w/namespacestd_1_1literals_1_1complex__literals.html',1,'std::literals']]],
+  ['std_3a_3aliterals_3a_3astring_5fliterals_11',['string_literals',['https://en.cppreference.com/w/namespacestd_1_1literals_1_1string__literals.html',1,'std::literals']]],
+  ['std_3a_3aliterals_3a_3astring_5fview_5fliterals_12',['string_view_literals',['https://en.cppreference.com/w/namespacestd_1_1literals_1_1string__view__literals.html',1,'std::literals']]],
+  ['std_3a_3apmr_13',['pmr',['https://en.cppreference.com/w/namespacestd_1_1pmr.html',1,'std']]],
+  ['std_3a_3aranges_14',['ranges',['https://en.cppreference.com/w/namespacestd_1_1ranges.html',1,'std']]],
+  ['std_3a_3aregex_5fconstants_15',['regex_constants',['https://en.cppreference.com/w/namespacestd_1_1regex__constants.html',1,'std']]],
+  ['std_3a_3arel_5fops_16',['rel_ops',['https://en.cppreference.com/w/namespacestd_1_1rel__ops.html',1,'std']]],
+  ['std_3a_3athis_5fthread_17',['this_thread',['https://en.cppreference.com/w/namespacestd_1_1this__thread.html',1,'std']]]
+];

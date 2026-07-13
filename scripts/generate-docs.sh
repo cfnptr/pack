@@ -10,22 +10,26 @@ if ! git --version &> /dev/null; then
     exit 1
 fi
 
-if [ ! -d "../cppreference-doxygen" ]; then
-    git clone https://github.com/cfnptr/cppreference-doxygen ../cppreference-doxygen
-    status=$?
-
-    if [ $status -ne 0 ]; then
-        echo "Failed to clone cppreference-doxygen repository."
-        exit $status
-    fi
+if [ ! -d "../doxygen/cppreference" ]; then
+    git clone https://github.com/cfnptr/cppreference-doxygen ../doxygen/cppreference
 else
-    git -C ../cppreference-doxygen pull
-    status=$?
+    git -C ../doxygen/cppreference pull
+fi
+status=$?
+if [ $status -ne 0 ]; then
+    echo "Failed to clone/pull cppreference-doxygen repository."
+    exit $status
+fi
 
-    if [ $status -ne 0 ]; then
-        echo "Failed to pull cppreference-doxygen repository changes."
-        exit $status
-    fi
+if [ ! -d "../doxygen/awesome-css" ]; then
+    git clone https://github.com/jothepro/doxygen-awesome-css ../doxygen/awesome-css
+else
+    git -C ../doxygen/awesome-css pull
+fi
+status=$?
+if [ $status -ne 0 ]; then
+    echo "Failed to clone/pull doxygen-awesome-css repository."
+    exit $status
 fi
 
 cd "../"
