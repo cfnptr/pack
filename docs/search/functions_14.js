@@ -75,8 +75,9 @@ var searchData=
   ['try_5flock_5fshared_5funtil_72',['try_lock_shared_until',['https://en.cppreference.com/w/cpp/thread/shared_timed_mutex/try_lock_shared_until.html',1,'std::shared_timed_mutex']]],
   ['try_5flock_5funtil_73',['try_lock_until',['https://en.cppreference.com/w/cpp/thread/unique_lock/try_lock_until.html',1,'std::unique_lock::try_lock_until()'],['https://en.cppreference.com/w/cpp/thread/timed_mutex/try_lock_until.html',1,'std::timed_mutex::try_lock_until()'],['https://en.cppreference.com/w/cpp/thread/recursive_timed_mutex/try_lock_until.html',1,'std::recursive_timed_mutex::try_lock_until()'],['https://en.cppreference.com/w/cpp/thread/shared_lock/try_lock_until.html',1,'std::shared_lock::try_lock_until()'],['https://en.cppreference.com/w/cpp/thread/shared_timed_mutex/try_lock_until.html',1,'std::shared_timed_mutex::try_lock_until()']]],
   ['try_5fwait_74',['try_wait',['https://en.cppreference.com/w/cpp/thread/latch/try_wait.html',1,'std::latch']]],
-  ['tuple_75',['tuple',['https://en.cppreference.com/w/cpp/utility/tuple/tuple.html',1,'std::tuple']]],
-  ['tuple_5fcat_76',['tuple_cat',['https://en.cppreference.com/w/cpp/utility/tuple/tuple_cat.html',1,'std']]],
-  ['type_77',['type',['https://en.cppreference.com/w/cpp/experimental/any/type.html',1,'std::experimental::any::type()'],['https://en.cppreference.com/w/cpp/experimental/fs/file_status/type.html',1,'std::experimental::filesystem::file_status::type()'],['https://en.cppreference.com/w/cpp/utility/any/type.html',1,'std::any::type()'],['https://en.cppreference.com/w/cpp/filesystem/file_status/type.html',1,'std::filesystem::file_status::type()']]],
-  ['type_5findex_78',['type_index',['https://en.cppreference.com/w/cpp/types/type_index/type_index.html',1,'std::type_index']]]
+  ['tryreadheader_75',['tryReadHeader',['../classpack_1_1Common.html#a5f803b3183e90a84a794072e4deda744',1,'pack::Common']]],
+  ['tuple_76',['tuple',['https://en.cppreference.com/w/cpp/utility/tuple/tuple.html',1,'std::tuple']]],
+  ['tuple_5fcat_77',['tuple_cat',['https://en.cppreference.com/w/cpp/utility/tuple/tuple_cat.html',1,'std']]],
+  ['type_78',['type',['https://en.cppreference.com/w/cpp/experimental/any/type.html',1,'std::experimental::any::type()'],['https://en.cppreference.com/w/cpp/experimental/fs/file_status/type.html',1,'std::experimental::filesystem::file_status::type()'],['https://en.cppreference.com/w/cpp/utility/any/type.html',1,'std::any::type()'],['https://en.cppreference.com/w/cpp/filesystem/file_status/type.html',1,'std::filesystem::file_status::type()']]],
+  ['type_5findex_79',['type_index',['https://en.cppreference.com/w/cpp/types/type_index/type_index.html',1,'std::type_index']]]
 ];

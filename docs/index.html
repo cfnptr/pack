@@ -123,12 +123,13 @@ Features</h1>
 Usage example</h1>
 <div class="fragment"><div class="line"><span class="keywordtype">void</span> packReaderExampleCPP()</div>
 <div class="line">{</div>
-<div class="line">    pack::Reader packReader(<span class="stringliteral">&quot;resources.pack&quot;</span>);</div>
+<div class="line">    <a class="code hl_class" href="classpack_1_1Reader.html">pack::Reader</a> packReader(<span class="stringliteral">&quot;resources.pack&quot;</span>);</div>
 <div class="line">    <span class="keyword">auto</span> itemIndex = packReader.getItemIndex(<span class="stringliteral">&quot;textures/sky.png&quot;</span>);</div>
 <div class="line">    <a class="code hl_classRef" href="https://en.cppreference.com/w/cpp/container/vector.html">std::vector&lt;uint8_t&gt;</a> itemData;</div>
 <div class="line">    packReader.readItemData(itemIndex, itemData);</div>
 <div class="line">    <span class="comment">// use data...</span></div>
 <div class="line">}</div>
+<div class="ttc" id="aclasspack_1_1Reader_html"><div class="ttname"><a href="classpack_1_1Reader.html">pack::Reader</a></div><div class="ttdoc">Pack reader instance handle.</div><div class="ttdef"><b>Definition</b> reader.hpp:44</div></div>
 <div class="ttc" id="avector_html"><div class="ttname"><a href="https://en.cppreference.com/w/cpp/container/vector.html">std::vector</a></div></div>
 </div><!-- fragment --><div class="fragment"><div class="line"><span class="keywordtype">void</span> packReaderExampleC()</div>
 <div class="line">{</div>

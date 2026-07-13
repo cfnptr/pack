@@ -1007,6 +1007,7 @@ WARN_LOGFILE           =
 
 INPUT                  = include \
                          README.md \
+                         wrappers/cpp \
                          BUILDING.md
 
 # This tag can be used to specify the character encoding of the source files
