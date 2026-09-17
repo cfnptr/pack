@@ -217,8 +217,8 @@ public:
 	 * 
 	 * @throw Error with a @ref PackResult string on failure.
 	 */
-	template<class T = uint8_t>
-	void readItemData(uint64_t itemIndex, vector<T>& buffer, uint32_t threadIndex = 0) const
+	template<class T = uint8_t, class A = std::allocator<T>>
+	void readItemData(uint64_t itemIndex, vector<T, A>& buffer, uint32_t threadIndex = 0) const
 	{
 		assert(getPackItemDataSize(instance, itemIndex) % sizeof(T) == 0);
 		buffer.resize(getPackItemDataSize(instance, itemIndex) / sizeof(T));
@@ -238,8 +238,8 @@ public:
 	 * 
 	 * @throw Error with a @ref PackResult string on failure.
 	 */
-	template<class T = uint8_t>
-	void readItemData(const filesystem::path& path, vector<T>& buffer, uint32_t threadIndex = 0) const
+	template<class T = uint8_t, class A = std::allocator<T>>
+	void readItemData(const filesystem::path& path, vector<T, A>& buffer, uint32_t threadIndex = 0) const
 	{
 		auto itemIndex = getItemIndex(path);
 		assert(getPackItemDataSize(instance, itemIndex) % sizeof(T) == 0);
