@@ -91,17 +91,12 @@ if(PACK_BUILD_UTILITIES)
 	target_link_libraries(pack-info PRIVATE pack-static)
 	target_include_directories(pack-info PRIVATE
 		${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include)
-		
-	if(CMAKE_BUILD_TYPE STREQUAL "Release" AND
-		(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR
-		CMAKE_SYSTEM_NAME STREQUAL "Darwin"))
 
-		add_custom_command(TARGET packer POST_BUILD
-			COMMAND strip "$<TARGET_FILE:packer>" VERBATIM)
-		add_custom_command(TARGET unpacker POST_BUILD
-			COMMAND strip "$<TARGET_FILE:unpacker>" VERBATIM)
-		add_custom_command(TARGET pack-info POST_BUILD
-			COMMAND strip "$<TARGET_FILE:pack-info>" VERBATIM)
+	include(cmake/strip-executable.cmake)
+	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		stripExecutable(packer)
+		stripExecutable(unpacker)
+		stripExecutable(pack-info)
 	endif()
 endif()
 
