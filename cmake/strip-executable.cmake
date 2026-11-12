@@ -13,7 +13,7 @@
 # limitations under the License.
 
 function(stripExecutable STRIP_TARGET)
-    if(LINUX)
+	if(LINUX)
 		add_custom_command(TARGET ${STRIP_TARGET} POST_BUILD VERBATIM
 			COMMAND ${CMAKE_COMMAND} -E echo 
 				"Stripping $<TARGET_FILE_NAME:${STRIP_TARGET}> executable..."
